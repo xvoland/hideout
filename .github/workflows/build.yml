@@ -11,6 +11,7 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -27,25 +28,48 @@ jobs:
           -derivedDataPath build
 
       - name: Package app
-        run: ditto -c -k --sequesterRsrc --keepParent "build/Build/Products/Release/Hideout.app" "Hideout.app.zip"
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            "build/Build/Products/Release/Hideout.app" \
+            "Hideout.app.zip"
 
       - name: Verify app.zip
         run: |
           ls -la Hideout.app.zip
           file Hideout.app.zip
-  
+
       - name: Create DMG
         run: |
-          hdiutil create -volname "Hideout" -srcfolder "build/Build/Products/Release/Hideout.app" -ov -format UDZO "Hideout.dmg"
+          hdiutil create \
+            -volname "Hideout" \
+            -srcfolder "build/Build/Products/Release/Hideout.app" \
+            -ov \
+            -format UDZO \
+            "Hideout.dmg"
 
       - name: Verify dmg
         run: |
           ls -la Hideout.dmg
           file Hideout.dmg
-  
-      - name: Publish release (test)
+
+      - name: Create source archive
+        run: |
+          git archive \
+            --format=zip \
+            --output="Hideout-source.zip" \
+            HEAD
+
+      - name: Verify source archive
+        run: |
+          ls -la Hideout-source.zip
+          file Hideout-source.zip
+
+      - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: Hideout.app.zip Hideout.dmg
+          files: |
+            Hideout.app.zip
+            Hideout.dmg
+            Hideout-source.zip
           prerelease: true
