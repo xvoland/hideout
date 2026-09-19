@@ -58,8 +58,6 @@ jobs:
 
           rm -rf dmg
 
-
-
       - name: Verify dmg
         run: |
           ls -la Hideout.dmg
