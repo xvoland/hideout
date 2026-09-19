@@ -5,7 +5,7 @@
 </p>
 
 
-> **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hidden/releases) page.
+> **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
 
 <p align="center">
 	<img width="200" height="200" margin-right="100%" src="img/icon_512@2x.png">
@@ -24,8 +24,8 @@
 
 Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation. The macOS 27 Golden Gate hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus); this fork packages, builds, and verifies it for macOS 27.
 
-## Hidden Bar
-Hidden Bar lets you hide menu bar items to give your Mac a cleaner look.
+## Hideout
+Hideout lets you hide menu bar items to give your Mac a cleaner look.
 
 <p align="center">
 	<img width="400" src="img/screen1.png">
@@ -40,7 +40,7 @@ Hidden Bar lets you hide menu bar items to give your Mac a cleaner look.
 
 ### Others
 
-The Hidden Bar is notarized before distributed out side App Store. It's safe to use 👍
+The Hideout is notarized before distributed out side App Store. It's safe to use 👍
 
 #### Using Homebrew
 
@@ -48,7 +48,7 @@ This fork ships its own Homebrew cask so you install **this** build — not the
 upstream one:
 
 ```
-brew install --cask https://raw.githubusercontent.com/xvoland/hidden/main/Casks/hiddenbar-goldengate.rb
+brew install --cask https://raw.githubusercontent.com/xvoland/hidden/main/Casks/hideout.rb
 ```
 
 This pulls the latest macOS 27 "Golden Gate" build from the
