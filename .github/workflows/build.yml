@@ -2,7 +2,7 @@ name: Build & Release Hideout (.app)
 
 on:
   push:
-    branches: [master]
+    branches: [develop, master]
     tags: ['v*']
   workflow_dispatch:
 
@@ -42,15 +42,6 @@ jobs:
         run: |
           hdiutil create -volname "Hideout" -srcfolder "build/Build/Products/Release/Hideout.app" -ov -format UDZO "Hideout.dmg"
 
-      - name: Create source archive
-        run: |
-          git archive --format=zip --output="Hideout-source.zip" HEAD
-
-      - name: List working directory files
-        run: |
-          ls -la
-          find . -name "*.zip" -o -name "*.dmg" | head -20
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -58,18 +49,11 @@ jobs:
           path: |
             Hideout.app.zip
             Hideout.dmg
-            Hideout-source.zip
-
-      - name: Verify files for release
-        run: |
-          echo "Files matching app zip:" && find . -name "Hideout*.zip" | head -5
-          echo "Files matching dmg:" && find . -name "Hideout*.dmg" | head -5
-          echo "Files matching source:" && find . -name "Hideout-source*" | head -5
 
       # Auto-publish a release only when a version tag is pushed.
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: Hideout.app.zip Hideout.dmg Hideout-source.zip
+          files: Hideout.app.zip Hideout.dmg
           prerelease: true
