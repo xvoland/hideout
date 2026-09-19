@@ -67,7 +67,7 @@
 		55F3F1182608923B0054B881 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		55F3F11C2608925A0054B881 /* StackView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StackView+Extension.swift"; sourceTree = "<group>"; };
 		9220587D22127050008A8B03 /* Hidden.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Hidden.entitlements; path = Hidden/Hidden.entitlements; sourceTree = "<group>"; };
-		929113F121F9D04100173149 /* Hidden Bar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hidden Bar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		929113F121F9D04100173149 /* Hideout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hideout.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		929113F421F9D04100173149 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		929113F821F9D04200173149 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		929113FB21F9D04200173149 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -229,7 +229,7 @@
 		929113F221F9D04100173149 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				929113F121F9D04100173149 /* Hidden Bar.app */,
+				929113F121F9D04100173149 /* Hideout.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -275,9 +275,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		929113F021F9D04100173149 /* Hidden Bar */ = {
+		929113F021F9D04100173149 /* Hideout */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9291141721F9D04200173149 /* Build configuration list for PBXNativeTarget "Hidden Bar" */;
+			buildConfigurationList = 9291141721F9D04200173149 /* Build configuration list for PBXNativeTarget "Hideout" */;
 			buildPhases = (
 				929113ED21F9D04100173149 /* Sources */,
 				929113EE21F9D04100173149 /* Frameworks */,
@@ -287,12 +287,12 @@
 			);
 			dependencies = (
 			);
-			name = "Hidden Bar";
+			name = "Hideout";
 			packageProductDependencies = (
 				08A5F85E23AA01EE00981CA5 /* HotKey */,
 			);
 			productName = vanillaClone;
-			productReference = 929113F121F9D04100173149 /* Hidden Bar.app */;
+			productReference = 929113F121F9D04100173149 /* Hideout.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -316,7 +316,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 929113EC21F9D04100173149 /* Build configuration list for PBXProject "Hidden Bar" */;
+			buildConfigurationList = 929113EC21F9D04100173149 /* Build configuration list for PBXProject "Hideout" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -340,7 +340,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				929113F021F9D04100173149 /* Hidden Bar */,
+				929113F021F9D04100173149 /* Hideout */,
 			);
 		};
 /* End PBXProject section */
@@ -779,7 +779,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		929113EC21F9D04100173149 /* Build configuration list for PBXProject "Hidden Bar" */ = {
+		929113EC21F9D04100173149 /* Build configuration list for PBXProject "Hideout" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA1E0010240F0A1100B0C3E0 /* Debug-Direct */,
@@ -790,7 +790,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9291141721F9D04200173149 /* Build configuration list for PBXNativeTarget "Hidden Bar" */ = {
+		9291141721F9D04200173149 /* Build configuration list for PBXNativeTarget "Hideout" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AA1E0012240F0A1100B0C3E2 /* Debug-Direct */,
