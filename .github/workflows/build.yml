@@ -44,7 +44,7 @@ jobs:
 
       - name: Create source archive
         run: |
-          git archive --format=zip --output="Hideout-source.zip" master
+          git archive --format=zip --output="Hideout-source.zip" HEAD
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
