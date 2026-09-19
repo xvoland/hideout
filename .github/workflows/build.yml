@@ -41,6 +41,9 @@ jobs:
       - name: Create DMG
         run: |
           hdiutil create -volname "Hideout" -srcfolder "build/Build/Products/Release/Hideout.app" -ov -format UDZO "Hideout.dmg"
+          hdiutil attach "Hideout.dmg"
+          ln -sf /Applications "/Volumes/Hideout/Applications"
+          hdiutil detach "Hideout.dmg"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
