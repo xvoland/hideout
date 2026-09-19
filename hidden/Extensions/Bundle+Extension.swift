@@ -1,6 +1,6 @@
 //
 //  Bundle+Extension.swift
-//  Hidden Bar
+//  Hideout
 //
 //  Created by phucld on 12/19/19.
 //  Changed by Vitalii Tereshchuk / xVoLAnD, 2026

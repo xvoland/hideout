@@ -1,4 +1,4 @@
-name: Build & Release Hidden Bar (.app)
+name: Build & Release Hideout (.app)
 
 on:
   push:
@@ -20,34 +20,34 @@ jobs:
 
       - name: Build (ad-hoc, no signing)
         run: >
-          xcodebuild -project 'Hidden Bar.xcodeproj'
-          -scheme 'Hidden Bar'
+          xcodebuild -project 'Hideout.xcodeproj'
+          -scheme 'Hideout'
           -configuration Release
           CODE_SIGNING_ALLOWED=NO
           -derivedDataPath build
 
       - name: Build direct (native visibility, no signing)
         run: >
-          xcodebuild -project 'Hidden Bar.xcodeproj'
-          -scheme 'Hidden Bar'
+          xcodebuild -project 'Hideout.xcodeproj'
+          -scheme 'Hideout'
           -configuration Release-Direct
           CODE_SIGNING_ALLOWED=NO
           -derivedDataPath build-direct
 
       # Keep the .app bundle intact (the previous upload flattened it to Contents/).
       - name: Package app
-        run: ditto -c -k --sequesterRsrc --keepParent "build/Build/Products/Release/Hidden Bar.app" "Hidden Bar.app.zip"
+        run: ditto -c -k --sequesterRsrc --keepParent "build/Build/Products/Release/Hideout.app" "Hideout.app.zip"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Hidden Bar.app
-          path: Hidden Bar.app.zip
+          name: Hideout.app
+          path: Hideout.app.zip
 
       # Auto-publish a release only when a version tag is pushed.
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: Hidden Bar.app.zip
+          files: Hideout.app.zip
           prerelease: true

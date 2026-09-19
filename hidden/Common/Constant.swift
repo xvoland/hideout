@@ -10,7 +10,7 @@
 import Foundation
 
 enum Constant {
-    static let appName = "Hidden Bar"
+    static let appName = "Hideout"
 
     static var isUsingLTRLanguage = false
 }

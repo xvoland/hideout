@@ -1,6 +1,6 @@
 //
 //  MenuBarLayout.swift
-//  Hidden Bar
+//  Hideout
 //
 //  Copyright © 2026 Dwarves Foundation. All rights reserved.
 //  macOS 27 Golden Gate fork — xVoLAnD (https://dotoca.net)
