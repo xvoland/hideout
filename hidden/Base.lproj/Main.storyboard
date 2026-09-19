@@ -12,9 +12,9 @@
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
-                            <menuItem title="Hidden Bar" id="1Xt-HY-uBw">
+                            <menuItem title="Hideout" id="1Xt-HY-uBw">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Hidden Bar" systemMenu="apple" id="uQy-DD-JDr">
+                                <menu key="submenu" title="Hideout" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
                                         <menuItem title="About Hidden Bar" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -150,7 +150,7 @@
                                                             <subviews>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ekW-28-SJX">
                                                                     <rect key="frame" x="-2" y="25" width="176" height="41"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Hidden Bar" id="2xp-Ht-xa6">
+                                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Hideout" id="2xp-Ht-xa6">
                                                                         <font key="font" metaFont="systemMedium" size="35"/>
                                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -413,7 +413,7 @@
                                             <textFieldCell key="cell" alignment="center" id="k7C-e5-6a0">
                                                 <font key="font" metaFont="system"/>
                                                 <string key="title">In your Mac's menu bar, hold ⌘ and drag icons
-between sections to configure Hidden Bar.</string>
+between sections to configure Hideout.</string>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
