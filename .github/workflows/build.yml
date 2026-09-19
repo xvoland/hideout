@@ -2,7 +2,7 @@ name: Build & Release Hideout (.app)
 
 on:
   push:
-    branches: [develop, master]
+    branches: [master]
     tags: ['v*']
   workflow_dispatch:
 
@@ -26,50 +26,24 @@ jobs:
           CODE_SIGNING_ALLOWED=NO
           -derivedDataPath build
 
-      - name: Build direct (native visibility, no signing)
-        run: >
-          xcodebuild -project 'Hideout.xcodeproj'
-          -scheme 'Hideout'
-          -configuration Release-Direct
-          CODE_SIGNING_ALLOWED=NO
-          -derivedDataPath build-direct
-
-      # Keep the .app bundle intact (the previous upload flattened it to Contents/).
       - name: Package app
         run: ditto -c -k --sequesterRsrc --keepParent "build/Build/Products/Release/Hideout.app" "Hideout.app.zip"
 
-      - name: Verify app.zip exists
+      - name: Verify app.zip
         run: |
-          echo "Checking for Hideout.app.zip..."
-          ls -la Hideout.app.zip 2>/dev/null || echo "Hideout.app.zip NOT found"
-          find . -name "*.zip" 2>/dev/null | head -10
-
+          ls -la Hideout.app.zip
+          file Hideout.app.zip
+  
       - name: Create DMG
         run: |
           hdiutil create -volname "Hideout" -srcfolder "build/Build/Products/Release/Hideout.app" -ov -format UDZO "Hideout.dmg"
 
-      - name: Verify dmg exists
+      - name: Verify dmg
         run: |
-          echo "Checking for Hideout.dmg..."
-          ls -la Hideout.dmg 2>/dev/null || echo "Hideout.dmg NOT found"
-          find . -name "*.dmg" 2>/dev/null | head -5
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Hideout
-          path: |
-            Hideout.app.zip
-            Hideout.dmg
-
-      - name: List all files before release
-        run: |
-          echo "=== All files in repo ==="
-          find . -maxdepth 3 -type f -name "*.zip" -o -name "*.dmg" | head -20
-          echo "=== Root level files ==="
-          ls -la *.zip *.dmg 2>/dev/null || echo "No zip/dmg at root"
-
-      - name: Publish release
+          ls -la Hideout.dmg
+          file Hideout.dmg
+  
+      - name: Publish release (test)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
