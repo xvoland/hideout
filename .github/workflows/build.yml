@@ -40,12 +40,25 @@ jobs:
 
       - name: Create DMG
         run: |
+          rm -rf dmg
+          mkdir -p dmg
+
+          cp -R \
+            "build/Build/Products/Release/Hideout.app" \
+            "dmg/Hideout.app"
+
+          ln -s /Applications "dmg/Applications"
+
           hdiutil create \
             -volname "Hideout" \
-            -srcfolder "build/Build/Products/Release/Hideout.app" \
+            -srcfolder "dmg" \
             -ov \
             -format UDZO \
             "Hideout.dmg"
+
+          rm -rf dmg
+
+
 
       - name: Verify dmg
         run: |
