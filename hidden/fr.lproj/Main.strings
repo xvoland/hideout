@@ -5,8 +5,8 @@
 /* Class = "NSMenuItem"; title = "Customize Toolbar…"; ObjectID = "1UK-8n-QPP"; */
 "1UK-8n-QPP.title" = "Personnaliser la barre d'outils";
 
-/* Class = "NSMenuItem"; title = "Hidden Bar"; ObjectID = "1Xt-HY-uBw"; */
-"1Xt-HY-uBw.title" = "Hidden Bar";
+/* Class = "NSMenuItem"; title = "HIDEOUT"; ObjectID = "1Xt-HY-uBw"; */
+"1Xt-HY-uBw.title" = "HIDEOUT";
 
 /* Class = "NSMenu"; title = "Find"; ObjectID = "1b7-l0-nxx"; */
 "1b7-l0-nxx.title" = "Chercher";
@@ -23,8 +23,8 @@
 /* Class = "NSMenuItem"; title = "Transformations"; ObjectID = "2oI-Rn-ZJC"; */
 "2oI-Rn-ZJC.title" = "Transformations";
 
-/* Class = "NSTextFieldCell"; title = "Hidden Bar"; ObjectID = "2xp-Ht-xa6"; */
-"2xp-Ht-xa6.title" = "Hidden Bar";
+/* Class = "NSTextFieldCell"; title = "HIDEOUT"; ObjectID = "2xp-Ht-xa6"; */
+"2xp-Ht-xa6.title" = "HIDEOUT";
 
 /* Class = "NSMenu"; title = "Spelling"; ObjectID = "3IN-sU-3Bg"; */
 "3IN-sU-3Bg.title" = "Orthographe";
@@ -47,8 +47,8 @@
 /* Class = "NSMenuItem"; title = "Enter Full Screen"; ObjectID = "4J7-dP-txa"; */
 "4J7-dP-txa.title" = "Passer en mode plein écran";
 
-/* Class = "NSMenuItem"; title = "Quit Hidden Bar"; ObjectID = "4sb-4s-VLi"; */
-"4sb-4s-VLi.title" = "Quitter Hidden Bar";
+/* Class = "NSMenuItem"; title = "Quit HIDEOUT"; ObjectID = "4sb-4s-VLi"; */
+"4sb-4s-VLi.title" = "Quitter HIDEOUT";
 
 /* Class = "NSMenuItem"; title = "Edit"; ObjectID = "5QF-Oa-p0T"; */
 "5QF-Oa-p0T.title" = "Édition";
@@ -56,8 +56,8 @@
 /* Class = "NSMenuItem"; title = "Copy Style"; ObjectID = "5Vv-lz-BsD"; */
 "5Vv-lz-BsD.title" = "Copier le style";
 
-/* Class = "NSMenuItem"; title = "About Hidden Bar"; ObjectID = "5kV-Vb-QxS"; */
-"5kV-Vb-QxS.title" = "À propos de Hidden Bar";
+/* Class = "NSMenuItem"; title = "About HIDEOUT"; ObjectID = "5kV-Vb-QxS"; */
+"5kV-Vb-QxS.title" = "À propos de HIDEOUT";
 
 /* Class = "NSMenuItem"; title = "Redo"; ObjectID = "6dh-zS-Vam"; */
 "6dh-zS-Vam.title" = "Refaire";
@@ -104,8 +104,8 @@
 /* Class = "NSMenu"; title = "Help"; ObjectID = "F2S-fz-NVQ"; */
 "F2S-fz-NVQ.title" = "Aide";
 
-/* Class = "NSMenuItem"; title = "Hidden Bar Help"; ObjectID = "FKE-Sm-Kum"; */
-"FKE-Sm-Kum.title" = "Aide pour Hidden Bar";
+/* Class = "NSMenuItem"; title = "HIDEOUT Help"; ObjectID = "FKE-Sm-Kum"; */
+"FKE-Sm-Kum.title" = "Aide pour HIDEOUT";
 
 /* Class = "NSMenuItem"; title = "Text"; ObjectID = "Fal-I4-PZk"; */
 "Fal-I4-PZk.title" = "Texte";
@@ -206,8 +206,8 @@
 /* Class = "NSMenuItem"; title = "Baseline"; ObjectID = "OaQ-X3-Vso"; */
 "OaQ-X3-Vso.title" = "Ligne de base";
 
-/* Class = "NSMenuItem"; title = "Hide Hidden Bar"; ObjectID = "Olw-nP-bQN"; */
-"Olw-nP-bQN.title" = "Masquer Hidden Bar";
+/* Class = "NSMenuItem"; title = "Hide HIDEOUT"; ObjectID = "Olw-nP-bQN"; */
+"Olw-nP-bQN.title" = "Masquer HIDEOUT";
 
 /* Class = "NSMenuItem"; title = "Find Previous"; ObjectID = "OwM-mh-QMV"; */
 "OwM-mh-QMV.title" = "Trouver le précédent";
@@ -254,8 +254,8 @@
 /* Class = "NSMenuItem"; title = "Italic"; ObjectID = "Vjx-xi-njq"; */
 "Vjx-xi-njq.title" = "Italique";
 
-/* Class = "NSButtonCell"; title = "Start Hidden Bar when I log in"; ObjectID = "W1G-55-zGo"; */
-"W1G-55-zGo.title" = "Démarrer automatiquement Hidden Bar lors de la connexion";
+/* Class = "NSButtonCell"; title = "Start HIDEOUT when I log in"; ObjectID = "W1G-55-zGo"; */
+"W1G-55-zGo.title" = "Démarrer automatiquement HIDEOUT lors de la connexion";
 
 /* Class = "NSMenu"; title = "Edit"; ObjectID = "W48-6f-4Dl"; */
 "W48-6f-4Dl.title" = "Édition";
@@ -269,7 +269,7 @@
 /* Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "WeT-3V-zwk"; */
 "WeT-3V-zwk.title" = "Coller et correspondre au style";
 
-/* Class = "NSTextFieldCell"; title = "Menu bar cleaner"; ObjectID = "X4W-sr-Z32"; */
+/* Class = "NSTextFieldCell"; title = "Organizing the Menu Bar"; ObjectID = "X4W-sr-Z32"; */
 "X4W-sr-Z32.title" = "Nettoyeur de la barre de menu";
 
 /* Class = "NSTextFieldCell"; title = "Know more about the fork"; ObjectID = "Xb1-xM-sYy"; */
@@ -392,8 +392,8 @@
 /* Class = "NSMenuItem"; title = "Format"; ObjectID = "jxT-CU-nIS"; */
 "jxT-CU-nIS.title" = "Format";
 
-/* Class = "NSTextFieldCell"; title = "In your Mac's menu bar, hold ⌘ and drag icons\nbetween sections to configure Hidden Bar."; ObjectID = "k7C-e5-6a0"; */
-"k7C-e5-6a0.title" = "Dans la barre des menus de votre Mac, maintenez la touche ⌘ et\nfaites glisser les icônes entre les sections pour configurer Hidden Bar.";
+/* Class = "NSTextFieldCell"; title = "In your Mac's menu bar, hold ⌘ and drag icons\nbetween sections to configure HIDEOUT."; ObjectID = "k7C-e5-6a0"; */
+"k7C-e5-6a0.title" = "Dans la barre des menus de votre Mac, maintenez la touche ⌘ et\nfaites glisser les icônes entre les sections pour configurer HIDEOUT.";
 
 /* Class = "NSMenuItem"; title = "Show Sidebar"; ObjectID = "kIP-vf-haE"; */
 "kIP-vf-haE.title" = "Afficher la barre latérale";
@@ -452,8 +452,8 @@
 /* Class = "NSMenu"; title = "Kern"; ObjectID = "tlD-Oa-oAM"; */
 "tlD-Oa-oAM.title" = "Crénage";
 
-/* Class = "NSMenu"; title = "Hidden Bar"; ObjectID = "uQy-DD-JDr"; */
-"uQy-DD-JDr.title" = "Hidden Bar";
+/* Class = "NSMenu"; title = "HIDEOUT"; ObjectID = "uQy-DD-JDr"; */
+"uQy-DD-JDr.title" = "HIDEOUT";
 
 /* Class = "NSMenuItem"; title = "Cut"; ObjectID = "uRl-iY-unG"; */
 "uRl-iY-unG.title" = "Couper";
