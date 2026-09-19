@@ -1,5 +1,5 @@
 <p align="right">
-<a href="https://dotoca.net">
+<a href="https://dotoca.net/hideout">
  		<img height="64" src="https://github.com/xvoland/xvoland/blob/main/images/paypal.png" alt="PayPal donations">
   </a>
 </p>
