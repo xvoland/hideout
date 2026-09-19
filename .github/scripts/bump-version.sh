@@ -18,7 +18,7 @@ fi
 echo "Tag:    $TAG"
 echo "Version: $VERSION"
 
-PROJECT_FILE="Hidden Bar.xcodeproj/project.pbxproj"
+PROJECT_FILE="Hideout.xcodeproj/project.pbxproj"
 
 if [[ ! -f "$PROJECT_FILE" ]]; then
   echo "Error: $PROJECT_FILE not found"
