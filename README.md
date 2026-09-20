@@ -16,6 +16,10 @@
   </a>
 </p>
 
+<p align="center">
+	<img src="img/tutorial.gif">
+</p>
+
 > **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
 
 ## Maintainer (this fork)
@@ -50,15 +54,15 @@ This fork ships its own Homebrew cask so you install **this** build — not the
 upstream one:
 
 ```
-brew install --cask https://raw.githubusercontent.com/xvoland/hidden/main/Casks/hideout.rb
+brew install --cask https://raw.githubusercontent.com/xvoland/hideout/main/Casks/hideout.rb
 ```
 
 This pulls the latest macOS 27 "Golden Gate" build from the
-[xvoland/hidden Releases](https://github.com/xvoland/hidden/releases) page. The
+[xvoland/hidden Releases](https://github.com/xvoland/hideout/releases) page. The
 build is **unsigned**, so before the first launch run:
 
 ```
-xattr -dr com.apple.quarantine /Applications/Hidden\ Bar.app
+xattr -dr com.apple.quarantine /Applications/Hideout.app
 ```
 
 > ⚠️ Do **not** use `brew install --cask hiddenbar` — that installs the upstream
@@ -67,7 +71,7 @@ xattr -dr com.apple.quarantine /Applications/Hidden\ Bar.app
 
 #### Manual download
 
-- [Download latest version](https://github.com/xvoland/hidden/releases/latest)
+- [Download latest version](https://github.com/xvoland/hideout/releases/latest)
 - Open and drag the app to the Applications folder.
 - Launch Hidden and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
 
@@ -85,14 +89,6 @@ xattr -dr com.apple.quarantine /Applications/Hidden\ Bar.app
 - [Manual](docs/MANUAL.md): every setting, the hidden Terminal-only options, and troubleshooting.
 - [Architecture](docs/ARCHITECTURE.md): how the hiding trick works, topology, and known limits.
 - [Maintainer runbook](docs/RUNBOOK.md): build, behavioral verification, and release process.
-
-## ✨<a href="https://github.com/xvoland/hidden/graphs/contributors">Contributors</a>
-
-This project exists thanks to all the people who contribute. Thank you guys so much 👏
-
-[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/0)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/0)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/1)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/1)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/2)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/2)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/3)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/3)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/4)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/4)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/5)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/5)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/6)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/6)[![](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/images/7)](https://sourcerer.io/fame/phucledien/dwarvesf/hidden/links/7)
-
-Please read [this](CONTRIBUTING.md) before you make a contribution.
 
 ## Requirements
 macOS version >= 13.0 (Ventura)
