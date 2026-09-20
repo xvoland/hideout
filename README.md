@@ -6,7 +6,7 @@
 </p>
 <p align="center">
 <a href="https://github.com/xvoland/hidden/releases/latest">
-		<img src="https://img.shields.io/badge/download-latest-brightgreen.svg" alt="download">
+		<img src="https://img.shields.io/badge/download-latest-brightgreen.svg" style="height: 80px" alt="download">
   </a>
 </p>
 
