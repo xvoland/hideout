@@ -1,11 +1,5 @@
-<p align="right">
-<a href="https://dotoca.net/hideout">
- 		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" alt="PayPal donations">
-  </a>
-</p>
 
 
-> **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
 
 <p align="center">
 	<img width="200" height="200" margin-right="100%" src="img/icon_512@2x.png">
@@ -15,6 +9,14 @@
 		<img src="https://img.shields.io/badge/download-latest-brightgreen.svg" alt="download">
   </a>
 </p>
+
+<p align="right">
+<a href="https://dotoca.net/hideout">
+ 		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" alt="PayPal donations">
+  </a>
+</p>
+
+> **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
 
 ## Maintainer (this fork)
 
