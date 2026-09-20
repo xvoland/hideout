@@ -10,7 +10,7 @@
   </a>
 </p>
 
-<p align="right">
+<p align="center">
 <a href="https://dotoca.net/hideout">
  		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" style="height: 80px" alt="PayPal, Gumroad, QR-codes etc donations">
   </a>
