@@ -80,7 +80,9 @@ class StatusBarController: MenuBarItemProvider {
         setupUI()
         setupAlwayHideStatusBar()
         setupHoverToExpandIfEnabled()
+        updateHoverMonitoring()
         NotificationCenter.default.addObserver(self, selector: #selector(handleScreenParametersChanged), name: NSApplication.didChangeScreenParametersNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateHoverMonitoring), name: .prefsChanged, object: nil)
 
         // Create the engine now so one that does not use the separator (macOS 27
         // native hiding) takes it back out before it is ever drawn.
@@ -110,6 +112,16 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func setupHoverToExpandIfEnabled() {
+        installHoverMonitor()
+    }
+
+    @objc private func updateHoverMonitoring() {
+        removeHoverMonitor()
+        installHoverMonitor()
+    }
+
+    private func installHoverMonitor() {
+        guard hoverMonitor == nil else { return }
         guard Preferences.hoverToExpand else { return }
         NSLog("HoverToExpand: enabled, installing global mouse monitor")
         hoverMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
@@ -128,6 +140,15 @@ class StatusBarController: MenuBarItemProvider {
                 }
             }
         }
+    }
+
+    private func removeHoverMonitor() {
+        if let monitor = hoverMonitor {
+            NSEvent.removeMonitor(monitor)
+            hoverMonitor = nil
+        }
+        hoverDwellTimer?.invalidate()
+        hoverDwellTimer = nil
     }
 
     @objc private func handleScreenParametersChanged() {
@@ -258,6 +279,9 @@ class StatusBarController: MenuBarItemProvider {
 
     private func collapseMenuBar() {
         guard menuBarEngine.isArrangementValid && !self.isCollapsed else {
+            if !menuBarEngine.isArrangementValid {
+                NSLog("StatusBar: collapse skipped — arrow is not on the visible side of the separator; ⌘-drag it past the separator")
+            }
             Preferences.lastCollapsedState = false
             autoCollapseIfNeeded()
             return
@@ -305,6 +329,7 @@ class StatusBarController: MenuBarItemProvider {
         if Preferences.useFullStatusBarOnExpandEnabled {
             NSApp.setActivationPolicy(.regular)
         }
+        Preferences.lastCollapsedState = false
     }
 
     private func didCollapseMenuBar() {
