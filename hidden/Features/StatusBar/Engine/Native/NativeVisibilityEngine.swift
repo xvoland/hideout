@@ -63,7 +63,10 @@ final class NativeVisibilityEngine: MenuBarEngine {
          inventory: MenuBarInventoryProviding = AccessibilityMenuBarInventory(),
          visibility: NativeVisibilityProviding = NativeVisibilityBridge(),
          ownBundleIdentifier: String? = Bundle.main.bundleIdentifier,
-         itemFrame: @escaping (NSStatusItem) -> CGRect? = { $0.button?.window?.frame },
+         itemFrame: @escaping (NSStatusItem) -> CGRect? = {
+            guard let button = $0.button, let origin = button.getOrigin else { return nil }
+            return CGRect(origin: origin, size: button.bounds.size)
+         },
          isLTR: @escaping () -> Bool = { Constant.isUsingLTRLanguage }) {
         self.items = items
         self.inventory = inventory
