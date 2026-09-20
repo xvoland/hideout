@@ -1,6 +1,6 @@
 <p align="right">
 <a href="https://dotoca.net/hideout">
- 		<img height="64" src="https://github.com/xvoland/xvoland/blob/main/images/paypal.png" alt="PayPal donations">
+ 		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" alt="PayPal donations">
   </a>
 </p>
 
