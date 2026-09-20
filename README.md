@@ -6,13 +6,13 @@
 </p>
 <p align="center">
 <a href="https://github.com/xvoland/hidden/releases/latest">
-		<img src="https://img.shields.io/badge/download-latest-brightgreen.svg" style="height: 80px" alt="download">
+		<img src="https://img.shields.io/badge/download-latest-brightgreen.svg"  alt="download">
   </a>
 </p>
 
 <p align="right">
 <a href="https://dotoca.net/hideout">
- 		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" alt="PayPal donations">
+ 		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" style="height: 80px" alt="PayPal, Gumroad, QR-codes etc donations">
   </a>
 </p>
 
