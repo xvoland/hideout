@@ -36,7 +36,7 @@ class StatusBarController: MenuBarItemProvider {
     // NativeVisibilityEngine (native hiding); otherwise LegacyLengthEngine
     // with its spacer block (spacers are owned by the engine, not here).
     // Rebuilt when the user changes the engine preference.
-    private var menuBarEngine: MenuBarEngine = MenuBarEngineFactory.make(items: self)
+    private var menuBarEngine: MenuBarEngine!
 
     private var isCollapsed: Bool {
         return menuBarEngine.state == .collapsed
@@ -78,6 +78,7 @@ class StatusBarController: MenuBarItemProvider {
 
     //MARK: - Methods
     init() {
+        menuBarEngine = MenuBarEngineFactory.make(items: self)
         setupUI()
         setupAlwayHideStatusBar()
         setupHoverToExpandIfEnabled()

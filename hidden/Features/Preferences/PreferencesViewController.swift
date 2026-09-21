@@ -146,15 +146,18 @@ class PreferencesViewController: NSViewController {
     private func setupEnginePreferenceUI() {
         guard let container = generalStackView else { return }
         // A row: label, segmented control, then a note underneath.
-        let row = NSStackView(arrangedSubviews: [enginePreferenceLabel, enginePreferenceControl])
+        let row = NSStackView()
         row.orientation = .horizontal
         row.spacing = 12
         row.alignment = .centerY
         row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(enginePreferenceLabel)
+        row.addArrangedSubview(enginePreferenceControl)
 
-        let noteRow = NSStackView(arrangedSubviews: [enginePreferenceNote])
+        let noteRow = NSStackView()
         noteRow.orientation = .horizontal
         noteRow.translatesAutoresizingMaskIntoConstraints = false
+        noteRow.addArrangedSubview(enginePreferenceNote)
 
         container.addView(row, in: .top)
         container.addView(noteRow, in: .top)
@@ -182,7 +185,7 @@ class PreferencesViewController: NSViewController {
         default: selected = 0
         }
         engineSegmentedControl.selectSegment(withTag: selected)
-        engineSegmentedControl.setSelected(true, forSegment: selected)
+
 
         let resolved = MenuBarEngineFactory.resolvedPreference(Preferences.menuBarEnginePreference)
         let nativeOffered = MenuBarEngineFactory.nativeVisibilityAvailable
