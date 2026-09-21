@@ -237,6 +237,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
         assertion = nil
     }
 
+    deinit {
+        // Releasing the assertion restores the bar if this engine is discarded
+        // (for example when the user switches engines) without an explicit expand.
+        assertion?.invalidate()
+    }
+
     // Logged when the reason changes, so a retried collapse does not spam.
     private func logUnavailableOnce(_ reason: String) {
         guard reason != lastUnavailableReason else { return }
