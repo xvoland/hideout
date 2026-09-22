@@ -118,6 +118,12 @@ with `HIDDENBAR_NATIVE_VISIBILITY`, so it offers native hiding. The App Store (o
 any sandboxed) lane cannot ship native hiding — it stays on the legacy engine and
 inherits the width limit.
 
+| Mode | Mechanism | Width-independent? | Needs | Used on |
+|---|---|---|---|---|
+| Auto | resolves to Native or Legacy | depends on resolution | — | default; Native on direct 27 build, else Legacy |
+| Native | allow-list via `MenuBarClientCore` | yes | direct (non-sandboxed) build + Accessibility | macOS 27 direct build |
+| Legacy | spacer-length inflation | no (capped at narrowest/2 on 27) | nothing | every build; pre-27 and sandboxed/App Store |
+
 
 ## Autostart
 
