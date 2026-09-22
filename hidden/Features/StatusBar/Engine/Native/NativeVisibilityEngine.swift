@@ -184,7 +184,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
                                                        alwaysHiddenSeparatorFrame: alwaysHiddenFrame,
                                                        isLTR: isLTR,
                                                        excludingBundle: self.ownBundleIdentifier)
-            NSLog("NativeVisibility: arrow at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
+            AppLog.info("NativeVisibility: arrow at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
             self.layout = layout
             body(layout)
         }
@@ -210,7 +210,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 completion(true)
             case .failure(let error):
                 // Fail open: never leave icons hidden after an error.
-                NSLog("NativeVisibility: activation failed: \(error.localizedDescription)")
+                AppLog.info("NativeVisibility: activation failed: \(error.localizedDescription)")
                 self.releaseAssertion()
                 completion(false)
             }
@@ -249,6 +249,6 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private func logUnavailableOnce(_ reason: String) {
         guard reason != lastUnavailableReason else { return }
         lastUnavailableReason = reason
-        NSLog("NativeVisibility: hiding unavailable: \(reason)")
+        AppLog.info("NativeVisibility: hiding unavailable: \(reason)")
     }
 }

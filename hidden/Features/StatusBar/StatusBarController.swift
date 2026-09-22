@@ -126,7 +126,7 @@ class StatusBarController: MenuBarItemProvider {
     private func installHoverMonitor() {
         guard hoverMonitor == nil else { return }
         guard Preferences.hoverToExpand else { return }
-        NSLog("HoverToExpand: enabled, installing global mouse monitor")
+        AppLog.info("HoverToExpand: enabled, installing global mouse monitor")
         hoverMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
             guard let self = self else { return }
             guard self.isCollapsed && self.isMouseInMenuBar else {
@@ -307,7 +307,7 @@ class StatusBarController: MenuBarItemProvider {
     private func collapseMenuBar() {
         guard menuBarEngine.isArrangementValid && !self.isCollapsed else {
             if !menuBarEngine.isArrangementValid {
-                NSLog("StatusBar: collapse skipped — arrow is not on the visible side of the separator; ⌘-drag it past the separator")
+                AppLog.info("StatusBar: collapse skipped — arrow is not on the visible side of the separator; ⌘-drag it past the separator")
             }
             Preferences.lastCollapsedState = false
             autoCollapseIfNeeded()

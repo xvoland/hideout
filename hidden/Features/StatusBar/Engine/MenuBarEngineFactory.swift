@@ -7,6 +7,18 @@
 //
 
 import Foundation
+import os
+
+// Unified-logging diagnostics. NSLog routes through os_log as *private*, so
+// `log stream` renders every message as `<private>` — useless for debugging.
+// This helper logs everything as public; the strings carry no user data, only
+// bundle ids, coordinates and engine state.
+enum AppLog {
+    private static let logger = Logger(subsystem: "hideout", category: "menubar")
+    static func info(_ message: String) {
+        logger.info("\(message, privacy: .public)")
+    }
+}
 
 // The single place that picks a hiding mechanism for the running OS.
 enum MenuBarEngineFactory {
@@ -45,7 +57,7 @@ enum MenuBarEngineFactory {
         // the native visibility API (plain Debug/Release, App Store) both .auto
         // and .native fall back to .legacy. Logged so a "hides nothing" report
         // can be told apart from a broken engine.
-        NSLog("MenuBarEngine: preference=\(Preferences.menuBarEnginePreference.rawValue) resolved=\(resolved.rawValue) nativeAvailable=\(nativeVisibilityAvailable)")
+        AppLog.info("MenuBarEngine: preference=\(Preferences.menuBarEnginePreference.rawValue) resolved=\(resolved.rawValue) nativeAvailable=\(nativeVisibilityAvailable)")
         if resolved == .native {
             return NativeVisibilityEngine(items: items)
         }
