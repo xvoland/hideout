@@ -93,6 +93,23 @@ The **Hiding engine** control in Preferences → Settings lets you choose:
 
 > The direct/ad-hoc GitHub build (Homebrew cask, Releases page) is compiled with `HIDDENBAR_NATIVE_VISIBILITY=1` and ships Native hiding. The App Store build is sandboxed and cannot use the private API — it stays on Legacy.
 
+## 🤔 Why two engines?
+
+macOS historically had **no public API** to hide other apps' menu-bar icons. Hidden Bar has always used a geometry hack: inflate a separator `NSStatusItem` so icons to its left slide out of view.
+
+| macOS era | What changed | Hidden Bar's response |
+|-----------|--------------|----------------------|
+| **≤ 26 (Ventura/Sonoma/Sequoia)** | Each status item = its own window. Inflating the separator pushes icons off-screen. | **Legacy engine** (spacer inflation) — the *only* way it could work. |
+| **27 Golden Gate** | Menu bar became **one window** with a native overflow (`«`). Inflating past half the screen width **drops** the item instead of clamping. | **Legacy adapted** (spacers + cap at `narrowest/2 - 64`). Works, but width-limited on wide/mixed displays. |
+| **27 + private API** | macOS 27 introduced `MenuBarClientCore` (assessment mode) — a private framework that can restrict the menu bar to an allow-list. | **Native engine** — asks macOS to hide everything except the allow-list. Width-independent, notch-aware, no spacer math. |
+
+**Why keep both?**
+
+- **Native** is the modern path: width-independent, notch-aware, no spacer math. But it requires the **direct (non-sandboxed) build**, macOS 27+, and Accessibility permission. It uses a private API Apple may change.
+- **Legacy** is the universal fallback: works on **every** macOS (13+), on the **App Store/sandboxed build**, on macOS ≤ 26, when Accessibility is denied, and as a safety net if Apple breaks the private API.
+
+**Auto** (default) picks the best available: Native on this direct macOS 27 build, Legacy everywhere else.
+
 ## 🕹 Usage
 
 * `⌘` + drag to move the Hidden icons around in the menu bar.
