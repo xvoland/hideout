@@ -47,7 +47,7 @@ class PreferencesViewController: NSViewController {
         ], trackingMode: .selectOne, target: self,
            action: #selector(enginePreferenceChanged(_:)))
         control.translatesAutoresizingMaskIntoConstraints = false
-        control.setToolTip("Auto picks native hiding on macOS 27 (direct build), legacy otherwise. Native forced requires the direct, non-sandboxed build; Legacy always works but depends on display width.".localized)
+        control.toolTip = "Auto picks native hiding on macOS 27 (direct build), legacy otherwise. Native forced requires the direct, non-sandboxed build; Legacy always works but depends on display width.".localized
         return control
     }()
 
