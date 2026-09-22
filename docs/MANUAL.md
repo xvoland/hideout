@@ -62,7 +62,9 @@ the reflow, so:
   hiding reports "unavailable" and the bar is left expanded rather than half-hidden;
 - hiding is **per app bundle**: if an app has several icons, they all hide or show
   together (the most-visible icon wins), and macOS's own items (clock, Wi-Fi,
-  Control Center) can never be hidden this way;
+  Bluetooth, battery, Control Center, …) can never be hidden this way — macOS
+  keeps them visible regardless of the restriction. To remove those, use
+  System Settings → Control Center ("Don't show in menu bar");
 - sections are read only while the bar is expanded, so an app launched while
   collapsed stays hidden until the next read.
 

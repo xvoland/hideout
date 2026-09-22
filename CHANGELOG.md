@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.18.6 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- GitHub releases actually include native hiding now: CI built the sandboxed `Release` config (without `HIDDENBAR_NATIVE_VISIBILITY`), so Auto and Native silently fell back to Legacy and collapse hid nothing on macOS 27. CI now builds `Release-Direct`.
+- Silent wrong-engine reports are gone: the factory logs preference/resolved/nativeAvailable at startup, and Legacy collapse logs its lengths and screens — a misbuilt app is now distinguishable from a broken engine.
+- Diagnostics are readable: hiding-path logging moved from NSLog (rendered as `<private>` in `log stream`) to public unified logging via an `AppLog` helper.
+
+### Changed
+- `develop` pushes trigger CI and upload the test build (zip + DMG) as an artifact for 14 days; published releases remain tag-driven prereleases.
+
 ## v1.18.5 (2026-09-22)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
