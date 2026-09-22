@@ -851,6 +851,7 @@ between sections to configure Hideout.</string>
                         <outlet property="checkBoxShowAlwaysHiddenSection" destination="yaS-iD-h7g" id="T5N-bN-yl2"/>
                         <outlet property="checkBoxShowPreferences" destination="gWT-L1-Xdf" id="sC8-cw-Fmh"/>
                         <outlet property="checkBoxUseFullStatusbar" destination="EQP-7r-FSu" id="Vll-3t-F9V"/>
+                        <outlet property="generalStackView" destination="do4-pv-o3U" id="xVo-generalStackView"/>
                         <outlet property="lblAlwayHidden" destination="eBG-Wk-IXv" id="JaJ-0i-o6U"/>
                         <outlet property="statusBarStackView" destination="pJz-eb-ydI" id="huU-as-oWi"/>
                         <outlet property="textFieldTitle" destination="RGE-Xv-zm5" id="v43-3R-PwU"/>

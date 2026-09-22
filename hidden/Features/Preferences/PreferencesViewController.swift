@@ -184,7 +184,7 @@ class PreferencesViewController: NSViewController {
         case .legacy: selected = 2
         default: selected = 0
         }
-        engineSegmentedControl.selectSegment(withTag: selected)
+        engineSegmentedControl.selectedSegment = selected
 
 
         let resolved = MenuBarEngineFactory.resolvedPreference(Preferences.menuBarEnginePreference)
