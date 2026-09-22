@@ -76,6 +76,23 @@ xattr -dr com.apple.quarantine /Applications/Hideout.app
 - Open and drag the app to the Applications folder.
 - Launch Hidden and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
 
+## ⚙️ Hiding engine (macOS 27)
+
+macOS 27 Golden Gate rebuilt the menu bar as a single window. Hidden Bar offers two hiding mechanisms:
+
+| Engine | How it works | Width-independent? | Build required |
+|--------|--------------|--------------------|----------------|
+| **Native** (default on direct build) | Asks macOS's private `MenuBarClientCore` (assessment mode) to keep only an allow-list visible. macOS does the hiding/reflow itself. | **Yes** — works regardless of display width, notch, or front app | **Direct (non-sandboxed) build only** — this GitHub/ad-hoc release. Needs Accessibility permission (prompted on first collapse). |
+| **Legacy** | Inflates spacer `NSStatusItem`s to push icons into the system `«` overflow. | **No** — capped at half the *narrowest* screen on macOS 27; leaks on wide/mixed displays | Every build (App Store, sandboxed, pre-27). Fallback when Native unavailable. |
+
+The **Hiding engine** control in Preferences → Settings lets you choose:
+
+- **Auto** (default): Native on this direct build, Legacy everywhere else.
+- **Native** (force): uses the private `MenuBarClientCore` API; rejected on sandboxed/pre-27 builds with a fallback notice.
+- **Legacy** (force): spacer-inflation trick, works everywhere but width-limited on macOS 27.
+
+> The direct/ad-hoc GitHub build (Homebrew cask, Releases page) is compiled with `HIDDENBAR_NATIVE_VISIBILITY=1` and ships Native hiding. The App Store build is sandboxed and cannot use the private API — it stays on Legacy.
+
 ## 🕹 Usage
 
 * `⌘` + drag to move the Hidden icons around in the menu bar.
