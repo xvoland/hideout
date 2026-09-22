@@ -64,6 +64,7 @@ final class LegacyLengthEngine: MenuBarEngine {
     }
 
     func collapse(completion: @escaping (CollapseResult) -> Void) {
+        NSLog("LegacyLength: collapse — separator=\(collapsedLength), spacers=\(spacers.count)×\(collapsedLength), alwaysHidden=\(alwaysHiddenCollapsedLength), screens=\(NSScreen.screens.map { Int($0.frame.width) })")
         items?.separatorItem.length = collapsedLength
         setSpacersInflated(true)
         items?.alwaysHiddenItem?.length = alwaysHiddenCollapsedLength

@@ -41,6 +41,11 @@ enum MenuBarEngineFactory {
         // frontmost app's menus. Otherwise we fall back to the legacy length engine
         // with its macOS 27 spacer block.
         let resolved = resolvedPreference(Preferences.menuBarEnginePreference)
+        // The resolved engine is the one that actually runs: on builds without
+        // the native visibility API (plain Debug/Release, App Store) both .auto
+        // and .native fall back to .legacy. Logged so a "hides nothing" report
+        // can be told apart from a broken engine.
+        NSLog("MenuBarEngine: preference=\(Preferences.menuBarEnginePreference.rawValue) resolved=\(resolved.rawValue) nativeAvailable=\(nativeVisibilityAvailable)")
         if resolved == .native {
             return NativeVisibilityEngine(items: items)
         }

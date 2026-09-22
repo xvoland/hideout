@@ -23,14 +23,14 @@ jobs:
         run: >
           xcodebuild -project 'Hideout.xcodeproj'
           -scheme 'Hideout'
-          -configuration Release
+          -configuration Release-Direct
           CODE_SIGNING_ALLOWED=NO
           -derivedDataPath build
 
       - name: Package app
         run: |
           ditto -c -k --sequesterRsrc --keepParent \
-            "build/Build/Products/Release/Hideout.app" \
+            "build/Build/Products/Release-Direct/Hideout.app" \
             "Hideout.app.zip"
 
       - name: Verify app.zip
@@ -44,7 +44,7 @@ jobs:
           mkdir -p dmg
 
           cp -R \
-            "build/Build/Products/Release/Hideout.app" \
+            "build/Build/Products/Release-Direct/Hideout.app" \
             "dmg/Hideout.app"
 
           ln -s /Applications "dmg/Applications"
