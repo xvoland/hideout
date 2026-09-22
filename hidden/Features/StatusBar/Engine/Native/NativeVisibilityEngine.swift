@@ -115,6 +115,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 self.state = succeeded ? .collapsed : .expanded
                 if succeeded {
                     self.setSeparatorsVisible(false)
+                    self.items?.alwaysHiddenItem?.isVisible = false
                 }
                 completion(succeeded ? .collapsed : .unavailable)
             }
@@ -123,6 +124,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
 
     func expand() {
         setSeparatorsVisible(true)
+        items?.alwaysHiddenItem?.isVisible = true
         state = .expanded
         applyExpandedPresentation()
     }
