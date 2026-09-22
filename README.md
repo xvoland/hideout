@@ -20,6 +20,7 @@
 	<img src="img/tutorial.gif">
 </p>
 
+> [!WARNING]
 > **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
 
 ## Maintainer (this fork)

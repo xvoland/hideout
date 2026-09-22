@@ -8,6 +8,7 @@ Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
 ### Added
 - Opt-in hover-to-expand: set `defaults write com.dwarvesv.minimalbar hoverToExpand -bool true` to expand the bar when the pointer dwells in the menu bar.
 - Right-clicking the expand/collapse arrow now opens the same context menu as the separator, so Preferences is reachable from the control you already click.
+- Hiding-engine selector in Preferences (Auto / Native / Legacy). Auto uses native hiding on the direct macOS 27 build and falls back to Legacy otherwise; Native can be forced (rejected on sandboxed/pre-27 builds, with an explanation) and Legacy always works. The engine rebuilds live when changed. Native hiding is width-independent and fixes icons leaking from the system overflow on wide displays.
 
 ### Fixed
 - macOS 27 Golden Gate: hiding works again with the new single-window menu bar and native overflow button (#360). The separator stays under half the display width (macOS 27 drops items at that cliff) and spacer items cover wide and mixed-width displays; displaced icons go into the system `«` overflow instead of off-screen. macOS 27 Golden Gate support contributed by Vitalii Tereshchuk (https://dotoca.net) on this fork.

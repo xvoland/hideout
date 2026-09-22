@@ -35,7 +35,8 @@ class StatusBarController: MenuBarItemProvider {
     // wants and reflects the result in the UI. On macOS 27 the direct build uses
     // NativeVisibilityEngine (native hiding); otherwise LegacyLengthEngine
     // with its spacer block (spacers are owned by the engine, not here).
-    private lazy var menuBarEngine: MenuBarEngine = MenuBarEngineFactory.make(items: self)
+    // Rebuilt when the user changes the engine preference.
+    private var menuBarEngine: MenuBarEngine!
 
     private var isCollapsed: Bool {
         return menuBarEngine.state == .collapsed
@@ -77,12 +78,14 @@ class StatusBarController: MenuBarItemProvider {
 
     //MARK: - Methods
     init() {
+        menuBarEngine = MenuBarEngineFactory.make(items: self)
         setupUI()
         setupAlwayHideStatusBar()
         setupHoverToExpandIfEnabled()
         updateHoverMonitoring()
         NotificationCenter.default.addObserver(self, selector: #selector(handleScreenParametersChanged), name: NSApplication.didChangeScreenParametersNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateHoverMonitoring), name: .prefsChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(rebuildEngineIfNeeded), name: .enginePreferenceChanged, object: nil)
 
         // Create the engine now so one that does not use the separator (macOS 27
         // native hiding) takes it back out before it is ever drawn.
@@ -153,6 +156,30 @@ class StatusBarController: MenuBarItemProvider {
 
     @objc private func handleScreenParametersChanged() {
         menuBarEngine.invalidateLayout()
+    }
+
+    // Rebuild the hiding engine when the user changes the engine preference. The
+    // previous engine is discarded; if it held a native assertion that is released
+    // by deinit. The new engine restores the current collapsed/expanded state.
+    @objc private func rebuildEngineIfNeeded() {
+        let previousCollapsed = isCollapsed
+        let previousAreSeparatorsHidden = Preferences.areSeparatorsHidden
+        let previousAlwaysHidden = Preferences.alwaysHiddenSectionEnabled
+        // Drop any active native assertion on the old engine before discarding it,
+        // so a forced switch does not leave icons hidden by the previous engine.
+        menuBarEngine.expand()
+        menuBarEngine = MenuBarEngineFactory.make(items: self)
+        if previousAreSeparatorsHidden {
+            applySeparatorsHidden(true)
+        }
+        if previousAlwaysHidden {
+            menuBarEngine.updateAlwaysHiddenSection(enabled: true, separatorHidden: previousAreSeparatorsHidden)
+        }
+        if previousCollapsed {
+            collapseMenuBar()
+        } else {
+            expandMenubar(isInitialRestore: true)
+        }
     }
 
     private func setupUI() {

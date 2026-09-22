@@ -1,6 +1,6 @@
 # Architecture
 
-Hidden Bar is a single-process, sandboxed AppKit menubar utility (~1.5k lines of
+Hidden Bar is a single-process AppKit menubar utility (~1.5k lines of
 Swift, one dependency: [HotKey](https://github.com/soffes/HotKey)). There is no
 helper app, no daemon, no network. Everything happens inside a handful of
 `NSStatusItem`s (arrow, separator, optional always-hidden, plus macOS 27
@@ -88,6 +88,37 @@ flowchart TD
 | Self-restore | `isVisible = true` forced on our items at launch; Cmd-dragging them off otherwise bricks the app (its only UI is those items) | none |
 | Always-hidden section | a second separator item; its own length games, gated by `alwaysHiddenSectionEnabled` | item not created |
 
+## Hiding engine selection (macOS 27)
+
+There are two engines; `MenuBarEngineFactory` picks one:
+
+- **`NativeVisibilityEngine`** — used on the **direct, non-sandboxed** build
+  (`HIDDENBAR_NATIVE_VISIBILITY` defined) on macOS 27. It asks macOS's private
+  `MenuBarClientCore` (assessment mode) to keep only an allow-list of status items
+  visible. Because macOS does the hiding and reflow itself, this is **independent
+  of display width, the notch, and the frontmost app's menus** — it fixes the
+  "icons slide in from the far left on wide displays" artifact of the legacy path.
+  Requires the Accessibility permission (read via the AX API) and does not work
+  inside the App Sandbox (the sandbox denies the `axserver` mach-lookup).
+- **`LegacyLengthEngine`** — the spacer-inflation trick. Works on every build and
+  macOS version, but on macOS 27 it is capped under half the **narrowest** screen,
+  so on wide/mixed-width setups some icons cannot be covered and leak into the
+  system `«` overflow.
+
+The user chooses via a segmented control in Preferences
+(`Preferences.menuBarEnginePreference`: `auto` / `native` / `legacy`). `auto`
+(resolved at construction) takes native when the build offers it, else legacy.
+Forcing `native` on a build that cannot (sandboxed / pre-27) is **rejected** and
+falls back to legacy — the control shows why. Changing the preference rebuilds the
+engine live (`.enginePreferenceChanged` → `StatusBarController.rebuildEngineIfNeeded`)
+and restores the current collapsed/expanded state.
+
+**Distribution consequence:** the GitHub/direct (ad-hoc, unsigned) build is compiled
+with `HIDDENBAR_NATIVE_VISIBILITY`, so it offers native hiding. The App Store (or
+any sandboxed) lane cannot ship native hiding — it stays on the legacy engine and
+inherits the width limit.
+
+
 ## Autostart
 
 macOS 13+ `SMAppService.mainApp`: the app registers itself; the login item is
@@ -98,12 +129,15 @@ garbage-collects those; see Apple TN3111). The helper app itself is gone.
 
 ## Security posture
 
-Sandboxed (`com.apple.security.app-sandbox`), hardened runtime, no network
-entitlement, no file I/O, no IPC surface, no shell or subprocess use. The only
-dependency is HotKey (a small Carbon `RegisterEventHotKey` wrapper) locked by
-the committed `Package.resolved`. The opt-in hover monitor observes pointer
-position only and discards event payloads. About-window links are hardcoded.
-A full-tree audit (2026-06) scored 9/10 with hygiene-level findings only.
+The App Store (sandboxed) lane is sandboxed (`com.apple.security.app-sandbox`),
+hardened runtime, no network entitlement, no file I/O, no IPC surface, no shell or
+subprocess use. The direct/ad-hoc GitHub build is **not** sandboxed (it must reach
+the Accessibility server and the private `MenuBarClientCore` for native hiding) and
+is distributed unsigned (`xattr -dr com.apple.quarantine` after install). The only
+dependency is HotKey (a small Carbon `RegisterEventHotKey` wrapper) locked by the
+committed `Package.resolved`. The opt-in hover monitor observes pointer position
+only and discards event payloads. About-window links are hardcoded. A full-tree
+audit (2026-06) scored 9/10 with hygiene-level findings only.
 
 ## Known architectural limits
 
