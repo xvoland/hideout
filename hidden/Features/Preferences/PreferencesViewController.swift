@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  vanillaClone
+//  PreferencesViewController.swift
 //
 //  Created by Thanh Nguyen on 1/24/19.
 //  Changed by Vitalii Tereshchuk, 2026
@@ -37,26 +37,9 @@ class PreferencesViewController: NSViewController {
     @IBOutlet weak var checkBoxUseFullStatusbar: NSButton!
     @IBOutlet weak var timePopup: NSPopUpButton!
 
-    // Hiding-engine selector (auto / native / legacy). Built in code rather than
-    // in the storyboard so the menu-bar mechanics stay out of Main.storyboard.
-    private lazy var engineSegmentedControl: NSSegmentedControl = {
-        let control = NSSegmentedControl(labels: [
-            "Auto".localized,
-            "Native".localized,
-            "Legacy".localized
-        ], trackingMode: .selectOne, target: self,
-           action: #selector(enginePreferenceChanged(_:)))
-        control.translatesAutoresizingMaskIntoConstraints = false
-        control.toolTip = "Auto picks native hiding on macOS 27 (direct build), legacy otherwise. Native forced requires the direct, non-sandboxed build; Legacy always works but depends on display width.".localized
-        return control
-    }()
-
-    private lazy var enginePreferenceLabel: NSTextField = {
-        let label = NSTextField(labelWithString: "Hiding engine".localized)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
+    // Hiding status line. The engine selector (Auto/Native/Legacy) was removed
+    // in v1.19 — hiding is always native. Only the note stays, as a static
+    // status line.
     private lazy var enginePreferenceNote: NSTextField = {
         let note = NSTextField(wrappingLabelWithString: "")
         note.translatesAutoresizingMaskIntoConstraints = false
@@ -88,7 +71,8 @@ class PreferencesViewController: NSViewController {
         updateData()
         loadHotkey()
         createTutorialView()
-        setupEnginePreferenceUI()
+        setupEngineNoteUI()
+        setupCheckUpdatesUI()
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: .prefsChanged, object: nil)
         
         // Lower imageViewTop slightly to avoid overlap with segment buttons
@@ -141,61 +125,46 @@ class PreferencesViewController: NSViewController {
         }
     }
 
-    // MARK: - Hiding engine preference
+    // MARK: - Hiding engine status note (no selection since v1.19)
 
-    private func setupEnginePreferenceUI() {
+    private func setupEngineNoteUI() {
         guard let container = generalStackView else { return }
-        // A row: label, segmented control, then a note underneath.
-        let row = NSStackView()
-        row.orientation = .horizontal
-        row.spacing = 12
-        row.alignment = .centerY
-        row.translatesAutoresizingMaskIntoConstraints = false
-        row.addArrangedSubview(enginePreferenceLabel)
-        row.addArrangedSubview(enginePreferenceControl)
-
         let noteRow = NSStackView()
         noteRow.orientation = .horizontal
         noteRow.translatesAutoresizingMaskIntoConstraints = false
         noteRow.addArrangedSubview(enginePreferenceNote)
 
-        container.addView(row, in: .top)
         container.addView(noteRow, in: .top)
-        updateEnginePreferenceUI()
+        updateEngineNote()
     }
 
-    private var enginePreferenceControl: NSSegmentedControl { engineSegmentedControl }
-
-    @objc private func enginePreferenceChanged(_ sender: NSSegmentedControl) {
-        let preference: Preferences.MenuBarEnginePreference
-        switch sender.indexOfSelectedItem {
-        case 1: preference = .native
-        case 2: preference = .legacy
-        default: preference = .auto
-        }
-        Preferences.menuBarEnginePreference = preference
-        updateEnginePreferenceUI()
-    }
-
-    private func updateEnginePreferenceUI() {
-        let selected: Int
-        switch Preferences.menuBarEnginePreference {
-        case .native: selected = 1
-        case .legacy: selected = 2
-        default: selected = 0
-        }
-        engineSegmentedControl.selectedSegment = selected
-
-
-        let resolved = MenuBarEngineFactory.resolvedPreference(Preferences.menuBarEnginePreference)
-        let nativeOffered = MenuBarEngineFactory.nativeVisibilityAvailable
-        if !nativeOffered && Preferences.menuBarEnginePreference == .native {
-            enginePreferenceNote.stringValue = "Native hiding needs the direct (non-sandboxed) build on macOS 27 — falling back to Legacy.".localized
-        } else if resolved == .native {
-            enginePreferenceNote.stringValue = "Using native hiding (independent of display width).".localized
+    private func updateEngineNote() {
+        if NativeVisibilityEngine.nativeVisibilityAvailable {
+            enginePreferenceNote.stringValue = "Hiding: native hiding (macOS 27 direct build).".localized
         } else {
-            enginePreferenceNote.stringValue = "Using Legacy spacer hiding (limited on wide displays).".localized
+            enginePreferenceNote.stringValue = "Hiding unavailable: needs the direct (non-sandboxed) build on macOS 27.".localized
         }
+    }
+
+    // Manual update check. It used to live in the status menu, but the extra
+    // row pushed the menu into scrolling (scroll arrow) on some setups, so the
+    // trigger moved here. Auto-check at launch still runs via AppDelegate.
+    private lazy var checkUpdatesButton: NSButton = {
+        let button = NSButton(title: "Check for Updates...".localized,
+                              target: UpdateChecker.shared,
+                              action: #selector(UpdateChecker.checkNow))
+        button.bezelStyle = .rounded
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    private func setupCheckUpdatesUI() {
+        guard let container = generalStackView else { return }
+        let row = NSStackView()
+        row.orientation = .horizontal
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(checkUpdatesButton)
+        container.addView(row, in: .bottom)
     }
     
     // When the set shortcut button is pressed start listening for the new shortcut
@@ -264,7 +233,7 @@ class PreferencesViewController: NSViewController {
         checkBoxShowPreferences.state = Preferences.isShowPreference ? .on : .off
         checkBoxShowAlwaysHiddenSection.state = Preferences.alwaysHiddenSectionEnabled ? .on : .off
         timePopup.selectItem(at: SelectedSecond.secondToPossition(seconds: Preferences.numberOfSecondForAutoHide))
-        updateEnginePreferenceUI()
+        updateEngineNote()
 
         // Visual feedback: highlight changed items
         view.layer?.backgroundColor = NSColor.controlBackgroundColor.cgColor

@@ -7,6 +7,7 @@
 //
 
 #import "HBNativeVisibilityShim.h"
+#import <os/log.h>
 
 static NSString *const HBNativeVisibilityErrorDomain = @"HBNativeVisibility";
 
@@ -81,7 +82,7 @@ void HBNativeVisibilityInvalidate(id assertion) {
             ((void (*)(id, SEL))objc_msgSend)(assertion, HBInvalidate());
         }
     } @catch (NSException *exception) {
-        NSLog(@"NativeVisibility: invalidate raised %@: %@", exception.name, exception.reason);
+        os_log_info(OS_LOG_DEFAULT, "%{public}@: invalidate raised %{public}@: %{public}@", @"NativeVisibility", exception.name, exception.reason);
     }
 }
 

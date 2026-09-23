@@ -26,16 +26,29 @@ import AppKit
 // Limits, all from what macOS 27 exposes:
 // - Hiding is per app: an app with several icons hides or shows them together
 //   (the most visible section wins).
-// - macOS's own items (clock, Wi-Fi, Control Center...) are always kept visible:
-//   Accessibility cannot tell them apart, so they cannot be mapped to sections.
+// - Kept means allow-listed (own, visible-section, hosts, indices) — anything
+//   else hides given reflow time, Apple bundle extras included. Position only
+//   feeds the allow-list; there is no fail-open.
 // - Sections are read only while nothing is hidden, because hidden items report
 //   stale positions. They are re-read on the next collapse from an unrestricted
 //   bar, so an app launched while collapsed stays hidden until then, the same
 //   as a new icon landing in the hidden section under the old mechanism.
 final class NativeVisibilityEngine: MenuBarEngine {
     // System item identifiers to keep visible. Unknown identifiers are ignored,
-    // so the range covers items a given Mac does not have (0-63 checked on 27.0).
-    static let systemItemsToKeep = Array(0..<64)
+    // so the window is deliberately wide: Apple extras live past index 63 on
+    // 27.0 (Time Machine vanished with 0..<64 and still with 0..<256), and
+    // numbering differs per Mac.
+    static let systemItemsToKeep = Array(0..<4096)
+
+    // Whether the running build can offer native hiding at all (direct,
+    // non-sandboxed build linked with HIDDENBAR_NATIVE_VISIBILITY on 27).
+    static var nativeVisibilityAvailable: Bool {
+        #if HIDDENBAR_NATIVE_VISIBILITY
+        return ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= 27
+        #else
+        return false
+        #endif
+    }
 
     private weak var items: MenuBarItemProvider?
     private let inventory: MenuBarInventoryProviding
@@ -103,18 +116,37 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return completion(.unavailable)
         }
         state = .calibrating
-        withLayout { [weak self] layout in
+        withLayout { [weak self] layout, inventory, _ in
             guard let self = self else { return }
             guard let layout = layout else {
                 self.logUnavailableOnce("the arrow's position cannot be read yet")
                 self.state = .expanded
                 return completion(.unavailable)
             }
+            // Per-icon pre-collapse census: ordinal left-to-right, section
+            // (VISIBLE/HIDDEN/ALWAYSHIDDEN from the layout above), and the
+            // visible flag (everything reads from an unrestricted bar here).
+            let ordered = inventory.sorted { $0.frame.midX < $1.frame.midX }
+            let preLine = ordered.enumerated().map { (i, item) -> String in
+                let id = item.bundleIdentifier ?? "?"
+                let section: String
+                if let bundle = item.bundleIdentifier, let s = layout.sections[bundle] {
+                    section = s == .visible ? "V" : (s == .hidden ? "H" : "A")
+                } else {
+                    section = "?"
+                }
+                return "[\(i)]\(id)@\(Int(item.frame.midX)):\(section):visible:true"
+            }.joined(separator: " ")
+            AppLog.info("NativeVisibility: pre-collapse \(preLine)")
+            let preBundles = Set(inventory.compactMap { $0.bundleIdentifier })
+            let preCounts = Dictionary(grouping: inventory.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
             self.activate(allowing: layout.bundles(in: [.visible])) { [weak self] succeeded in
                 guard let self = self else { return }
                 self.state = succeeded ? .collapsed : .expanded
                 if succeeded {
                     self.setSeparatorsVisible(false)
+                    self.items?.alwaysHiddenItem?.isVisible = false
+                    self.logPostCollapse(pre: preBundles, preCounts: preCounts, generation: self.generation)
                 }
                 completion(succeeded ? .collapsed : .unavailable)
             }
@@ -123,6 +155,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
 
     func expand() {
         setSeparatorsVisible(true)
+        items?.alwaysHiddenItem?.isVisible = true
         state = .expanded
         applyExpandedPresentation()
     }
@@ -153,7 +186,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         guard alwaysHiddenEnabled && alwaysHiddenSeparatorHidden, visibility.isAvailable, inventory.isAuthorized else {
             return releaseAssertion()
         }
-        withLayout { [weak self] layout in
+        withLayout { [weak self] layout, _, _ in
             guard let self = self else { return }
             guard let layout = layout else {
                 return self.releaseAssertion()
@@ -165,26 +198,28 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // The sections as the user arranged them. Read fresh only from an
     // unrestricted bar; while a restriction is active the cached ones stand in.
     // Superseded by any later expand or activation, like an activation is.
-    private func withLayout(_ body: @escaping (MenuBarLayout?) -> Void) {
+    private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
         if assertion != nil {
-            return body(layout)
+            return body(layout, [], nil)
         }
         guard let arrow = items?.toggleItem,
-              let boundary = itemFrame(arrow) else { return body(nil) }
+              let boundary = itemFrame(arrow) else { return body(nil, [], nil) }
         let alwaysHiddenFrame = alwaysHiddenEnabled ? items?.alwaysHiddenItem.flatMap(itemFrame) : nil
         let isLTR = self.isLTR()
         generation += 1
         let generation = self.generation
         inventory.snapshot { [weak self] inventory in
             guard let self = self, generation == self.generation else { return }
+            let dump = inventory.sorted { $0.frame.midX < $1.frame.midX }.map { "\($0.bundleIdentifier ?? "?")@\(Int($0.frame.midX))" }.joined(separator: " ")
+            AppLog.info("NativeVisibility: inventory [\(dump)] arrowX=\(Int(boundary.midX))")
             let layout = MenuBarLayoutResolver.resolve(inventory: inventory,
                                                        separatorFrame: boundary,
                                                        alwaysHiddenSeparatorFrame: alwaysHiddenFrame,
                                                        isLTR: isLTR,
                                                        excludingBundle: self.ownBundleIdentifier)
-            NSLog("NativeVisibility: arrow at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
+            AppLog.info("NativeVisibility: arrow at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
             self.layout = layout
-            body(layout)
+            body(layout, inventory, boundary.midX)
         }
     }
 
@@ -193,7 +228,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private func activate(allowing bundles: [String], completion: @escaping (Bool) -> Void) {
         generation += 1
         let generation = self.generation
-        let allowed = (ownBundleIdentifier.map { [$0] } ?? []) + bundles
+        // System hosts (MenuBarAgent, Control Center, SystemUIServer) own
+        // Apple's extras — including ones Accessibility never exposes (Time
+        // Machine) — so they are always kept. No third-party item can squat
+        // these Apple-only namespaces.
+        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
+        AppLog.info("NativeVisibility: allowing \(allowed)")
         visibility.activate(allowedSystemItems: Self.systemItemsToKeep,
                             allowedBundleIdentifiers: allowed) { [weak self] result in
             guard let self = self, generation == self.generation else {
@@ -208,10 +248,41 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 completion(true)
             case .failure(let error):
                 // Fail open: never leave icons hidden after an error.
-                NSLog("NativeVisibility: activation failed: \(error.localizedDescription)")
+                AppLog.info("NativeVisibility: activation failed: \(error.localizedDescription)")
                 self.releaseAssertion()
                 completion(false)
             }
+        }
+    }
+
+    // Fire-and-forget post-collapse census: which items macOS still reports
+    // once the restriction is active. Never blocks the completion; purely
+    // diagnostic. Two samples: immediate (mid-transition tree) and +15s
+    // (settled). Counts per bundle catch partial vanishes (e.g. MenuBarAgent
+    // 7→5) that bundle-set subtraction misses.
+    private func logPostCollapse(pre preBundles: Set<String>, preCounts: [String: Int], generation: Int) {
+        snapshotPostCollapse(pre: preBundles, preCounts: preCounts, generation: generation, tag: "")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak self] in
+            self?.snapshotPostCollapse(pre: preBundles, preCounts: preCounts, generation: generation, tag: "+15s")
+        }
+    }
+
+    private func snapshotPostCollapse(pre preBundles: Set<String>, preCounts: [String: Int], generation: Int, tag: String) {
+        inventory.snapshot { [weak self] post in
+            guard let self = self else { return }
+            let stale = generation == self.generation ? "" : " superseded"
+            let ordered = post.sorted { $0.frame.midX < $1.frame.midX }
+            let present = ordered.enumerated().map { (i, item) in
+                "[\(i)]\(item.bundleIdentifier ?? "?")@\(Int(item.frame.midX)):visible:true"
+            }.joined(separator: " ")
+            let postBundles = Set(post.compactMap { $0.bundleIdentifier })
+            let missing = preBundles.subtracting(postBundles).sorted().joined(separator: " ")
+            let postCounts = Dictionary(grouping: post.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
+            let reduced = preCounts.compactMap { (bundle, before) -> String? in
+                guard let after = postCounts[bundle], after < before else { return nil }
+                return "\(bundle):\(before)→\(after)"
+            }.sorted().joined(separator: " ")
+            AppLog.info("NativeVisibility: post-collapse\(tag)\(stale) present [\(present)] missing [\(missing)] reduced [\(reduced)]")
         }
     }
 
@@ -247,6 +318,6 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private func logUnavailableOnce(_ reason: String) {
         guard reason != lastUnavailableReason else { return }
         lastUnavailableReason = reason
-        NSLog("NativeVisibility: hiding unavailable: \(reason)")
+        AppLog.info("NativeVisibility: hiding unavailable: \(reason)")
     }
 }

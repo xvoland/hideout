@@ -1,5 +1,82 @@
 # Changelog
 
+## v1.20.0 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Changed
+- **Rebrand to Hideout identity**: bundle id `com.dwarvesv.minimalbar` →
+  `net.dotoca.hideout`, status-item slots `hiddenbar_*` → `hideout_*`.
+  Settings auto-migrate on first launch (the old domain is copied, never
+  modified — downgrading keeps the old settings). Two things cannot migrate
+  and need one manual step each: re-grant Accessibility in System Settings
+  (macOS ties it to the bundle id and re-prompts automatically), and ⌘-drag
+  icons into place once (slot positions reset with the new names). Upstream
+  attribution (Dwarves Foundation, dwarvesf/hidden, skuthus) is unchanged.
+
+### Removed
+- Legacy hiding engine and the Hiding engine selector: hiding is always native
+  since v1.19 (direct macOS 27 builds). Pre-27 and sandboxed builds report
+  hiding unavailable instead of silently falling back; upstream
+  dwarvesf/hidden remains the path there.
+
+## v1.18.8 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+First full (non-test) Golden Gate release.
+
+### Changed
+- Verified Legacy behavior documented honestly (notch displays vs wide
+  notchless externals) in the engine note, the manual and the backlog.
+- Release process: `vX.Y.Z-goldengate-test` tags keep publishing as
+  prereleases; clean `vX.Y.Z` tags now publish as full releases.
+
+## v1.18.7 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Native collapse hides reliably on macOS 27: the allow-list always keeps Apple
+  system host bundles (MenuBarAgent, Control Center, SystemUIServer), so Time
+  Machine and similar Apple extras no longer vanish; the kept system-item
+  window widened 64 → 4096.
+- The arrow flips only on confirmed collapse; presses during native calibration
+  are ignored instead of stacking superseded activations.
+- Legacy no longer eats its own arrow: spacers verified at/after the arrow stay
+  deflated, spacer blocks are removed on engine rebuild instead of leaking
+  invisible items, and the block size is back to the full 10+10 that displaces.
+
+### Changed
+- Hiding diagnostics are readable (`log stream` shows plain text via an
+  `AppLog` helper) and identify the exact code (`diagRev`), the resolved
+  engine, per-collapse sections with coordinates, and Legacy order checks.
+- Branch builds upload the test app as an artifact; `develop` pushes trigger CI.
+
+### Known limitations
+- Legacy length inflation is inert on macOS 27.0 (26A428): inflated items render
+  (a blank gap on wide displays) but displace nothing — use Native on direct
+  builds. Pre-27 behavior is unchanged.
+- Items macOS cannot attribute to an app stay visible: team-prefixed ids
+  (1Password helper), icons hosted in another process (Cotypist, SpamSieve),
+  extras invisible to Accessibility. Apple system items are always kept.
+
+## v1.18.6 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- GitHub releases actually include native hiding now: CI built the sandboxed `Release` config (without `HIDDENBAR_NATIVE_VISIBILITY`), so Auto and Native silently fell back to Legacy and collapse hid nothing on macOS 27. CI now builds `Release-Direct`.
+- Silent wrong-engine reports are gone: the factory logs preference/resolved/nativeAvailable at startup, and Legacy collapse logs its lengths and screens — a misbuilt app is now distinguishable from a broken engine.
+- Diagnostics are readable: hiding-path logging moved from NSLog (rendered as `<private>` in `log stream`) to public unified logging via an `AppLog` helper.
+
+### Changed
+- `develop` pushes trigger CI and upload the test build (zip + DMG) as an artifact for 14 days; published releases remain tag-driven prereleases.
+
 ## v1.18.5 (2026-09-22)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

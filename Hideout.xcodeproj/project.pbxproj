@@ -30,12 +30,13 @@
 		92C97B88220032ED0007559C /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C97B87220032ED0007559C /* Util.swift */; };
 		92C97B8D220058740007559C /* NSView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C97B8C220058740007559C /* NSView+Extension.swift */; };
 		92C97B8F220147FE0007559C /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C97B8E220147FE0007559C /* Constant.swift */; };
+		C70DC4EC26A1B3D4009E77F2 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70DC4EC26A1B3D4009E77F1 /* UpdateChecker.swift */; };
 		92C97B9122018C1F0007559C /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C97B9022018C1F0007559C /* StatusBarController.swift */; };
 		967F4B2524169BC800F18D3C /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967F4B2424169BC800F18D3C /* String+Extension.swift */; };
 		967F4B2824169CAF00F18D3C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 967F4B2A24169CAF00F18D3C /* Localizable.strings */; };
 		AA1E0001240F0A1100B0C3D1 /* MenuBarEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1E0000240F0A1100B0C3D1 /* MenuBarEngine.swift */; };
-		AA1E0002240F0A1100B0C3D2 /* LegacyLengthEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1E0001240F0A1100B0C3D2 /* LegacyLengthEngine.swift */; };
-		AA1E0003240F0A1100B0C3D3 /* MenuBarEngineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1E0002240F0A1100B0C3D3 /* MenuBarEngineFactory.swift */; };
+		
+		
 		AA1E0004240F0A1100B0C3D4 /* NativeVisibilityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1E0003240F0A1100B0C3D4 /* NativeVisibilityEngine.swift */; };
 		AA1E0005240F0A1100B0C3D5 /* NativeVisibilityBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1E0004240F0A1100B0C3D5 /* NativeVisibilityBridge.swift */; };
 		AA1E0006240F0A1100B0C3D6 /* HBNativeVisibilityShim.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1E0005240F0A1100B0C3D6 /* HBNativeVisibilityShim.m */; };
@@ -77,6 +78,7 @@
 		92C97B87220032ED0007559C /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		92C97B8C220058740007559C /* NSView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+Extension.swift"; sourceTree = "<group>"; };
 		92C97B8E220147FE0007559C /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
+		C70DC4EC26A1B3D4009E77F1 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		92C97B9022018C1F0007559C /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
 		967F4B2424169BC800F18D3C /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		967F4B2924169CAF00F18D3C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -84,8 +86,8 @@
 		967F4B2C24169CB400F18D3C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B1326443261D7E0200319D35 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		AA1E0000240F0A1100B0C3D1 /* MenuBarEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarEngine.swift; sourceTree = "<group>"; };
-		AA1E0001240F0A1100B0C3D2 /* LegacyLengthEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyLengthEngine.swift; sourceTree = "<group>"; };
-		AA1E0002240F0A1100B0C3D3 /* MenuBarEngineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarEngineFactory.swift; sourceTree = "<group>"; };
+		
+		
 		AA1E0003240F0A1100B0C3D4 /* NativeVisibilityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeVisibilityEngine.swift; sourceTree = "<group>"; };
 		AA1E0004240F0A1100B0C3D5 /* NativeVisibilityBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeVisibilityBridge.swift; sourceTree = "<group>"; };
 		AA1E0005240F0A1100B0C3D6 /* HBNativeVisibilityShim.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HBNativeVisibilityShim.m; sourceTree = "<group>"; };
@@ -148,8 +150,8 @@
 			isa = PBXGroup;
 			children = (
 				AA1E0000240F0A1100B0C3D1 /* MenuBarEngine.swift */,
-				AA1E0001240F0A1100B0C3D2 /* LegacyLengthEngine.swift */,
-				AA1E0002240F0A1100B0C3D3 /* MenuBarEngineFactory.swift */,
+
+
 				AA1E000D240F0A1100B0C3DE /* Native */,
 			);
 			path = Engine;
@@ -213,6 +215,7 @@
 				00117C4326600671005E517C /* Assets.swift */,
 				92C97B8E220147FE0007559C /* Constant.swift */,
 				08A5F86023AA085B00981CA5 /* Preferences.swift */,
+				C70DC4EC26A1B3D4009E77F1 /* UpdateChecker.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -367,6 +370,7 @@
 				08C20FE023AB44E60035D978 /* Bundle+Extension.swift in Sources */,
 				08A5F85C23AA013100981CA5 /* SelectedSecond.swift in Sources */,
 				08A5F86123AA085B00981CA5 /* Preferences.swift in Sources */,
+				C70DC4EC26A1B3D4009E77F2 /* UpdateChecker.swift in Sources */,
 				92C97B9122018C1F0007559C /* StatusBarController.swift in Sources */,
 				55F3F1192608923B0054B881 /* Date+Extension.swift in Sources */,
 				08B9F32C2411883300AA0551 /* NSWindow+Extension.swift in Sources */,
@@ -386,8 +390,8 @@
 				AA1E0007240F0A1100B0C3D7 /* MenuBarLayout.swift in Sources */,
 				AA1E0008240F0A1100B0C3D8 /* AccessibilityMenuBarInventory.swift in Sources */,
 				AA1E0001240F0A1100B0C3D1 /* MenuBarEngine.swift in Sources */,
-				AA1E0002240F0A1100B0C3D2 /* LegacyLengthEngine.swift in Sources */,
-				AA1E0003240F0A1100B0C3D3 /* MenuBarEngineFactory.swift in Sources */,
+
+
 				AA1E0004240F0A1100B0C3D4 /* NativeVisibilityEngine.swift in Sources */,
 				AA1E0005240F0A1100B0C3D5 /* NativeVisibilityBridge.swift in Sources */,
 				AA1E0006240F0A1100B0C3D6 /* HBNativeVisibilityShim.m in Sources */,
@@ -691,7 +695,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -717,7 +721,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -742,7 +746,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "hidden/Hidden-Bridging-Header.h";
@@ -768,7 +772,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "hidden/Hidden-Bridging-Header.h";

@@ -22,7 +22,7 @@ Everything Hidden Bar can do, including the parts with no UI.
 | Global shortcut | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18) |
 | Enable always hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow |
 | Use full menu bar on expanding | App becomes briefly "regular" while expanded (helps on tight menubars) |
-| Hiding engine | Which hiding mechanism to use: **Auto**, **Native**, or **Legacy** (see below) |
+
 
 > **Always-hidden section, current behavior:** items in the always-hidden zone
 > are reliably pushed off-screen only when "hide separators" is also on
@@ -33,53 +33,34 @@ Everything Hidden Bar can do, including the parts with no UI.
 > the always-hidden zone until the rework lands, since a stuck off-screen item has
 > to be recovered by ⌘-dragging it back (macOS persists its position per app).
 
-## Hiding engine (macOS 27)
+## Hiding (macOS 27)
 
-macOS 27 Golden Gate rebuilt the menu bar as a single window, so the old trick of
-pushing icons off-screen no longer works the same way. Hidden Bar offers two
-mechanisms, chosen with the **Hiding engine** control in Preferences.
-
-### Auto (default)
-
-Picks the best engine for the running app: **Native** on the direct (non-sandboxed)
-build on macOS 27, otherwise **Legacy**. This is the recommended setting — you get
-native hiding where it is available and a working fallback everywhere else.
-
-### Native
-
-Asks macOS itself to keep only an allow-list of status items visible, using the
-private `MenuBarClientCore` framework (assessment mode). macOS does the hiding and
+Hiding is always native since v1.19 (the engine selector was removed): macOS
+itself keeps only an allow-list of status items visible, using the private
+`MenuBarClientCore` framework (assessment mode). macOS does the hiding and
 the reflow, so:
 
 - hiding is **independent of display width, the notch, and the frontmost app's
-  menus** — icons no longer "slide in from the far left" on wide/mixed-width setups;
+  menus**;
 - it requires the **direct build** of Hidden Bar (the GitHub/ad-hoc, unsigned
-  release). The App Store build is sandboxed and cannot reach Accessibility or the
-  private framework, so forcing Native there is rejected and Hidden Bar falls back
-  to Legacy (the note under the control says so);
-- it needs the **Accessibility** permission (read once, to learn which apps you
-  placed in each section). On the first collapse macOS prompts you; until granted,
-  hiding reports "unavailable" and the bar is left expanded rather than half-hidden;
-- hiding is **per app bundle**: if an app has several icons, they all hide or show
-  together (the most-visible icon wins), and macOS's own items (clock, Wi-Fi,
-  Control Center) can never be hidden this way;
+  release) on **macOS 27**, plus the **Accessibility** permission (read once,
+  to learn which apps you placed in each section). On the first collapse macOS
+  prompts you; until granted, hiding reports "unavailable" and the bar is left
+  expanded rather than half-hidden. On builds without the native API
+  (sandboxed, pre-27) collapsing reports unavailable and the arrow stays put;
+- hiding is **per app bundle** for classification: if an app has several icons,
+  they all hide or show together (the most-visible icon wins). What stays is
+  decided by the allow-list (own, visible-section, hosts, indices) — Apple
+  bundle extras hide like normal apps; indexed/host system items (clock,
+  Wi-Fi, Bluetooth, battery, Control Center, …) stay. To remove those, use
+  System Settings → Control Center ("Don't show in menu bar");
+- everything left of the arrow hides on collapse: macOS hides every item not
+  on the allow-list — app bundles, helper ids and hosted icons alike, given
+  reflow time. Allow longer than feels necessary before judging: the
+  Accessibility snapshot alone takes up to ~10s and macOS reflows after
+  activation. Only indexed/host system items stay, unconditionally;
 - sections are read only while the bar is expanded, so an app launched while
   collapsed stays hidden until the next read.
-
-### Legacy
-
-The original spacer-inflation trick. It works on **every** build and macOS version
-(including sandboxed/App Store and pre-27). On macOS 27 its collapse width is
-capped under half the **narrowest** attached screen, so on wide or mixed-width
-displays some icons cannot be covered and leak into the system `«` overflow (and
-return from the far left when you expand). On macOS 26 and earlier there is no
-such cap — it covers the widest screen as before.
-
-### Switching at runtime
-
-Changing the control rebuilds the engine live (no restart). The current
-collapsed/expanded state is restored, and any active Native assertion is released
-so a switch back to Legacy never leaves icons stuck hidden.
 
 ## Behaviors you get for free
 
@@ -87,9 +68,8 @@ so a switch back to Legacy never leaves icons stuck hidden.
   the auto-collapse countdown defers and restarts; it resumes when you leave.
 - **Self-repair**: if the arrow or separator was ⌘-dragged off the bar (which
   used to make the app unreachable forever), they come back on next launch.
-- **Display changes**: plugging in or removing monitors re-sizes the hidden zone
-  automatically (widest screen on macOS 26 and earlier; narrowest-plus-spacers
-  on macOS 27).
+- **Display changes**: plugging in or removing monitors drops the cached
+  sections; they are re-read from the unrestricted bar on the next collapse.
 
 ## Hidden settings (Terminal)
 
@@ -97,16 +77,16 @@ All via `defaults`; quit and relaunch the app after changing them.
 
 ```sh
 # expand by hovering the menu bar for ~0.5s (off by default)
-defaults write com.dwarvesv.minimalbar hoverToExpand -bool true
+defaults write net.dotoca.hideout hoverToExpand -bool true
 
 # auto-collapse delay in seconds (the UI offers a fixed list; any value works)
-defaults write com.dwarvesv.minimalbar numberOfSecondForAutoHide -float 5
+defaults write net.dotoca.hideout numberOfSecondForAutoHide -float 5
 
 # force the app language regardless of system order (issue #287)
-defaults write com.dwarvesv.minimalbar AppleLanguages '(en)'
+defaults write net.dotoca.hideout AppleLanguages '(en)'
 ```
 
-To undo any of them: `defaults delete com.dwarvesv.minimalbar <key>`.
+To undo any of them: `defaults delete net.dotoca.hideout <key>`.
 
 ## Troubleshooting
 

@@ -12,12 +12,19 @@
 "Disable Auto Collapse" = "Disable Auto Collapse";
 "Quit" = "Quit";
 "Set Shortcut" = "Set Shortcut";
+"A new version of Hideout is available" = "A new version of Hideout is available";
+"Hideout %@ is now available — you are running %@." = "Hideout %@ is now available — you are running %@.";
+"Download" = "Download";
+"Later" = "Later";
+"Hideout is up to date" = "Hideout is up to date";
+"Version %@ is the latest stable release." = "Version %@ is the latest stable release.";
+"OK" = "OK";
 "Tutorial text" = "
-Use the always hidden feature to keep your icons tidy. Here's how to set it
+Use the always hidden feature to keep your icons tidy. Here's how to set it up:
 Steps to enable:
-1. Enable the always hidden “|” (translucent color bar)
-2. Hold  ⌘ and drag it on the left-hand side of the normal bar, then move any icons you want to disappear on the left of that bar.
-3. Finally, please right-click on the collapse “<” icon to make it disappear.
+1. Enable the always hidden “|” (translucent color bar).
+2. Hold  ⌘ and drag it to the left-hand side of the normal bar, then move any icons you want to disappear to the left of that bar.
+3. Finally, right-click the collapse “<” icon to make them disappear.
 Steps to view always hidden icons:
-1. You right-click on “<” icon again to view and repeat the action to enable the feature. Enjoy 😉!
+1. Right-click the “<” icon again to view them, and repeat the action to hide them. Enjoy 😉!
 ";

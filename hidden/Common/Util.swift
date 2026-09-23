@@ -1,6 +1,6 @@
 //
 //  Util.swift
-//  vanillaClone
+//  Util.swift
 //
 //  Created by Thanh Nguyen on 1/29/19.
 //  Changed by Vitalii Tereshchuk / xVoLAnD, 2026

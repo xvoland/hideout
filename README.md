@@ -74,41 +74,25 @@ xattr -dr com.apple.quarantine /Applications/Hideout.app
 
 - [Download latest version](https://github.com/xvoland/hideout/releases/latest)
 - Open and drag the app to the Applications folder.
-- Launch Hidden and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
+- Launch Hideout and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
 
-## ⚙️ Hiding engine (macOS 27)
+## ⚙️ Hiding (macOS 27)
 
-macOS 27 Golden Gate rebuilt the menu bar as a single window. Hidden Bar offers two hiding mechanisms:
+macOS 27 Golden Gate rebuilt the menu bar as a single window. Hiding is always native since v1.19: Hideout asks macOS's private `MenuBarClientCore` (assessment mode) to keep only an allow-list visible. macOS does the hiding/reflow itself — independent of display width, notch, or front app.
 
-| Engine | How it works | Width-independent? | Build required |
-|--------|--------------|--------------------|----------------|
-| **Native** (default on direct build) | Asks macOS's private `MenuBarClientCore` (assessment mode) to keep only an allow-list visible. macOS does the hiding/reflow itself. | **Yes** — works regardless of display width, notch, or front app | **Direct (non-sandboxed) build only** — this GitHub/ad-hoc release. Needs Accessibility permission (prompted on first collapse). |
-| **Legacy** | Inflates spacer `NSStatusItem`s to push icons into the system `«` overflow. | **No** — capped at half the *narrowest* screen on macOS 27; leaks on wide/mixed displays | Every build (App Store, sandboxed, pre-27). Fallback when Native unavailable. |
+Requirements: the **direct (non-sandboxed) build** on **macOS 27** (this GitHub/ad-hoc release, compiled with `HIDDENBAR_NATIVE_VISIBILITY=1`), plus **Accessibility** permission (prompted on first collapse). Where unavailable (sandboxed builds, pre-27), collapsing reports unavailable and the arrow stays put.
 
-The **Hiding engine** control in Preferences → Settings lets you choose:
+## 🤔 Why native hiding?
 
-- **Auto** (default): Native on this direct build, Legacy everywhere else.
-- **Native** (force): uses the private `MenuBarClientCore` API; rejected on sandboxed/pre-27 builds with a fallback notice.
-- **Legacy** (force): spacer-inflation trick, works everywhere but width-limited on macOS 27.
+macOS historically had **no public API** to hide other apps' menu-bar icons. Hideout used a geometry hack: inflate a separator `NSStatusItem` so icons to its left slide out of view.
 
-> The direct/ad-hoc GitHub build (Homebrew cask, Releases page) is compiled with `HIDDENBAR_NATIVE_VISIBILITY=1` and ships Native hiding. The App Store build is sandboxed and cannot use the private API — it stays on Legacy.
+| macOS era | What changed | Consequence |
+|-----------|--------------|-------------|
+| **≤ 26 (Ventura/Sonoma/Sequoia)** | Each status item = its own window. Inflating the separator pushes icons off-screen. | Geometry hiding worked. |
+| **27 Golden Gate** | Menu bar became **one window** with a native overflow (`«`). Inflating past half the screen width **drops** the item instead of clamping, and length changes no longer displace neighbours. | Geometry hiding is dead on 27 — hiding must go through the system. |
+| **27 + private API** | macOS 27 introduced `MenuBarClientCore` (assessment mode) — a private framework that can restrict the menu bar to an allow-list. | **Native hiding** — asks macOS to hide everything except the allow-list. Width-independent, notch-aware. |
 
-## 🤔 Why two engines?
-
-macOS historically had **no public API** to hide other apps' menu-bar icons. Hidden Bar has always used a geometry hack: inflate a separator `NSStatusItem` so icons to its left slide out of view.
-
-| macOS era | What changed | Hidden Bar's response |
-|-----------|--------------|----------------------|
-| **≤ 26 (Ventura/Sonoma/Sequoia)** | Each status item = its own window. Inflating the separator pushes icons off-screen. | **Legacy engine** (spacer inflation) — the *only* way it could work. |
-| **27 Golden Gate** | Menu bar became **one window** with a native overflow (`«`). Inflating past half the screen width **drops** the item instead of clamping. | **Legacy adapted** (spacers + cap at `narrowest/2 - 64`). Works, but width-limited on wide/mixed displays. |
-| **27 + private API** | macOS 27 introduced `MenuBarClientCore` (assessment mode) — a private framework that can restrict the menu bar to an allow-list. | **Native engine** — asks macOS to hide everything except the allow-list. Width-independent, notch-aware, no spacer math. |
-
-**Why keep both?**
-
-- **Native** is the modern path: width-independent, notch-aware, no spacer math. But it requires the **direct (non-sandboxed) build**, macOS 27+, and Accessibility permission. It uses a private API Apple may change.
-- **Legacy** is the universal fallback: works on **every** macOS (13+), on the **App Store/sandboxed build**, on macOS ≤ 26, when Accessibility is denied, and as a safety net if Apple breaks the private API.
-
-**Auto** (default) picks the best available: Native on this direct macOS 27 build, Legacy everywhere else.
+Native requires the **direct (non-sandboxed) build**, macOS 27+, and Accessibility permission. It uses a private API Apple may change. For macOS ≤ 26, upstream `dwarvesf/hidden` remains the path.
 
 ## 🕹 Usage
 

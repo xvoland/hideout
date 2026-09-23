@@ -16,7 +16,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Hideout" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="About Hidden Bar" id="5kV-Vb-QxS">
+                                        <menuItem title="About Hideout" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
@@ -30,7 +30,7 @@
                                             <menu key="submenu" title="Services" systemMenu="services" id="hz9-B4-Xy5"/>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="4je-JR-u6R"/>
-                                        <menuItem title="Hide Hidden Bar" keyEquivalent="h" id="Olw-nP-bQN">
+                                        <menuItem title="Hide Hideout" keyEquivalent="h" id="Olw-nP-bQN">
                                             <connections>
                                                 <action selector="hide:" target="Ady-hI-5gd" id="PnN-Uc-m68"/>
                                             </connections>
@@ -48,7 +48,7 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="kCx-OE-vgT"/>
-                                        <menuItem title="Quit Hidden Bar" keyEquivalent="q" id="4sb-4s-VLi">
+                                        <menuItem title="Quit Hideout" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
                                             </connections>
@@ -575,7 +575,7 @@ between sections to configure Hideout.</string>
                                         </imageView>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eBG-Wk-IXv">
                                             <rect key="frame" x="314" y="141" width="189" height="28"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="⭐️Always Hidden" id="1jU-1x-cFf">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="⭐️ Always Hidden" id="1jU-1x-cFf">
                                                 <font key="font" metaFont="system" size="24"/>
                                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -615,7 +615,7 @@ between sections to configure Hideout.</string>
                                         <subviews>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cbR-Jv-adm">
                                                 <rect key="frame" x="-2" y="116" width="207" height="18"/>
-                                                <buttonCell key="cell" type="check" title="Start Hidden Bar when I log in" bezelStyle="regularSquare" imagePosition="left" inset="2" id="W1G-55-zGo">
+                                                <buttonCell key="cell" type="check" title="Start Hideout when I log in" bezelStyle="regularSquare" imagePosition="left" inset="2" id="W1G-55-zGo">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
@@ -635,7 +635,7 @@ between sections to configure Hideout.</string>
                                             </button>
                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EQP-7r-FSu">
                                                 <rect key="frame" x="-2" y="64" width="238" height="18"/>
-                                                <buttonCell key="cell" type="check" title="Use the full MenuBar on expanding" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8z8-6N-wnc">
+                                                <buttonCell key="cell" type="check" title="Use the full menu bar when expanded" bezelStyle="regularSquare" imagePosition="left" inset="2" id="8z8-6N-wnc">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
@@ -688,7 +688,7 @@ between sections to configure Hideout.</string>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="20" id="Pg4-Eh-1V3"/>
                                                         </constraints>
-                                                        <buttonCell key="cell" type="check" title="Automatically hide icon after: " bezelStyle="regularSquare" imagePosition="left" inset="2" id="kg8-rW-srh">
+                                                        <buttonCell key="cell" type="check" title="Automatically hide icon(s) after: " bezelStyle="regularSquare" imagePosition="left" inset="2" id="kg8-rW-srh">
                                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                             <font key="font" metaFont="system"/>
                                                         </buttonCell>

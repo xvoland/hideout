@@ -1,6 +1,6 @@
 //
 //  StatusBarController.swift
-//  vanillaClone
+//  StatusBarController.swift
 //
 //  Created by Thanh Nguyen on 1/30/19.
 //  Changed by Vitalii Tereshchuk / xVoLAnD, 2026
@@ -19,9 +19,9 @@ class StatusBarController: MenuBarItemProvider {
 
     // Created and named in declaration order on purpose: a status item registers
     // with the menu bar under its autosave name, and on macOS 27 every new name
-    // lands left of the previous one, so the bar reads separator, spacers, arrow.
-    let btnExpandCollapse = StatusBarController.makeItem("hiddenbar_expandcollapse", length: NSStatusItem.variableLength)
-    let btnSeparate = StatusBarController.makeItem("hiddenbar_separate", length: 1)
+    // lands left of the previous one, so the bar reads separator, arrow.
+    let btnExpandCollapse = StatusBarController.makeItem("hideout_expandcollapse", length: NSStatusItem.variableLength)
+    let btnSeparate = StatusBarController.makeItem("hideout_separate", length: 1)
     var btnAlwaysHidden:NSStatusItem? = nil
 
     //MARK: - MenuBarItemProvider conformance
@@ -32,10 +32,9 @@ class StatusBarController: MenuBarItemProvider {
     private let imgIconLine = NSImage(named:NSImage.Name("ic_line"))
 
     // The engine owns the hiding mechanics; the controller decides WHAT the user
-    // wants and reflects the result in the UI. On macOS 27 the direct build uses
-    // NativeVisibilityEngine (native hiding); otherwise LegacyLengthEngine
-    // with its spacer block (spacers are owned by the engine, not here).
-    // Rebuilt when the user changes the engine preference.
+    // wants and reflects the result in the UI. Hiding is always native
+    // (NativeVisibilityEngine) since v1.19; on builds without the native
+    // visibility API collapse reports unavailable and the arrow stays put.
     private var menuBarEngine: MenuBarEngine!
 
     private var isCollapsed: Bool {
@@ -78,14 +77,17 @@ class StatusBarController: MenuBarItemProvider {
 
     //MARK: - Methods
     init() {
-        menuBarEngine = MenuBarEngineFactory.make(items: self)
+        // Identity migration first: everything below reads Preferences.
+        Preferences.migrateFromLegacyDomainIfNeeded()
+        menuBarEngine = NativeVisibilityEngine(items: self)
+        AppLog.info("MenuBarEngine: native diagRev=\(BuildInfo.diagnosticsRevision) nativeAvailable=\(NativeVisibilityEngine.nativeVisibilityAvailable)")
         setupUI()
         setupAlwayHideStatusBar()
         setupHoverToExpandIfEnabled()
         updateHoverMonitoring()
         NotificationCenter.default.addObserver(self, selector: #selector(handleScreenParametersChanged), name: NSApplication.didChangeScreenParametersNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateHoverMonitoring), name: .prefsChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(rebuildEngineIfNeeded), name: .enginePreferenceChanged, object: nil)
+
 
         // Create the engine now so one that does not use the separator (macOS 27
         // native hiding) takes it back out before it is ever drawn.
@@ -126,7 +128,7 @@ class StatusBarController: MenuBarItemProvider {
     private func installHoverMonitor() {
         guard hoverMonitor == nil else { return }
         guard Preferences.hoverToExpand else { return }
-        NSLog("HoverToExpand: enabled, installing global mouse monitor")
+        AppLog.info("HoverToExpand: enabled, installing global mouse monitor")
         hoverMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
             guard let self = self else { return }
             guard self.isCollapsed && self.isMouseInMenuBar else {
@@ -156,30 +158,6 @@ class StatusBarController: MenuBarItemProvider {
 
     @objc private func handleScreenParametersChanged() {
         menuBarEngine.invalidateLayout()
-    }
-
-    // Rebuild the hiding engine when the user changes the engine preference. The
-    // previous engine is discarded; if it held a native assertion that is released
-    // by deinit. The new engine restores the current collapsed/expanded state.
-    @objc private func rebuildEngineIfNeeded() {
-        let previousCollapsed = isCollapsed
-        let previousAreSeparatorsHidden = Preferences.areSeparatorsHidden
-        let previousAlwaysHidden = Preferences.alwaysHiddenSectionEnabled
-        // Drop any active native assertion on the old engine before discarding it,
-        // so a forced switch does not leave icons hidden by the previous engine.
-        menuBarEngine.expand()
-        menuBarEngine = MenuBarEngineFactory.make(items: self)
-        if previousAreSeparatorsHidden {
-            applySeparatorsHidden(true)
-        }
-        if previousAlwaysHidden {
-            menuBarEngine.updateAlwaysHiddenSection(enabled: true, separatorHidden: previousAreSeparatorsHidden)
-        }
-        if previousCollapsed {
-            collapseMenuBar()
-        } else {
-            expandMenubar(isInitialRestore: true)
-        }
     }
 
     private func setupUI() {
@@ -243,6 +221,14 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     func expandCollapseIfNeeded() {
+        // While the native engine calibrates (async Accessibility read plus
+        // activation), presses are ignored: the bar is neither collapsed nor
+        // expanded, and treating the press as a new collapse would pile
+        // superseded activations behind the in-flight one.
+        if menuBarEngine.state == .calibrating {
+            AppLog.info("StatusBar: press ignored — engine calibrating")
+            return
+        }
         if isToggle {return}
         isToggle = true
 
@@ -307,21 +293,24 @@ class StatusBarController: MenuBarItemProvider {
     private func collapseMenuBar() {
         guard menuBarEngine.isArrangementValid && !self.isCollapsed else {
             if !menuBarEngine.isArrangementValid {
-                NSLog("StatusBar: collapse skipped — arrow is not on the visible side of the separator; ⌘-drag it past the separator")
+                AppLog.info("StatusBar: collapse skipped — arrow is not on the visible side of the separator; ⌘-drag it past the separator")
+            } else {
+                AppLog.info("StatusBar: collapse ignored — already collapsed (engine state=\(menuBarEngine.state))")
             }
             Preferences.lastCollapsedState = false
             autoCollapseIfNeeded()
             return
         }
-
-        if let button = btnExpandCollapse.button {
-            button.image = Assets.expandImage
-        }
+        AppLog.info("StatusBar: collapse requested")
+        // The arrow flips only in didCollapseMenuBar once the engine confirms.
+        // Flipping it here would show collapsed while nothing is hidden yet:
+        // the native engine calibrates asynchronously (Accessibility snapshot
+        // alone takes up to ~10s), and every screenshot taken in that window
+        // "proved" hiding was broken when it had not even started.
         if Preferences.useFullStatusBarOnExpandEnabled {
             NSApp.setActivationPolicy(.accessory)
             NSApp.deactivate()
         }
-        Preferences.lastCollapsedState = true
         menuBarEngine.collapse { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -334,6 +323,7 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func expandMenubar(isInitialRestore: Bool = false) {
+        AppLog.info("StatusBar: expand requested (isCollapsed=\(self.isCollapsed))")
         guard self.isCollapsed else {return}
         if let button = btnExpandCollapse.button {
             button.image = Assets.collapseImage
@@ -350,6 +340,7 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func didFailToCollapseMenuBar() {
+        AppLog.info("StatusBar: collapse failed (.unavailable) — arrow reverted to <")
         if let button = btnExpandCollapse.button {
             button.image = Assets.collapseImage
         }
@@ -360,9 +351,11 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func didCollapseMenuBar() {
+        AppLog.info("StatusBar: collapse completed (.collapsed)")
         if let button = btnExpandCollapse.button {
             button.image = Assets.expandImage
         }
+        Preferences.lastCollapsedState = true
     }
 
     private func autoCollapseIfNeeded() {
@@ -377,6 +370,10 @@ class StatusBarController: MenuBarItemProvider {
         self.timer = Timer.scheduledTimer(withTimeInterval: Preferences.numberOfSecondForAutoHide, repeats: false) { [weak self] _ in
             guard let self = self, Preferences.isAutoHide else { return }
             if self.isMouseInMenuBar || self.isPreferencesWindowVisible {
+                // Silent by design until now: this re-arm loop is why auto-hide
+                // "stops working" whenever the pointer parks in the menu bar or
+                // Preferences stays open (e.g. while switching engines to test).
+                AppLog.info("StatusBar: auto-collapse deferred (pointerInBar=\(self.isMouseInMenuBar) prefsVisible=\(self.isPreferencesWindowVisible)) — re-arming")
                 self.startTimerToAutoHide()
             } else {
                 self.collapseMenuBar()
@@ -443,7 +440,7 @@ extension StatusBarController {
                 button.image = self.imgIconLine
                 button.appearsDisabled = true
             }
-            self.btnAlwaysHidden?.autosaveName = "hiddenbar_terminate" + StatusBarController.autosaveSuffix
+            self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             self.btnAlwaysHidden?.isVisible = true
         } else {
             if let existing = self.btnAlwaysHidden {

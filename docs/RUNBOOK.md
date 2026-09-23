@@ -23,15 +23,12 @@ deprecated `SMLoginItemSetEnabled(false)` call that cleans up legacy installs.
 The repo has no unit-test infrastructure; behavior is verified against the real
 menu bar. Two building blocks make that scriptable:
 
-1. **Truth signal**: the separator's AX size.
-   `osascript -e 'tell application "System Events" to tell process "Hidden Bar" to get size of menu bar item 2 of menu bar 2'`
-   reads ~20pt expanded vs the collapse length. On macOS 26 and earlier that is
-   ~2x the widest screen width; on macOS 27 Golden Gate it is `collapseUnit` =
-   `floor(narrowestScreen/2 - 64)` (the half-width cliff macOS 27 drops items
-   at), backed by 6 hidden spacer items (`hiddenbar_spacer0..5`) so the total
-   span covers wide/mixed-width displays. Displaced icons land in the system `«`
-   overflow, not off-screen. The always-hidden section has its own spacer block
-   (`hiddenbar_ahspacer0..5`) for the same reason (#4). Item 1 is the arrow.
+1. **Truth signal**: the log. Collapse prints
+   `NativeVisibility: arrow at x=…; visible […], hidden […], always hidden […]`
+   followed by `VisibilityRestrictionAssertion session activated`, then
+   `StatusBar: collapse completed (.collapsed)` and the arrow flips to `>`.
+   Expand prints `expand requested` and drops the assertion. Any deviation
+   (missing activation, `.unavailable`, arrow/model mismatch) is the bug.
 2. **Real clicks, not AXPress**: `AXPress` on the arrow is a no-op because the
    action handler reads `NSApp.currentEvent` (nil under assistive synthesis;
    known accessibility defect). Post real `CGEvent` mouse clicks at the arrow's
@@ -52,7 +49,7 @@ Standard checks before any release:
 - localization tables stay parseable: `plutil -lint hidden/*.lproj/*.strings`.
 
 When testing on a machine that runs Hidden Bar daily: export the prefs domain
-first (`defaults export com.dwarvesv.minimalbar backup.plist`), quit the
+first (`defaults export net.dotoca.hideout backup.plist`), quit the
 installed app, test the dev build, then re-import and relaunch.
 
 ## Release

@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  vanillaClone
+//  AppDelegate.swift
 //
 //  Created by Thanh Nguyen on 1/24/19.
 //  Changed by Vitalii Tereshchuk, 2026
@@ -33,6 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate{
         setupHotKey()
         openPreferencesIfNeeded()
         detectLTRLang()
+        UpdateChecker.shared.checkIfDue()
     }
     
     func openPreferencesIfNeeded() {
@@ -49,6 +50,9 @@ class AppDelegate: NSObject, NSApplicationDelegate{
     private func removeLegacyLauncherLoginItem() {
         // Builds before the SMAppService migration registered a helper app in BTM;
         // macOS never garbage-collects that record (TN3111), so deauthorize it once.
+        // NOTE (do not "fix" the identifier below): it must stay
+        // com.dwarvesv.LauncherApplication — that exact record is what we are
+        // cleaning up. Renaming it would orphan pre-migration login items.
         let migratedKey = "smAppServiceMigrated"
         guard !UserDefaults.standard.bool(forKey: migratedKey) else { return }
         SMLoginItemSetEnabled("com.dwarvesv.LauncherApplication" as CFString, false)

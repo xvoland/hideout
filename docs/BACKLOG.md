@@ -11,11 +11,9 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
 
 ## macOS 27 (landed, residual)
 
-- **Hide mechanism restored (#360).** Collapse uses a sub-half-width unit plus
-  spacer items so displaced icons go into the native overflow (`«`). Residual:
-  always-hidden still inflates as one unit (can leak on very wide displays when
-  the regular section is expanded); first launch after upgrade needs a one-time
-  ⌘-drag because items register under `_v27` names.
+- **Hide mechanism restored (#360), native-only since v1.19** (Legacy engine
+  deleted; pre-27 path: upstream). Residual: always-hidden presentation with
+  separators shown; one-time ⌘-drag after upgrade (autosave names).
 
 ## Blocked on external-display hardware
 
@@ -68,3 +66,29 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
   Do not merge on description alone; #358 especially needs a real review.
 - **#242 permanent icon-loss repro.** Needs a throwaway defaults profile (live repro
   risks losing real menu-bar icons). Required before the always-hidden decouple lands.
+
+## Hideout fork — session state 2026-09-23 (develop @ 4a3569b)
+
+- **v1.20.0 re-released** (tag force-moved 92ea180 → 4a3569b, full release): update
+  checker (launch + weekly throttle, stable-only, manual button in Preferences General),
+  UI grammar fixes, visible-rebrand leftovers (About/Hide/Quit menu, login checkbox).
+  Same version number → the in-app checker will NOT flag it to existing v1.20.0 installs.
+- **OPEN — version stamping.** Repo MARKETING_VERSION is a 1.18.5 fossil;
+  bump-version.sh patches tag builds ephemerally and never commits back, so dev builds
+  show 1.18.5 in About. Dev-suffix + commit-back was proposed; status unclear after the
+  build-revert request — DO NOT implement without an explicit go-ahead.
+- **DEFERRED — AX-invisible icons (Player ▶).** The allow-list API can only keep named
+  bundles; unknowns cannot be kept, and ⌘-drag does not help them (sections come from
+  the AX census). Path if revived: identify the owner (running-apps diff / « overflow /
+  user report) + persistent always-visible bundle set. Fail-open-for-unknowns rejected
+  (kills the no-fail-open guarantee).
+- **OPEN — PRIVACY_POLICY one-liner** disclosing update checks (api.github.com, launch +
+  weekly). Needs the owner's wording.
+- **OPEN — Hideout-source.zip in releases:** keep or drop so a release holds exactly two
+  files? Unanswered.
+- **CLOSED (owner declined):** UpdateChecker docs in MANUAL/README/CHANGELOG; debug-log
+  trim (diagnostic logs stay as-is).
+- **Standing:** new .swift files need pbxproj registration (PBXFileReference +
+  PBXBuildFile + group children + Sources); verification via CI only (no local Xcode);
+  single-file LSP "cannot find in scope" is noise, verify via build; re-release =
+  `git tag -f vX.Y.Z && git push -f origin vX.Y.Z` (CI rebuilds + republishes).

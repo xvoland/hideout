@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import os
 
 // StatusBarController decides WHAT the user wants (collapsed or expanded, which
 // sections exist); an engine decides HOW the menu bar is made to do it. Keeping
@@ -61,4 +62,21 @@ protocol MenuBarItemProvider: AnyObject {
     var toggleItem: NSStatusItem { get }
     var separatorItem: NSStatusItem { get }
     var alwaysHiddenItem: NSStatusItem? { get }
+}
+
+// Unified-logging diagnostics. NSLog routes through os_log as *private*, so
+// `log stream` renders every message as `<private>` — useless for debugging.
+// This helper logs everything as public; the strings carry no user data, only
+// bundle ids, coordinates and engine state.
+enum AppLog {
+    private static let logger = Logger(subsystem: "hideout", category: "menubar")
+    static func info(_ message: String) {
+        logger.info("\(message, privacy: .public)")
+    }
+}
+
+// Identifies the exact code behind a log line: MARKETING_VERSION only moves
+// on tags, so this is bumped on every diagnostics-visibility change.
+enum BuildInfo {
+    static let diagnosticsRevision = 8
 }
