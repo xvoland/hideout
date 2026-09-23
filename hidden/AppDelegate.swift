@@ -33,6 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate{
         setupHotKey()
         openPreferencesIfNeeded()
         detectLTRLang()
+        UpdateChecker.shared.checkIfDue()
     }
     
     func openPreferencesIfNeeded() {

@@ -150,5 +150,14 @@ enum Preferences {
         }
     }
 
+    static var lastUpdateCheck: Date? {
+        get {
+            UserDefaults.standard.object(forKey: "lastUpdateCheck") as? Date
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "lastUpdateCheck")
+        }
+    }
+
 
 }
