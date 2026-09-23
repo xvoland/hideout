@@ -203,7 +203,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return body(layout, [], nil)
         }
         guard let arrow = items?.toggleItem,
-              let boundary = itemFrame(arrow) else { return body(nil) }
+              let boundary = itemFrame(arrow) else { return body(nil, [], nil) }
         let alwaysHiddenFrame = alwaysHiddenEnabled ? items?.alwaysHiddenItem.flatMap(itemFrame) : nil
         let isLTR = self.isLTR()
         generation += 1
