@@ -161,15 +161,55 @@ final class LegacyLengthEngine: MenuBarEngine {
         return ""
     }()
 
+    // Hidden side of a boundary (LTR: left of it, RTL: right of it).
+    private func isOnHiddenSide(x: CGFloat, boundary: CGFloat) -> Bool {
+        Constant.isUsingLTRLanguage ? x < boundary : x > boundary
+    }
+
     private func setSpacersInflated(_ inflated: Bool) {
+        guard inflated else {
+            for spacer in spacers { spacer.length = 0 }
+            return
+        }
+        // Inflate only spacers verified on the hidden side of the arrow. A
+        // misplaced spacer at/after the arrow would shove the arrow itself
+        // into the « overflow on inflation and it would vanish (seen live:
+        // spacers=[906×9, 997] with arrowX=972). Skipped rogues stay at zero.
+        let boundary = items?.toggleItem.button?.getOrigin?.x
         for spacer in spacers {
-            spacer.length = inflated ? collapsedLength : 0
+            if let spacerX = spacer.button?.getOrigin?.x, let boundary = boundary,
+               !isOnHiddenSide(x: spacerX, boundary: boundary) {
+                AppLog.info("LegacyLength: skipping rogue spacer at x=\(Int(spacerX)) (arrow at \(Int(boundary))) — inflating it would shove the arrow into «. Reset slots with `defaults delete com.dwarvesv.minimalbar` (reconfigure prefs after) and restart.")
+                spacer.length = 0
+                continue
+            }
+            spacer.length = collapsedLength
         }
     }
 
     private func setAlwaysHiddenSpacersInflated(_ inflated: Bool) {
+        guard inflated else {
+            for spacer in alwaysHiddenSpacers { spacer.length = 0 }
+            return
+        }
+        let boundary = items?.alwaysHiddenItem?.button?.getOrigin?.x
         for spacer in alwaysHiddenSpacers {
-            spacer.length = inflated ? alwaysHiddenCollapsedLength : 0
+            if let spacerX = spacer.button?.getOrigin?.x, let boundary = boundary,
+               !isOnHiddenSide(x: spacerX, boundary: boundary) {
+                AppLog.info("LegacyLength: skipping rogue always-hidden spacer at x=\(Int(spacerX))")
+                spacer.length = 0
+                continue
+            }
+            spacer.length = alwaysHiddenCollapsedLength
+        }
+    }
+
+    deinit {
+        // Spacers are ours alone: remove them so engine rebuilds (preference
+        // switches) do not accumulate leaked invisible items that fragment
+        // the bar order further.
+        for spacer in spacers + alwaysHiddenSpacers {
+            NSStatusBar.system.removeStatusItem(spacer)
         }
     }
 }
