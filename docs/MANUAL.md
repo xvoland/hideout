@@ -71,11 +71,13 @@ the reflow, so:
 ### Legacy
 
 The original spacer-inflation trick. It works on **every** build and macOS version
-(including sandboxed/App Store and pre-27). On macOS 27 its collapse width is
-capped under half the **narrowest** attached screen, so on wide or mixed-width
-displays some icons cannot be covered and leak into the system `«` overflow (and
-return from the far left when you expand). On macOS 26 and earlier there is no
-such cap — it covers the widest screen as before.
+(including sandboxed/App Store and pre-27). On macOS 27.0 (26A428) length
+inflation appears to be ignored by the system outright: inflated items neither
+displace icons nor render, so Legacy neither hides nor breaks the bar there —
+use Native on direct builds. (On 27 betas the width is capped under half the
+**narrowest** attached screen with overflow into `«`; behavior varies by 27
+build.) On macOS 26 and earlier there is no such cap — it covers the widest
+screen as before.
 
 ### Switching at runtime
 

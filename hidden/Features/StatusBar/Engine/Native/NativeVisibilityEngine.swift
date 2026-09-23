@@ -35,8 +35,9 @@ import AppKit
 final class NativeVisibilityEngine: MenuBarEngine {
     // System item identifiers to keep visible. Unknown identifiers are ignored,
     // so the window is deliberately wide: Apple extras live past index 63 on
-    // 27.0 (Time Machine vanished with 0..<64), and numbering differs per Mac.
-    static let systemItemsToKeep = Array(0..<256)
+    // 27.0 (Time Machine vanished with 0..<64 and still with 0..<256), and
+    // numbering differs per Mac.
+    static let systemItemsToKeep = Array(0..<1024)
 
     private weak var items: MenuBarItemProvider?
     private let inventory: MenuBarInventoryProviding
