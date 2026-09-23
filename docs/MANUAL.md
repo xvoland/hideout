@@ -65,11 +65,13 @@ the reflow, so:
   Bluetooth, battery, Control Center, …) can never be hidden this way — macOS
   keeps them visible regardless of the restriction. To remove those, use
   System Settings → Control Center ("Don't show in menu bar");
-- items macOS cannot attribute to an app stay visible (fail-open): helpers
-  reporting a team-prefixed id (1Password), icons hosted inside another
-  process (Cotypist, SpamSieve), or extras invisible to Accessibility. Apple
-  system hosts (MenuBarAgent, Control Center, SystemUIServer) are always kept
-  for the same reason;
+- icons left of the arrow that stay visible fall in two groups: ones macOS
+  cannot attribute to an app (fail-open: team-prefixed ids like 1Password's
+  helper, icons hosted in another process like Cotypist/SpamSieve, extras
+  invisible to Accessibility), and ones outside the `«` overflow's reach. Keep
+  hidden icons clustered near the arrow — far-flung ones may stay regardless
+  of section. Apple system hosts (MenuBarAgent, Control Center,
+  SystemUIServer) are always kept;
 - sections are read only while the bar is expanded, so an app launched while
   collapsed stays hidden until the next read.
 
