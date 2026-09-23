@@ -20,6 +20,12 @@ enum AppLog {
     }
 }
 
+// Identifies the exact code behind a log line: MARKETING_VERSION only moves
+// on tags, so this is bumped on every diagnostics-visibility change.
+enum BuildInfo {
+    static let diagnosticsRevision = 6
+}
+
 // The single place that picks a hiding mechanism for the running OS.
 enum MenuBarEngineFactory {
     // Whether the running build can offer the native visibility engine at all
@@ -57,7 +63,7 @@ enum MenuBarEngineFactory {
         // the native visibility API (plain Debug/Release, App Store) both .auto
         // and .native fall back to .legacy. Logged so a "hides nothing" report
         // can be told apart from a broken engine.
-        AppLog.info("MenuBarEngine: preference=\(Preferences.menuBarEnginePreference.rawValue) resolved=\(resolved.rawValue) nativeAvailable=\(nativeVisibilityAvailable)")
+        AppLog.info("MenuBarEngine: preference=\(Preferences.menuBarEnginePreference.rawValue) resolved=\(resolved.rawValue) nativeAvailable=\(nativeVisibilityAvailable) diagRev=\(BuildInfo.diagnosticsRevision)")
         if resolved == .native {
             return NativeVisibilityEngine(items: items)
         }

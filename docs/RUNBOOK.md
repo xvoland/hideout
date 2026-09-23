@@ -28,10 +28,12 @@ menu bar. Two building blocks make that scriptable:
    reads ~20pt expanded vs the collapse length. On macOS 26 and earlier that is
    ~2x the widest screen width; on macOS 27 Golden Gate it is `collapseUnit` =
    `floor(narrowestScreen/2 - 64)` (the half-width cliff macOS 27 drops items
-   at), backed by 6 hidden spacer items (`hiddenbar_spacer0..5`) so the total
-   span covers wide/mixed-width displays. Displaced icons land in the system `«`
-   overflow, not off-screen. The always-hidden section has its own spacer block
-   (`hiddenbar_ahspacer0..5`) for the same reason (#4). Item 1 is the arrow.
+   at), backed by a computed number of hidden spacer items (`hiddenbar_spacerN`,
+   grown until spacers + separator exceed the widest display, capped at 10) so
+   the total span covers wide/mixed-width displays. Displaced icons land in the
+   system `«` overflow, not off-screen. The always-hidden section has its own
+   spacer block (`hiddenbar_ahspacerN`) for the same reason (#4). Item 1 is the
+   arrow.
 2. **Real clicks, not AXPress**: `AXPress` on the arrow is a no-op because the
    action handler reads `NSApp.currentEvent` (nil under assistive synthesis;
    known accessibility defect). Post real `CGEvent` mouse clicks at the arrow's

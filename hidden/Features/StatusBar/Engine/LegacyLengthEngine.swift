@@ -30,18 +30,18 @@ final class LegacyLengthEngine: MenuBarEngine {
     // macOS 27 only: zero-length spacers between the arrow and the separator that
     // inflate with it so the total span covers wide/mixed displays without any
     // single item crossing the half-width cliff. Empty on <= 26.
-    private let spacers: [NSStatusItem]
+    private var spacers: [NSStatusItem] = []
     // macOS 27 only: spacer block for the always-hidden section (mirrors the main
     // spacers so a single inflated unit can't span wide displays).
-    private var alwaysHiddenSpacers: [NSStatusItem]
+    private var alwaysHiddenSpacers: [NSStatusItem] = []
 
     private var collapsedLength: CGFloat = 2000
     private var alwaysHiddenCollapsedLength: CGFloat = 0
 
     init(items: MenuBarItemProvider) {
         self.items = items
-        self.spacers = LegacyLengthEngine.makeSpacers()
-        self.alwaysHiddenSpacers = LegacyLengthEngine.makeAlwaysHiddenSpacers()
+        // Spacer blocks grow inside updateCollapsedLengths to exactly what the
+        // attached displays need (see ensureSpacerCapacity).
         updateCollapsedLengths()
     }
 
@@ -130,29 +130,33 @@ final class LegacyLengthEngine: MenuBarEngine {
         collapsedLength = bounded
         alwaysHiddenCollapsedLength = alwaysHiddenEnabled ? bounded : 0
         LegacyLengthEngine.spacerCollapseLength = bounded
+        ensureSpacerCapacity(unit: bounded)
     }
 
-    private static func makeSpacers() -> [NSStatusItem] {
-        guard #available(macOS 27.0, *) else { return [] }
-        return (0..<10).map { index in
-            let item = NSStatusBar.system.statusItem(withLength: 0)
-            item.button?.isEnabled = false
-            // Keep the slot registered: a hidden (isVisible = false) item loses its
-            // position when re-shown on macOS 27, so hide by zero length instead.
-            item.isVisible = true
-            item.autosaveName = "hiddenbar_spacer\(index)" + Self.autosaveSuffix
-            return item
+    private static func makeSpacer(index: Int, prefix: String) -> NSStatusItem {
+        let item = NSStatusBar.system.statusItem(withLength: 0)
+        item.button?.isEnabled = false
+        // Keep the slot registered: a hidden (isVisible = false) item loses its
+        // position when re-shown on macOS 27, so hide by zero length instead.
+        item.isVisible = true
+        item.autosaveName = "\(prefix)\(index)" + Self.autosaveSuffix
+        return item
+    }
+
+    // Burst-creating a fixed 10+10 spacer items at once makes MenuBarAgent drop
+    // scenes (observed live with "No matching scene to invalidate" errors, the
+    // arrow included). Grow each block only to what the widest display needs —
+    // (spacers + separator) × unit must exceed it — capped at the old 10, and
+    // never shrink (extra zero-length items are harmless when deflated).
+    // Pre-27 the blocks stay empty as before.
+    private func ensureSpacerCapacity(unit: CGFloat) {
+        guard #available(macOS 27.0, *), unit > 0 else { return }
+        let widest = NSScreen.screens.map { $0.frame.width }.max() ?? 1728
+        while spacers.count < 10, CGFloat(spacers.count + 1) * unit <= widest {
+            spacers.append(Self.makeSpacer(index: spacers.count, prefix: "hiddenbar_spacer"))
         }
-    }
-
-    private static func makeAlwaysHiddenSpacers() -> [NSStatusItem] {
-        guard #available(macOS 27.0, *) else { return [] }
-        return (0..<10).map { index in
-            let item = NSStatusBar.system.statusItem(withLength: 0)
-            item.button?.isEnabled = false
-            item.isVisible = true
-            item.autosaveName = "hiddenbar_ahspacer\(index)" + Self.autosaveSuffix
-            return item
+        while alwaysHiddenSpacers.count < 10, CGFloat(alwaysHiddenSpacers.count + 1) * unit <= widest {
+            alwaysHiddenSpacers.append(Self.makeSpacer(index: alwaysHiddenSpacers.count, prefix: "hiddenbar_ahspacer"))
         }
     }
 
