@@ -116,19 +116,37 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return completion(.unavailable)
         }
         state = .calibrating
-        withLayout { [weak self] layout in
+        withLayout { [weak self] layout, inventory, _ in
             guard let self = self else { return }
             guard let layout = layout else {
                 self.logUnavailableOnce("the arrow's position cannot be read yet")
                 self.state = .expanded
                 return completion(.unavailable)
             }
+            // Per-icon pre-collapse census: ordinal left-to-right, section
+            // (VISIBLE/HIDDEN/ALWAYSHIDDEN from the layout above), and the
+            // visible flag (everything reads from an unrestricted bar here).
+            let ordered = inventory.sorted { $0.frame.midX < $1.frame.midX }
+            let preLine = ordered.enumerated().map { (i, item) -> String in
+                let id = item.bundleIdentifier ?? "?"
+                let section: String
+                if let bundle = item.bundleIdentifier, let s = layout.sections[bundle] {
+                    section = s == .visible ? "V" : (s == .hidden ? "H" : "A")
+                } else {
+                    section = "?"
+                }
+                return "[\(i)]\(id)@\(Int(item.frame.midX)):\(section):visible:true"
+            }.joined(separator: " ")
+            AppLog.info("NativeVisibility: pre-collapse \(preLine)")
+            let preBundles = Set(inventory.compactMap { $0.bundleIdentifier })
+            let preGeneration = self.generation
             self.activate(allowing: layout.bundles(in: [.visible])) { [weak self] succeeded in
                 guard let self = self else { return }
                 self.state = succeeded ? .collapsed : .expanded
                 if succeeded {
                     self.setSeparatorsVisible(false)
                     self.items?.alwaysHiddenItem?.isVisible = false
+                    self.logPostCollapse(pre: preBundles, generation: preGeneration)
                 }
                 completion(succeeded ? .collapsed : .unavailable)
             }
@@ -168,7 +186,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         guard alwaysHiddenEnabled && alwaysHiddenSeparatorHidden, visibility.isAvailable, inventory.isAuthorized else {
             return releaseAssertion()
         }
-        withLayout { [weak self] layout in
+        withLayout { [weak self] layout, _, _ in
             guard let self = self else { return }
             guard let layout = layout else {
                 return self.releaseAssertion()
@@ -180,9 +198,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // The sections as the user arranged them. Read fresh only from an
     // unrestricted bar; while a restriction is active the cached ones stand in.
     // Superseded by any later expand or activation, like an activation is.
-    private func withLayout(_ body: @escaping (MenuBarLayout?) -> Void) {
+    private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
         if assertion != nil {
-            return body(layout)
+            return body(layout, [], nil)
         }
         guard let arrow = items?.toggleItem,
               let boundary = itemFrame(arrow) else { return body(nil) }
@@ -201,7 +219,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
                                                        excludingBundle: self.ownBundleIdentifier)
             AppLog.info("NativeVisibility: arrow at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
             self.layout = layout
-            body(layout)
+            body(layout, inventory, boundary.midX)
         }
     }
 
@@ -234,6 +252,24 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 self.releaseAssertion()
                 completion(false)
             }
+        }
+    }
+
+    // Fire-and-forget post-collapse census: which items macOS still reports
+    // once the restriction is active. Never blocks the completion; purely
+    // diagnostic. If items hidden by the restriction keep reporting stale
+    // frames, they show up here as present — compare against the eye test:
+    // missing[] that stay visible anyway, or present[] that vanished, tell
+    // which way the staleness goes.
+    private func logPostCollapse(pre preBundles: Set<String>, generation: Int) {
+        inventory.snapshot { [weak self] post in
+            guard let self = self else { return }
+            let tag = generation == self.generation ? "" : " superseded"
+            let present = post.sorted { $0.frame.midX < $1.frame.midX }.enumerated().map { (i, item) in
+                "[\(i)]\(item.bundleIdentifier ?? "?")@\(Int(item.frame.midX)):visible:true"
+            }.joined(separator: " ")
+            let missing = preBundles.subtracting(post.compactMap { $0.bundleIdentifier }).sorted().joined(separator: " ")
+            AppLog.info("NativeVisibility: post-collapse\(tag) present [\(present)] missing [\(missing)]")
         }
     }
 
