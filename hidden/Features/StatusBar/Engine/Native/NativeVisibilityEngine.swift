@@ -179,6 +179,8 @@ final class NativeVisibilityEngine: MenuBarEngine {
         let generation = self.generation
         inventory.snapshot { [weak self] inventory in
             guard let self = self, generation == self.generation else { return }
+            let dump = inventory.sorted { $0.frame.midX < $1.frame.midX }.map { "\($0.bundleIdentifier ?? "?")@\(Int($0.frame.midX))" }.joined(separator: " ")
+            AppLog.info("NativeVisibility: inventory [\(dump)] arrowX=\(Int(boundary.midX))")
             let layout = MenuBarLayoutResolver.resolve(inventory: inventory,
                                                        separatorFrame: boundary,
                                                        alwaysHiddenSeparatorFrame: alwaysHiddenFrame,
