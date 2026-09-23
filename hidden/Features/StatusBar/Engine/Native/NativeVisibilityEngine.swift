@@ -26,8 +26,9 @@ import AppKit
 // Limits, all from what macOS 27 exposes:
 // - Hiding is per app: an app with several icons hides or shows them together
 //   (the most visible section wins).
-// - macOS's own items (clock, Wi-Fi, Control Center...) are always kept visible:
-//   Accessibility cannot tell them apart, so they cannot be mapped to sections.
+// - Kept means allow-listed (own, visible-section, hosts, indices) — anything
+//   else hides given reflow time, Apple bundle extras included. Position only
+//   feeds the allow-list; there is no fail-open.
 // - Sections are read only while nothing is hidden, because hidden items report
 //   stale positions. They are re-read on the next collapse from an unrestricted
 //   bar, so an app launched while collapsed stays hidden until then, the same

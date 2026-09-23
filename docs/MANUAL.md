@@ -48,19 +48,17 @@ the reflow, so:
   prompts you; until granted, hiding reports "unavailable" and the bar is left
   expanded rather than half-hidden. On builds without the native API
   (sandboxed, pre-27) collapsing reports unavailable and the arrow stays put;
-- hiding is **per app bundle**: if an app has several icons, they all hide or show
-  together (the most-visible icon wins), and macOS's own items (clock, Wi-Fi,
-  Bluetooth, battery, Control Center, …) can never be hidden this way — macOS
-  keeps them visible regardless of the restriction. To remove those, use
+- hiding is **per app bundle** for classification: if an app has several icons,
+  they all hide or show together (the most-visible icon wins). What stays is
+  decided by the allow-list (own, visible-section, hosts, indices) — Apple
+  bundle extras hide like normal apps; indexed/host system items (clock,
+  Wi-Fi, Bluetooth, battery, Control Center, …) stay. To remove those, use
   System Settings → Control Center ("Don't show in menu bar");
-- everything left of the arrow hides on collapse, regardless of which app owns
-  it (verified: normal apps, team-prefixed helper ids, hosted icons — position
-  and identity both proved irrelevant). Allow a few seconds after collapsing
-  before judging: the Accessibility snapshot alone takes up to ~10s and macOS
-  reflows after activation, so a screenshot taken instantly proves nothing.
-  Extras invisible to Accessibility stay visible (fail-open: nothing to
-  classify). Apple system hosts (MenuBarAgent, Control Center, SystemUIServer)
-  and Apple's own items are always kept;
+- everything left of the arrow hides on collapse: macOS hides every item not
+  on the allow-list — app bundles, helper ids and hosted icons alike, given
+  reflow time. Allow longer than feels necessary before judging: the
+  Accessibility snapshot alone takes up to ~10s and macOS reflows after
+  activation. Only indexed/host system items stay, unconditionally;
 - sections are read only while the bar is expanded, so an app launched while
   collapsed stays hidden until the next read.
 
