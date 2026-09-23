@@ -40,8 +40,12 @@ final class LegacyLengthEngine: MenuBarEngine {
 
     init(items: MenuBarItemProvider) {
         self.items = items
-        // Spacer blocks grow inside updateCollapsedLengths to exactly what the
-        // attached displays need (see ensureSpacerCapacity).
+        // Fixed 10+10 blocks: the computed small blocks proved too weak to
+        // displace anything on 27.0, while the full block hides (rogue-gating
+        // below keeps the arrow safe). Deinit removes them so rebuilds do not
+        // accumulate leaked invisible items.
+        self.spacers = (0..<10).map { Self.makeSpacer(index: $0, prefix: "hiddenbar_spacer") }
+        self.alwaysHiddenSpacers = (0..<10).map { Self.makeSpacer(index: $0, prefix: "hiddenbar_ahspacer") }
         updateCollapsedLengths()
     }
 
@@ -130,7 +134,6 @@ final class LegacyLengthEngine: MenuBarEngine {
         collapsedLength = bounded
         alwaysHiddenCollapsedLength = alwaysHiddenEnabled ? bounded : 0
         LegacyLengthEngine.spacerCollapseLength = bounded
-        ensureSpacerCapacity(unit: bounded)
     }
 
     private static func makeSpacer(index: Int, prefix: String) -> NSStatusItem {
@@ -143,22 +146,11 @@ final class LegacyLengthEngine: MenuBarEngine {
         return item
     }
 
-    // Burst-creating a fixed 10+10 spacer items at once makes MenuBarAgent drop
-    // scenes (observed live with "No matching scene to invalidate" errors, the
-    // arrow included). Grow each block only to what the widest display needs —
-    // (spacers + separator) × unit must exceed it — capped at the old 10, and
-    // never shrink (extra zero-length items are harmless when deflated).
-    // Pre-27 the blocks stay empty as before.
-    private func ensureSpacerCapacity(unit: CGFloat) {
-        guard #available(macOS 27.0, *), unit > 0 else { return }
-        let widest = NSScreen.screens.map { $0.frame.width }.max() ?? 1728
-        while spacers.count < 10, CGFloat(spacers.count + 1) * unit <= widest {
-            spacers.append(Self.makeSpacer(index: spacers.count, prefix: "hiddenbar_spacer"))
-        }
-        while alwaysHiddenSpacers.count < 10, CGFloat(alwaysHiddenSpacers.count + 1) * unit <= widest {
-            alwaysHiddenSpacers.append(Self.makeSpacer(index: alwaysHiddenSpacers.count, prefix: "hiddenbar_ahspacer"))
-        }
-    }
+    // NOTE: a fixed 10+10 burst is intentional. A computed small block (2+sep)
+    // proved too weak to displace anything on 27.0; the full block hides, and
+    // rogue-gating in setSpacersInflated keeps a misplaced spacer from shoving
+    // the arrow into «. Deinit removes the blocks so rebuilds do not leak.
+    // Pre-27 both blocks stay empty (Legacy uses one wide separator there).
 
     private static let autosaveSuffix: String = {
         if #available(macOS 27.0, *) { return "_v27" }
