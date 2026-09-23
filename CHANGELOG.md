@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.18.7 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Native collapse hides reliably on macOS 27: the allow-list always keeps Apple
+  system host bundles (MenuBarAgent, Control Center, SystemUIServer), so Time
+  Machine and similar Apple extras no longer vanish; the kept system-item
+  window widened 64 → 4096.
+- The arrow flips only on confirmed collapse; presses during native calibration
+  are ignored instead of stacking superseded activations.
+- Legacy no longer eats its own arrow: spacers verified at/after the arrow stay
+  deflated, spacer blocks are removed on engine rebuild instead of leaking
+  invisible items, and the block size is back to the full 10+10 that displaces.
+
+### Changed
+- Hiding diagnostics are readable (`log stream` shows plain text via an
+  `AppLog` helper) and identify the exact code (`diagRev`), the resolved
+  engine, per-collapse sections with coordinates, and Legacy order checks.
+- Branch builds upload the test app as an artifact; `develop` pushes trigger CI.
+
+### Known limitations
+- Legacy length inflation is inert on macOS 27.0 (26A428): inflated items render
+  (a blank gap on wide displays) but displace nothing — use Native on direct
+  builds. Pre-27 behavior is unchanged.
+- Items macOS cannot attribute to an app stay visible: team-prefixed ids
+  (1Password helper), icons hosted in another process (Cotypist, SpamSieve),
+  extras invisible to Accessibility. Apple system items are always kept.
+
 ## v1.18.6 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

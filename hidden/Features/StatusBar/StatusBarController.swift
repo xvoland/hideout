@@ -392,6 +392,10 @@ class StatusBarController: MenuBarItemProvider {
         self.timer = Timer.scheduledTimer(withTimeInterval: Preferences.numberOfSecondForAutoHide, repeats: false) { [weak self] _ in
             guard let self = self, Preferences.isAutoHide else { return }
             if self.isMouseInMenuBar || self.isPreferencesWindowVisible {
+                // Silent by design until now: this re-arm loop is why auto-hide
+                // "stops working" whenever the pointer parks in the menu bar or
+                // Preferences stays open (e.g. while switching engines to test).
+                AppLog.info("StatusBar: auto-collapse deferred (pointerInBar=\(self.isMouseInMenuBar) prefsVisible=\(self.isPreferencesWindowVisible)) — re-arming")
                 self.startTimerToAutoHide()
             } else {
                 self.collapseMenuBar()
