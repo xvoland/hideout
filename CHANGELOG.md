@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.19.0 (unreleased)
+## v1.20.0 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
 [v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
