@@ -37,7 +37,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // so the window is deliberately wide: Apple extras live past index 63 on
     // 27.0 (Time Machine vanished with 0..<64 and still with 0..<256), and
     // numbering differs per Mac.
-    static let systemItemsToKeep = Array(0..<1024)
+    static let systemItemsToKeep = Array(0..<4096)
 
     private weak var items: MenuBarItemProvider?
     private let inventory: MenuBarInventoryProviding
