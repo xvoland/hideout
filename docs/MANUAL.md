@@ -76,12 +76,12 @@ the reflow, so:
 ### Legacy
 
 The original spacer-inflation trick. It works on **every** build and macOS version
-(including sandboxed/App Store and pre-27). On macOS 27.0 (26A428) length
-inflation appears to be ignored by the system outright: inflated items neither
-displace icons nor render, so Legacy neither hides nor breaks the bar there —
-use Native on direct builds. (On 27 betas the width is capped under half the
-**narrowest** attached screen with overflow into `«`; behavior varies by 27
-build.) On macOS 26 and earlier there is no such cap — it covers the widest
+(including sandboxed/App Store and pre-27). On macOS 27 it hides by displacing
+icons into the native `«` overflow, which exists where the bar meets the notch:
+verified working on the internal notch display (14", 27.0 26A428). On wide
+notchless externals there is no overflow target — inflated items render as a
+blank gap but displace nothing, so Legacy is inert there; use Native on direct
+builds. On macOS 26 and earlier there is no such cap — it covers the widest
 screen as before.
 
 ### Switching at runtime

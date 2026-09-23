@@ -194,7 +194,7 @@ class PreferencesViewController: NSViewController {
         } else if resolved == .native {
             enginePreferenceNote.stringValue = "Using native hiding (independent of display width).".localized
         } else {
-            enginePreferenceNote.stringValue = "Using Legacy spacer hiding. On macOS 27.0 length inflation may be ignored by the system (no hiding, arrow stays) — Native is recommended on direct builds.".localized
+            enginePreferenceNote.stringValue = "Using Legacy spacer hiding (notch displays; inert on wide notchless externals). Native is recommended on direct builds.".localized
         }
     }
     

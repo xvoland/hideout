@@ -15,7 +15,9 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
   spacer items so displaced icons go into the native overflow (`«`). Residual:
   always-hidden still inflates as one unit (can leak on very wide displays when
   the regular section is expanded); first launch after upgrade needs a one-time
-  ⌘-drag because items register under `_v27` names.
+  ⌘-drag because items register under `_v27` names. Verified 27.0 (26A428):
+  works on the internal notch display; inert on wide notchless externals (no
+  `«` target — inflation renders a blank gap, nothing displaces).
 
 ## Blocked on external-display hardware
 
