@@ -199,7 +199,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private func activate(allowing bundles: [String], completion: @escaping (Bool) -> Void) {
         generation += 1
         let generation = self.generation
-        let allowed = (ownBundleIdentifier.map { [$0] } ?? []) + bundles
+        // System hosts (MenuBarAgent, Control Center, SystemUIServer) own
+        // Apple's extras — including ones Accessibility never exposes (Time
+        // Machine) — so they are always kept. No third-party item can squat
+        // these Apple-only namespaces.
+        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
+        AppLog.info("NativeVisibility: allowing \(allowed)")
         visibility.activate(allowedSystemItems: Self.systemItemsToKeep,
                             allowedBundleIdentifiers: allowed) { [weak self] result in
             guard let self = self, generation == self.generation else {

@@ -65,6 +65,11 @@ the reflow, so:
   Bluetooth, battery, Control Center, …) can never be hidden this way — macOS
   keeps them visible regardless of the restriction. To remove those, use
   System Settings → Control Center ("Don't show in menu bar");
+- items macOS cannot attribute to an app stay visible (fail-open): helpers
+  reporting a team-prefixed id (1Password), icons hosted inside another
+  process (Cotypist, SpamSieve), or extras invisible to Accessibility. Apple
+  system hosts (MenuBarAgent, Control Center, SystemUIServer) are always kept
+  for the same reason;
 - sections are read only while the bar is expanded, so an app launched while
   collapsed stays hidden until the next read.
 

@@ -23,7 +23,7 @@ enum AppLog {
 // Identifies the exact code behind a log line: MARKETING_VERSION only moves
 // on tags, so this is bumped on every diagnostics-visibility change.
 enum BuildInfo {
-    static let diagnosticsRevision = 7
+    static let diagnosticsRevision = 8
 }
 
 // The single place that picks a hiding mechanism for the running OS.
