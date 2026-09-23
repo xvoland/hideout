@@ -150,26 +150,5 @@ enum Preferences {
         }
     }
 
-    // Which hiding engine the user wants. "auto" lets MenuBarEngineFactory pick
-    // (native on macOS 27 direct build, legacy otherwise). "native" forces the
-    // native visibility engine; "legacy" forces the spacer-length engine. Forcing
-    // a build-incompatible choice falls back to auto at engine construction.
-    enum MenuBarEnginePreference: String {
-        case auto
-        case native
-        case legacy
-    }
 
-    static var menuBarEnginePreference: MenuBarEnginePreference {
-        get {
-            let raw = UserDefaults.standard.string(forKey: UserDefaults.Key.menuBarEnginePreference)
-            return MenuBarEnginePreference(rawValue: raw ?? "") ?? .auto
-        }
-        set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: UserDefaults.Key.menuBarEnginePreference)
-            NotificationCenter.default.post(Notification(name: .enginePreferenceChanged))
-        }
-    }
-
-    
 }

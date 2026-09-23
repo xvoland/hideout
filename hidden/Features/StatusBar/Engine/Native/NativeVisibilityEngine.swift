@@ -39,6 +39,16 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // numbering differs per Mac.
     static let systemItemsToKeep = Array(0..<4096)
 
+    // Whether the running build can offer native hiding at all (direct,
+    // non-sandboxed build linked with HIDDENBAR_NATIVE_VISIBILITY on 27).
+    static var nativeVisibilityAvailable: Bool {
+        #if HIDDENBAR_NATIVE_VISIBILITY
+        return ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= 27
+        #else
+        return false
+        #endif
+    }
+
     private weak var items: MenuBarItemProvider?
     private let inventory: MenuBarInventoryProviding
     private let visibility: NativeVisibilityProviding

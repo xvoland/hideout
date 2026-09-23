@@ -15,6 +15,12 @@ Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
   icons into place once (slot positions reset with the new names). Upstream
   attribution (Dwarves Foundation, dwarvesf/hidden, skuthus) is unchanged.
 
+### Removed
+- Legacy hiding engine and the Hiding engine selector: hiding is always native
+  since v1.19 (direct macOS 27 builds). Pre-27 and sandboxed builds report
+  hiding unavailable instead of silently falling back; upstream
+  dwarvesf/hidden remains the path there.
+
 ## v1.18.8 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

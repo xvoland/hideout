@@ -11,14 +11,9 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
 
 ## macOS 27 (landed, residual)
 
-- **Hide mechanism restored (#360).** Collapse uses a sub-half-width unit plus
-  spacer items so displaced icons go into the native overflow (`«`). Residual:
-  always-hidden still inflates as one unit (can leak on very wide displays when
-  the regular section is expanded); first launch after upgrade needs a one-time
-  ⌘-drag because items register under `_v27` names. Verified 27.0 (26A428):
-  works on the internal notch display; on wide notchless externals the
-  leftmost icons are pushed off-screen and restored on expand (no `«` there),
-  while near-arrow leftovers stay — no code lever forces those.
+- **Hide mechanism restored (#360), native-only since v1.19** (Legacy engine
+  deleted; pre-27 path: upstream). Residual: always-hidden presentation with
+  separators shown; one-time ⌘-drag after upgrade (autosave names).
 
 ## Blocked on external-display hardware
 

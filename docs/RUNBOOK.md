@@ -23,19 +23,12 @@ deprecated `SMLoginItemSetEnabled(false)` call that cleans up legacy installs.
 The repo has no unit-test infrastructure; behavior is verified against the real
 menu bar. Two building blocks make that scriptable:
 
-1. **Truth signal**: the separator's AX size.
-   `osascript -e 'tell application "System Events" to tell process "Hidden Bar" to get size of menu bar item 2 of menu bar 2'`
-   reads ~20pt expanded vs the collapse length. On macOS 26 and earlier that is
-   ~2x the widest screen width; on macOS 27 Golden Gate it is `collapseUnit` =
-   `floor(narrowestScreen/4)` (quarter width: half the *usable* bar minus notch
-   allowance — wider units vanish on notch displays), backed by 10 hidden
-   spacer items (`hideout_spacer0..9`) so the total
-   span covers wide/mixed-width displays (a smaller computed block proved too
-   weak to displace anything on 27.0). Spacers verified at/after the arrow are
-   left deflated so inflation cannot shove the arrow itself into the `«`
-   overflow. Displaced icons land in the system `«` overflow, not off-screen.
-   The always-hidden section has its own spacer block (`hideout_ahspacer0..9`)
-   for the same reason (#4). Item 1 is the arrow.
+1. **Truth signal**: the log. Collapse prints
+   `NativeVisibility: arrow at x=…; visible […], hidden […], always hidden […]`
+   followed by `VisibilityRestrictionAssertion session activated`, then
+   `StatusBar: collapse completed (.collapsed)` and the arrow flips to `>`.
+   Expand prints `expand requested` and drops the assertion. Any deviation
+   (missing activation, `.unavailable`, arrow/model mismatch) is the bug.
 2. **Real clicks, not AXPress**: `AXPress` on the arrow is a no-op because the
    action handler reads `NSApp.currentEvent` (nil under assistive synthesis;
    known accessibility defect). Post real `CGEvent` mouse clicks at the arrow's
