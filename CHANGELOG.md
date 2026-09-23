@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.18.8 (2026-09-23)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+First full (non-test) Golden Gate release.
+
+### Changed
+- Verified Legacy behavior documented honestly (notch displays vs wide
+  notchless externals) in the engine note, the manual and the backlog.
+- Release process: `vX.Y.Z-goldengate-test` tags keep publishing as
+  prereleases; clean `vX.Y.Z` tags now publish as full releases.
+
 ## v1.18.7 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

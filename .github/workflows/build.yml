@@ -93,4 +93,6 @@ jobs:
             Hideout.app.zip
             Hideout.dmg
             Hideout-source.zip
-          prerelease: true
+          # Test tags (vX.Y.Z-goldengate-test) publish as prereleases;
+          # clean vX.Y.Z tags publish as full releases.
+          prerelease: ${{ contains(github.ref, 'goldengate-test') }}
