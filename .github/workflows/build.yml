@@ -29,14 +29,30 @@ jobs:
 
       - name: Package app
         run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            SUFFIX="${GITHUB_REF_NAME}"
+          else
+            SUFFIX="dev-${GITHUB_SHA::7}"
+          fi
+          APP_ZIP="Hideout.app.zip"
+          APP_ZIP_VERSIONED="Hideout.app_${SUFFIX}.zip"
+          DMG="Hideout.dmg"
+          DMG_VERSIONED="Hideout_${SUFFIX}.dmg"
           ditto -c -k --sequesterRsrc --keepParent \
             "build/Build/Products/Release-Direct/Hideout.app" \
-            "Hideout.app.zip"
+            "$APP_ZIP"
+          cp "$APP_ZIP" "$APP_ZIP_VERSIONED"
+          {
+            echo "APP_ZIP=$APP_ZIP"
+            echo "APP_ZIP_VERSIONED=$APP_ZIP_VERSIONED"
+            echo "DMG=$DMG"
+            echo "DMG_VERSIONED=$DMG_VERSIONED"
+          } >> "$GITHUB_ENV"
 
       - name: Verify app.zip
         run: |
-          ls -la Hideout.app.zip
-          file Hideout.app.zip
+          ls -la "$APP_ZIP" "$APP_ZIP_VERSIONED"
+          file "$APP_ZIP_VERSIONED"
 
       - name: Create DMG
         run: |
@@ -54,14 +70,15 @@ jobs:
             -srcfolder "dmg" \
             -ov \
             -format UDZO \
-            "Hideout.dmg"
+            "$DMG"
+          cp "$DMG" "$DMG_VERSIONED"
 
           rm -rf dmg
 
       - name: Verify dmg
         run: |
-          ls -la Hideout.dmg
-          file Hideout.dmg
+          ls -la "$DMG" "$DMG_VERSIONED"
+          file "$DMG_VERSIONED"
 
       - name: Create source archive
         run: |
@@ -81,8 +98,10 @@ jobs:
         with:
           name: Hideout-direct-${{ github.sha }}
           path: |
-            Hideout.app.zip
-            Hideout.dmg
+            ${{ env.APP_ZIP }}
+            ${{ env.APP_ZIP_VERSIONED }}
+            ${{ env.DMG }}
+            ${{ env.DMG_VERSIONED }}
           retention-days: 14
 
       - name: Publish release
@@ -90,8 +109,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            Hideout.app.zip
-            Hideout.dmg
+            ${{ env.APP_ZIP }}
+            ${{ env.APP_ZIP_VERSIONED }}
+            ${{ env.DMG }}
+            ${{ env.DMG_VERSIONED }}
             Hideout-source.zip
           # Test tags (vX.Y.Z-goldengate-test) publish as prereleases;
           # clean vX.Y.Z tags publish as full releases.
