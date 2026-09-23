@@ -243,6 +243,14 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     func expandCollapseIfNeeded() {
+        // While the native engine calibrates (async Accessibility read plus
+        // activation), presses are ignored: the bar is neither collapsed nor
+        // expanded, and treating the press as a new collapse would pile
+        // superseded activations behind the in-flight one.
+        if menuBarEngine.state == .calibrating {
+            AppLog.info("StatusBar: press ignored — engine calibrating")
+            return
+        }
         if isToggle {return}
         isToggle = true
 
@@ -308,20 +316,23 @@ class StatusBarController: MenuBarItemProvider {
         guard menuBarEngine.isArrangementValid && !self.isCollapsed else {
             if !menuBarEngine.isArrangementValid {
                 AppLog.info("StatusBar: collapse skipped — arrow is not on the visible side of the separator; ⌘-drag it past the separator")
+            } else {
+                AppLog.info("StatusBar: collapse ignored — already collapsed (engine state=\(menuBarEngine.state))")
             }
             Preferences.lastCollapsedState = false
             autoCollapseIfNeeded()
             return
         }
-
-        if let button = btnExpandCollapse.button {
-            button.image = Assets.expandImage
-        }
+        AppLog.info("StatusBar: collapse requested")
+        // The arrow flips only in didCollapseMenuBar once the engine confirms.
+        // Flipping it here would show collapsed while nothing is hidden yet:
+        // the native engine calibrates asynchronously (Accessibility snapshot
+        // alone takes up to ~10s), and every screenshot taken in that window
+        // "proved" hiding was broken when it had not even started.
         if Preferences.useFullStatusBarOnExpandEnabled {
             NSApp.setActivationPolicy(.accessory)
             NSApp.deactivate()
         }
-        Preferences.lastCollapsedState = true
         menuBarEngine.collapse { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -334,6 +345,7 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func expandMenubar(isInitialRestore: Bool = false) {
+        AppLog.info("StatusBar: expand requested (isCollapsed=\(self.isCollapsed))")
         guard self.isCollapsed else {return}
         if let button = btnExpandCollapse.button {
             button.image = Assets.collapseImage
@@ -350,6 +362,7 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func didFailToCollapseMenuBar() {
+        AppLog.info("StatusBar: collapse failed (.unavailable) — arrow reverted to <")
         if let button = btnExpandCollapse.button {
             button.image = Assets.collapseImage
         }
@@ -360,9 +373,11 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func didCollapseMenuBar() {
+        AppLog.info("StatusBar: collapse completed (.collapsed)")
         if let button = btnExpandCollapse.button {
             button.image = Assets.expandImage
         }
+        Preferences.lastCollapsedState = true
     }
 
     private func autoCollapseIfNeeded() {
