@@ -27,8 +27,9 @@ menu bar. Two building blocks make that scriptable:
    `osascript -e 'tell application "System Events" to tell process "Hidden Bar" to get size of menu bar item 2 of menu bar 2'`
    reads ~20pt expanded vs the collapse length. On macOS 26 and earlier that is
    ~2x the widest screen width; on macOS 27 Golden Gate it is `collapseUnit` =
-   `floor(narrowestScreen/2 - 64)` (the half-width cliff macOS 27 drops items
-   at), backed by 10 hidden spacer items (`hideout_spacer0..9`) so the total
+   `floor(narrowestScreen/4)` (quarter width: half the *usable* bar minus notch
+   allowance — wider units vanish on notch displays), backed by 10 hidden
+   spacer items (`hideout_spacer0..9`) so the total
    span covers wide/mixed-width displays (a smaller computed block proved too
    weak to displace anything on 27.0). Spacers verified at/after the arrow are
    left deflated so inflation cannot shove the arrow itself into the `«`

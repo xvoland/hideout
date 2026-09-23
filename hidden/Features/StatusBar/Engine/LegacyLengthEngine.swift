@@ -117,11 +117,14 @@ final class LegacyLengthEngine: MenuBarEngine {
     private func updateCollapsedLengths() {
         let bounded: CGFloat
         if #available(macOS 27.0, *) {
-            // Sized under the NARROWEST attached screen: the only half-width cliff
-            // every bar's copy of the item can clear. A wider unit would be dropped
-            // on the narrow display, leaving icons unhidden there.
+            // Sized under a QUARTER of the narrowest attached screen. macOS 27
+            // drops items at half the *usable* bar width, and the notch eats a
+            // big chunk of that on internal displays: a 692 unit renders on a
+            // notchless wide bar but vanishes on the 14" built-in bar. Quarter
+            // width clears any realistic notch with margin, and 11 such units
+            // still span every attached display.
             let narrowest = NSScreen.screens.map { $0.frame.width }.min() ?? 1728
-            bounded = max(200, (narrowest / 2 - 64).rounded(.down))
+            bounded = max(200, (narrowest / 4).rounded(.down))
         } else {
             // The menubar replicates across every attached display, so the collapse
             // length must cover the WIDEST screen, not NSScreen.main (the focused
