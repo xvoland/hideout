@@ -99,7 +99,7 @@ final class UpdateChecker: NSObject {
     private func prompt(tag: String, current: String, url: URL) {
         let alert = NSAlert()
         alert.messageText = "A new version of Hideout is available".localized
-        alert.informativeText = "\(tag) is out — you have \(current).".localized
+        alert.informativeText = String(format: "Hideout %@ is now available — you are running %@.".localized, tag, current)
         alert.addButton(withTitle: "Download".localized)
         alert.addButton(withTitle: "Later".localized)
         if alert.runModal() == .alertFirstButtonReturn {
@@ -110,7 +110,7 @@ final class UpdateChecker: NSObject {
     private func confirmUpToDate(version: String) {
         let alert = NSAlert()
         alert.messageText = "Hideout is up to date".localized
-        alert.informativeText = "Version \(version) is the latest stable release.".localized
+        alert.informativeText = String(format: "Version %@ is the latest stable release.".localized, version)
         alert.addButton(withTitle: "OK".localized)
         alert.runModal()
     }
