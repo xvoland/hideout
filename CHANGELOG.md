@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.19.0 (unreleased)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Changed
+- **Rebrand to Hideout identity**: bundle id `com.dwarvesv.minimalbar` →
+  `net.dotoca.hideout`, status-item slots `hiddenbar_*` → `hideout_*`.
+  Settings auto-migrate on first launch (the old domain is copied, never
+  modified — downgrading keeps the old settings). Two things cannot migrate
+  and need one manual step each: re-grant Accessibility in System Settings
+  (macOS ties it to the bundle id and re-prompts automatically), and ⌘-drag
+  icons into place once (slot positions reset with the new names). Upstream
+  attribution (Dwarves Foundation, dwarvesf/hidden, skuthus) is unchanged.
+
 ## v1.18.8 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

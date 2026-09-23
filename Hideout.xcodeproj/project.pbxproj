@@ -691,7 +691,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -717,7 +717,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -742,7 +742,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "hidden/Hidden-Bridging-Header.h";
@@ -768,7 +768,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.18.5;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dwarvesv.minimalbar;
+				PRODUCT_BUNDLE_IDENTIFIER = net.dotoca.hideout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "hidden/Hidden-Bridging-Header.h";

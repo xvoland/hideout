@@ -9,7 +9,28 @@
 import Foundation
 
 enum Preferences {
-    
+
+    // One-time migration after the Hideout rebrand (bundle id
+    // com.dwarvesv.minimalbar → net.dotoca.hideout): copy every stored key so
+    // settings survive the identity change. The old domain is never modified,
+    // so downgrading keeps the old settings. TCC Accessibility and the menu-bar
+    // arrangement cannot migrate (system-owned): macOS re-prompts, icons need
+    // a one-time ⌘-drag into place.
+    static func migrateFromLegacyDomainIfNeeded() {
+        let doneKey = "hideoutRebrandMigratedV1"
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: doneKey) else { return }
+        if let legacy = UserDefaults(suiteName: "com.dwarvesv.minimalbar") {
+            let source = legacy.dictionaryRepresentation()
+            if !source.isEmpty {
+                for (key, value) in source where key != doneKey {
+                    defaults.set(value, forKey: key)
+                }
+            }
+        }
+        defaults.set(true, forKey: doneKey)
+    }
+
     static var globalKey: GlobalKeybindPreferences? {
         get {
             guard let data = UserDefaults.standard.value(forKey: UserDefaults.Key.globalKey) as? Data else { return nil }

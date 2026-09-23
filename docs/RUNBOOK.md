@@ -28,12 +28,12 @@ menu bar. Two building blocks make that scriptable:
    reads ~20pt expanded vs the collapse length. On macOS 26 and earlier that is
    ~2x the widest screen width; on macOS 27 Golden Gate it is `collapseUnit` =
    `floor(narrowestScreen/2 - 64)` (the half-width cliff macOS 27 drops items
-   at), backed by 10 hidden spacer items (`hiddenbar_spacer0..9`) so the total
+   at), backed by 10 hidden spacer items (`hideout_spacer0..9`) so the total
    span covers wide/mixed-width displays (a smaller computed block proved too
    weak to displace anything on 27.0). Spacers verified at/after the arrow are
    left deflated so inflation cannot shove the arrow itself into the `«`
    overflow. Displaced icons land in the system `«` overflow, not off-screen.
-   The always-hidden section has its own spacer block (`hiddenbar_ahspacer0..9`)
+   The always-hidden section has its own spacer block (`hideout_ahspacer0..9`)
    for the same reason (#4). Item 1 is the arrow.
 2. **Real clicks, not AXPress**: `AXPress` on the arrow is a no-op because the
    action handler reads `NSApp.currentEvent` (nil under assistive synthesis;
@@ -55,7 +55,7 @@ Standard checks before any release:
 - localization tables stay parseable: `plutil -lint hidden/*.lproj/*.strings`.
 
 When testing on a machine that runs Hidden Bar daily: export the prefs domain
-first (`defaults export com.dwarvesv.minimalbar backup.plist`), quit the
+first (`defaults export net.dotoca.hideout backup.plist`), quit the
 installed app, test the dev build, then re-import and relaunch.
 
 ## Release

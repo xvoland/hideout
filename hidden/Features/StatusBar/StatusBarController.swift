@@ -20,8 +20,8 @@ class StatusBarController: MenuBarItemProvider {
     // Created and named in declaration order on purpose: a status item registers
     // with the menu bar under its autosave name, and on macOS 27 every new name
     // lands left of the previous one, so the bar reads separator, spacers, arrow.
-    let btnExpandCollapse = StatusBarController.makeItem("hiddenbar_expandcollapse", length: NSStatusItem.variableLength)
-    let btnSeparate = StatusBarController.makeItem("hiddenbar_separate", length: 1)
+    let btnExpandCollapse = StatusBarController.makeItem("hideout_expandcollapse", length: NSStatusItem.variableLength)
+    let btnSeparate = StatusBarController.makeItem("hideout_separate", length: 1)
     var btnAlwaysHidden:NSStatusItem? = nil
 
     //MARK: - MenuBarItemProvider conformance
@@ -78,6 +78,8 @@ class StatusBarController: MenuBarItemProvider {
 
     //MARK: - Methods
     init() {
+        // Identity migration first: everything below reads Preferences.
+        Preferences.migrateFromLegacyDomainIfNeeded()
         menuBarEngine = MenuBarEngineFactory.make(items: self)
         setupUI()
         setupAlwayHideStatusBar()
@@ -462,7 +464,7 @@ extension StatusBarController {
                 button.image = self.imgIconLine
                 button.appearsDisabled = true
             }
-            self.btnAlwaysHidden?.autosaveName = "hiddenbar_terminate" + StatusBarController.autosaveSuffix
+            self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             self.btnAlwaysHidden?.isVisible = true
         } else {
             if let existing = self.btnAlwaysHidden {

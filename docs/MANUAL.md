@@ -109,16 +109,16 @@ All via `defaults`; quit and relaunch the app after changing them.
 
 ```sh
 # expand by hovering the menu bar for ~0.5s (off by default)
-defaults write com.dwarvesv.minimalbar hoverToExpand -bool true
+defaults write net.dotoca.hideout hoverToExpand -bool true
 
 # auto-collapse delay in seconds (the UI offers a fixed list; any value works)
-defaults write com.dwarvesv.minimalbar numberOfSecondForAutoHide -float 5
+defaults write net.dotoca.hideout numberOfSecondForAutoHide -float 5
 
 # force the app language regardless of system order (issue #287)
-defaults write com.dwarvesv.minimalbar AppleLanguages '(en)'
+defaults write net.dotoca.hideout AppleLanguages '(en)'
 ```
 
-To undo any of them: `defaults delete com.dwarvesv.minimalbar <key>`.
+To undo any of them: `defaults delete net.dotoca.hideout <key>`.
 
 ## Troubleshooting
 

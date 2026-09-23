@@ -44,8 +44,8 @@ final class LegacyLengthEngine: MenuBarEngine {
         // displace anything on 27.0, while the full block hides (rogue-gating
         // below keeps the arrow safe). Deinit removes them so rebuilds do not
         // accumulate leaked invisible items.
-        self.spacers = (0..<10).map { Self.makeSpacer(index: $0, prefix: "hiddenbar_spacer") }
-        self.alwaysHiddenSpacers = (0..<10).map { Self.makeSpacer(index: $0, prefix: "hiddenbar_ahspacer") }
+        self.spacers = (0..<10).map { Self.makeSpacer(index: $0, prefix: "hideout_spacer") }
+        self.alwaysHiddenSpacers = (0..<10).map { Self.makeSpacer(index: $0, prefix: "hideout_ahspacer") }
         updateCollapsedLengths()
     }
 
@@ -175,7 +175,7 @@ final class LegacyLengthEngine: MenuBarEngine {
         for spacer in spacers {
             if let spacerX = spacer.button?.getOrigin?.x, let boundary = boundary,
                !isOnHiddenSide(x: spacerX, boundary: boundary) {
-                AppLog.info("LegacyLength: skipping rogue spacer at x=\(Int(spacerX)) (arrow at \(Int(boundary))) — inflating it would shove the arrow into «. Reset slots with `defaults delete com.dwarvesv.minimalbar` (reconfigure prefs after) and restart.")
+                AppLog.info("LegacyLength: skipping rogue spacer at x=\(Int(spacerX)) (arrow at \(Int(boundary))) — inflating it would shove the arrow into «. Reset slots with `defaults delete net.dotoca.hideout` (reconfigure prefs after) and restart.")
                 spacer.length = 0
                 continue
             }
