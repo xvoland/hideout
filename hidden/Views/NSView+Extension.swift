@@ -1,6 +1,6 @@
 //
 //  NSView+Extension.swift
-//  vanillaClone
+//  NSView+Extension.swift
 //
 //  Created by Thanh Nguyen on 1/29/19.
 //  Changed by Vitalii Tereshchuk / xVoLAnD, 2026

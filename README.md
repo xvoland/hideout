@@ -74,17 +74,17 @@ xattr -dr com.apple.quarantine /Applications/Hideout.app
 
 - [Download latest version](https://github.com/xvoland/hideout/releases/latest)
 - Open and drag the app to the Applications folder.
-- Launch Hidden and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
+- Launch Hideout and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
 
 ## ⚙️ Hiding (macOS 27)
 
-macOS 27 Golden Gate rebuilt the menu bar as a single window. Hiding is always native since v1.19: Hidden Bar asks macOS's private `MenuBarClientCore` (assessment mode) to keep only an allow-list visible. macOS does the hiding/reflow itself — independent of display width, notch, or front app.
+macOS 27 Golden Gate rebuilt the menu bar as a single window. Hiding is always native since v1.19: Hideout asks macOS's private `MenuBarClientCore` (assessment mode) to keep only an allow-list visible. macOS does the hiding/reflow itself — independent of display width, notch, or front app.
 
 Requirements: the **direct (non-sandboxed) build** on **macOS 27** (this GitHub/ad-hoc release, compiled with `HIDDENBAR_NATIVE_VISIBILITY=1`), plus **Accessibility** permission (prompted on first collapse). Where unavailable (sandboxed builds, pre-27), collapsing reports unavailable and the arrow stays put.
 
 ## 🤔 Why native hiding?
 
-macOS historically had **no public API** to hide other apps' menu-bar icons. Hidden Bar used a geometry hack: inflate a separator `NSStatusItem` so icons to its left slide out of view.
+macOS historically had **no public API** to hide other apps' menu-bar icons. Hideout used a geometry hack: inflate a separator `NSStatusItem` so icons to its left slide out of view.
 
 | macOS era | What changed | Consequence |
 |-----------|--------------|-------------|

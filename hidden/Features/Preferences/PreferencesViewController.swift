@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  vanillaClone
+//  PreferencesViewController.swift
 //
 //  Created by Thanh Nguyen on 1/24/19.
 //  Changed by Vitalii Tereshchuk, 2026
