@@ -72,6 +72,7 @@ class PreferencesViewController: NSViewController {
         loadHotkey()
         createTutorialView()
         setupEngineNoteUI()
+        setupCheckUpdatesUI()
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: .prefsChanged, object: nil)
         
         // Lower imageViewTop slightly to avoid overlap with segment buttons
@@ -143,6 +144,27 @@ class PreferencesViewController: NSViewController {
         } else {
             enginePreferenceNote.stringValue = "Hiding unavailable: needs the direct (non-sandboxed) build on macOS 27.".localized
         }
+    }
+
+    // Manual update check. It used to live in the status menu, but the extra
+    // row pushed the menu into scrolling (scroll arrow) on some setups, so the
+    // trigger moved here. Auto-check at launch still runs via AppDelegate.
+    private lazy var checkUpdatesButton: NSButton = {
+        let button = NSButton(title: "Check for Updates...".localized,
+                              target: UpdateChecker.shared,
+                              action: #selector(UpdateChecker.checkNow))
+        button.bezelStyle = .rounded
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    private func setupCheckUpdatesUI() {
+        guard let container = generalStackView else { return }
+        let row = NSStackView()
+        row.orientation = .horizontal
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(checkUpdatesButton)
+        container.addView(row, in: .bottom)
     }
     
     // When the set shortcut button is pressed start listening for the new shortcut

@@ -394,10 +394,6 @@ class StatusBarController: MenuBarItemProvider {
         NotificationCenter.default.addObserver(self, selector: #selector(updateAutoHide), name: .prefsChanged, object: nil)
         menu.addItem(toggleAutoHideItem)
 
-        let updateItem = NSMenuItem(title: "Check for Updates...".localized, action: #selector(UpdateChecker.checkNow), keyEquivalent: "u")
-        updateItem.target = UpdateChecker.shared
-        menu.addItem(updateItem)
-
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit".localized, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
