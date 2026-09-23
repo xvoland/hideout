@@ -65,6 +65,13 @@ final class LegacyLengthEngine: MenuBarEngine {
 
     func collapse(completion: @escaping (CollapseResult) -> Void) {
         AppLog.info("LegacyLength: collapse — separator=\(collapsedLength), spacers=\(spacers.count)×\(collapsedLength), alwaysHidden=\(alwaysHiddenCollapsedLength), screens=\(NSScreen.screens.map { Int($0.frame.width) })")
+        // Order check: the spacer block must sit left of the arrow (LTR), else
+        // inflation shoves the arrow itself into the « overflow and it vanishes.
+        if let sepX = items?.separatorItem.button?.getOrigin?.x,
+           let arrowX = items?.toggleItem.button?.getOrigin?.x {
+            let spacerXs = spacers.compactMap { $0.button?.getOrigin?.x }.map { Int($0) }.sorted()
+            AppLog.info("LegacyLength: order sepX=\(Int(sepX)) spacers=\(spacerXs) arrowX=\(Int(arrowX))")
+        }
         items?.separatorItem.length = collapsedLength
         setSpacersInflated(true)
         items?.alwaysHiddenItem?.length = alwaysHiddenCollapsedLength
