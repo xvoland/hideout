@@ -139,14 +139,14 @@ final class NativeVisibilityEngine: MenuBarEngine {
             }.joined(separator: " ")
             AppLog.info("NativeVisibility: pre-collapse \(preLine)")
             let preBundles = Set(inventory.compactMap { $0.bundleIdentifier })
-            let preGeneration = self.generation
+            let preCounts = Dictionary(grouping: inventory.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
             self.activate(allowing: layout.bundles(in: [.visible])) { [weak self] succeeded in
                 guard let self = self else { return }
                 self.state = succeeded ? .collapsed : .expanded
                 if succeeded {
                     self.setSeparatorsVisible(false)
                     self.items?.alwaysHiddenItem?.isVisible = false
-                    self.logPostCollapse(pre: preBundles, generation: preGeneration)
+                    self.logPostCollapse(pre: preBundles, preCounts: preCounts, generation: self.generation)
                 }
                 completion(succeeded ? .collapsed : .unavailable)
             }
@@ -257,19 +257,32 @@ final class NativeVisibilityEngine: MenuBarEngine {
 
     // Fire-and-forget post-collapse census: which items macOS still reports
     // once the restriction is active. Never blocks the completion; purely
-    // diagnostic. If items hidden by the restriction keep reporting stale
-    // frames, they show up here as present — compare against the eye test:
-    // missing[] that stay visible anyway, or present[] that vanished, tell
-    // which way the staleness goes.
-    private func logPostCollapse(pre preBundles: Set<String>, generation: Int) {
+    // diagnostic. Two samples: immediate (mid-transition tree) and +15s
+    // (settled). Counts per bundle catch partial vanishes (e.g. MenuBarAgent
+    // 7→5) that bundle-set subtraction misses.
+    private func logPostCollapse(pre preBundles: Set<String>, preCounts: [String: Int], generation: Int) {
+        snapshotPostCollapse(pre: preBundles, preCounts: preCounts, generation: generation, tag: "")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak self] in
+            self?.snapshotPostCollapse(pre: preBundles, preCounts: preCounts, generation: generation, tag: "+15s")
+        }
+    }
+
+    private func snapshotPostCollapse(pre preBundles: Set<String>, preCounts: [String: Int], generation: Int, tag: String) {
         inventory.snapshot { [weak self] post in
             guard let self = self else { return }
-            let tag = generation == self.generation ? "" : " superseded"
-            let present = post.sorted { $0.frame.midX < $1.frame.midX }.enumerated().map { (i, item) in
+            let stale = generation == self.generation ? "" : " superseded"
+            let ordered = post.sorted { $0.frame.midX < $1.frame.midX }
+            let present = ordered.enumerated().map { (i, item) in
                 "[\(i)]\(item.bundleIdentifier ?? "?")@\(Int(item.frame.midX)):visible:true"
             }.joined(separator: " ")
-            let missing = preBundles.subtracting(post.compactMap { $0.bundleIdentifier }).sorted().joined(separator: " ")
-            AppLog.info("NativeVisibility: post-collapse\(tag) present [\(present)] missing [\(missing)]")
+            let postBundles = Set(post.compactMap { $0.bundleIdentifier })
+            let missing = preBundles.subtracting(postBundles).sorted().joined(separator: " ")
+            let postCounts = Dictionary(grouping: post.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
+            let reduced = preCounts.compactMap { (bundle, before) -> String? in
+                guard let after = postCounts[bundle], after < before else { return nil }
+                return "\(bundle):\(before)→\(after)"
+            }.sorted().joined(separator: " ")
+            AppLog.info("NativeVisibility: post-collapse\(tag)\(stale) present [\(present)] missing [\(missing)] reduced [\(reduced)]")
         }
     }
 
