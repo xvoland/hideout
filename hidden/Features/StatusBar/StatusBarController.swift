@@ -239,7 +239,11 @@ class StatusBarController: MenuBarItemProvider {
         if let event = NSApp.currentEvent {
 
             let eventHasOption = event.modifierFlags.contains(NSEvent.ModifierFlags.option)
+            // Live hold-state first: it covers deliberate presses held longer
+            // than the grace window (aiming at a thin separator easily exceeds
+            // 0.75s), which the press-timestamp latch alone would miss.
             let latchHasOption: Bool = {
+                if optionFlagHeld { return true }
                 if let last = lastOptionActive, Date().timeIntervalSince(last) < Self.optionLatchGrace {
                     return true
                 }

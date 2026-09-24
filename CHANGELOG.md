@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.21.3 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Option-click now counts a currently-held Option key, not just a press
+  within the grace window. The v1.21.2 diagnostics proved keypresses reach the
+  process while clicks kept reporting `option=false` — the gap was deliberate
+  presses held longer than 0.75s (easy while aiming at a thin separator),
+  which the press-timestamp latch alone missed. The live hold-state bool is
+  checked first (diagnostics `diagRev=30`).
+
 ## v1.21.2 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
