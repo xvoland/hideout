@@ -540,7 +540,12 @@ extension StatusBarController {
                 }
                 self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             }
-            self.btnAlwaysHidden?.isVisible = true
+            // Marker visibility follows arrange mode (the engine owns length
+            // from here on via updateAlwaysHiddenSection below); sync both now
+            // so enabling while collapsed can't leave a visible marker behind.
+            let showAHMarker = !Preferences.areSeparatorsHidden && !self.isCollapsed
+            self.btnAlwaysHidden?.isVisible = showAHMarker
+            self.btnAlwaysHidden?.length = showAHMarker ? 20 : 0
             // The zone only holds while expanded when separators are hidden;
             // without this one-time enforcement the feature silently does
             // nothing for anyone who never Option-clicked. Later explicit

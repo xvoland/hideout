@@ -25,7 +25,7 @@ Everything Hidden Bar can do, including the parts with no UI.
 | Show preferences on launch | Open this window at app start |
 | Auto collapse | Re-hide automatically after the chosen delay |
 | Global shortcut | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18) |
-| Enable always hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow |
+| Enable always hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow. Its `|` marker stays hidden in day-to-day use and appears only while arranging (same trigger) |
 | Use full menu bar on expanding | App becomes briefly "regular" while expanded (helps on tight menubars) |
 
 

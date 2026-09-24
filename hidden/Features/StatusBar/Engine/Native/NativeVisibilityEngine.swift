@@ -234,9 +234,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
     func expand() {
         stopNewcomerWatch()
         setSeparatorsVisible(true)
-        items?.alwaysHiddenItem?.isVisible = true
-        // The separator now has full length: capture its frame for the next
-        // collapse so the always-hidden zone is read from a real position.
+        // In arrange mode the separator has full length: capture its frame for
+        // the next collapse so the always-hidden zone is read from a real
+        // position. In normal mode it stays hidden (see setSeparatorsVisible).
         if alwaysHiddenEnabled,
            let ah = items?.alwaysHiddenItem,
            let frame = itemFrame(ah), frame.width > 0 {
@@ -382,7 +382,10 @@ final class NativeVisibilityEngine: MenuBarEngine {
             let boundary = self.cachedSeparatorFrame ?? arrowFrame
             // Refresh the cache only from a real-length frame; never from the
             // collapsed zero-length one, which would corrupt the always-hidden zone.
-            let liveAHFrame: CGRect? = self.alwaysHiddenEnabled ? self.items?.alwaysHiddenItem.flatMap(self.itemFrame) : nil
+            // A zero-width live frame (marker hidden) must not classify: fall
+            // back to the cache, else an empty zone.
+            let liveAHRaw: CGRect? = self.alwaysHiddenEnabled ? self.items?.alwaysHiddenItem.flatMap(self.itemFrame) : nil
+            let liveAHFrame: CGRect? = (liveAHRaw?.width ?? 0) > 0 ? liveAHRaw : nil
             if self.alwaysHiddenEnabled,
                let ah = self.items?.alwaysHiddenItem,
                ah.length > 0,
@@ -615,10 +618,11 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
     }
 
-    // Both separators show while expanded so they can be ⌘-dragged; while
-    // collapsed they hide (the regular one via isVisible, the always-hidden one
-    // via zero width — isVisible = false would make macOS forget where the user
-    // placed it, and its position defines the always-hidden zone).
+    // The regular separator shows while expanded so it can be ⌘-dragged; the
+    // always-hidden one only in arrange mode (see below). While collapsed they
+    // hide (the regular one via isVisible, the always-hidden one via zero
+    // width — isVisible = false would make macOS forget where the user placed
+    // it, and its position defines the always-hidden zone).
     private func setSeparatorsVisible(_ visible: Bool) {
         // Stamp only on an actual flip: the parked-while-hidden slot differs
         // from the shown one, so frames read within the settle window after a
@@ -627,7 +631,16 @@ final class NativeVisibilityEngine: MenuBarEngine {
             lastBarDisturbance = Date()
         }
         items?.separatorItem.isVisible = visible
-        items?.alwaysHiddenItem?.length = visible && alwaysHiddenEnabled ? expandedLength : 0
+        // The always-hidden marker shows only in arrange mode (separators
+        // shown) — day-to-day bars stay clean, including while expanded.
+        // Length and visibility move together; the slot and the cached frame
+        // survive either way (collapse cycles prove it).
+        let showAHMarker = visible && alwaysHiddenEnabled && !alwaysHiddenSeparatorHidden
+        if let ahVisible = items?.alwaysHiddenItem?.isVisible, ahVisible != showAHMarker {
+            lastBarDisturbance = Date()
+        }
+        items?.alwaysHiddenItem?.length = showAHMarker ? expandedLength : 0
+        items?.alwaysHiddenItem?.isVisible = showAHMarker
     }
 
     // Any arrangement works: whatever sits left of the separator is the hidden section.

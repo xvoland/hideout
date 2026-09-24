@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.21.4 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Changed
+- The always-hidden zone's `|` marker now stays hidden in day-to-day use
+  (including while expanded) and appears only in arrange mode (Option-click
+  or Preferences → Show All Icons for Arranging). Length and visibility move
+  together so the slot and the cached frame survive; the zone census ignores
+  a zero-width live frame and falls back to the cache (diagnostics `diagRev=31`).
+
 ## v1.21.3 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
