@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.20.15 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Move verification no longer fires on restriction-state reflow. The bar
+  shifts our thin separator between two adjacent slots (~32px apart) depending
+  on whether a restriction is held, so every transition looked like a drag and
+  forced a full re-read with a visible flash. The threshold is now 64px —
+  past any reflow jitter, still far below intentional drags (diagnostics
+  `diagRev=24`).
+
 ## v1.20.14 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

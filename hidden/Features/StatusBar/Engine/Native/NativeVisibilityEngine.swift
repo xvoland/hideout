@@ -295,13 +295,21 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // transition "detects" a move and re-reads forever (feedback loop).
     private static let settleInterval: TimeInterval = 1.5
     private var lastBarDisturbance: Date?
+    // The bar reflows our thin separator between two adjacent slots depending
+    // on restriction state (observed: settled 1028 released, 1060 held — a
+    // systematic ~32px flip, not a drag). Trigger only past a threshold no
+    // reflow can span: intentional drags move hundreds of px, and anything
+    // smaller self-corrects on the next separators-shown cycle (which always
+    // re-reads fresh). An unreadable live frame means "can't tell", never
+    // "moved".
+    private static let moveThreshold: CGFloat = 64
     // True only on positive evidence of movement (both frames readable and
     // apart): an unreadable live frame means "can't tell", never "moved".
     private func separatorsMovedSinceFreeze() -> Bool {
         if let last = lastBarDisturbance, Date().timeIntervalSince(last) < Self.settleInterval {
             return false
         }
-        let tolerance: CGFloat = 8
+        let tolerance: CGFloat = Self.moveThreshold
         if let stored = layoutSeparatorFrame,
            let sep = items?.separatorItem,
            let live = itemFrame(sep), live.width > 0,
