@@ -99,8 +99,10 @@ class StatusBarController: MenuBarItemProvider {
         setupAlwayHideStatusBar()
         setupHoverToExpandIfEnabled()
         updateHoverMonitoring()
+        installFlagsMonitor()
         NotificationCenter.default.addObserver(self, selector: #selector(handleScreenParametersChanged), name: NSApplication.didChangeScreenParametersNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateHoverMonitoring), name: .prefsChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(revealForArranging), name: .revealForArranging, object: nil)
 
 
         // Create the engine now so one that does not use the separator (macOS 27
@@ -124,9 +126,34 @@ class StatusBarController: MenuBarItemProvider {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        removeFlagsMonitor()
         hoverDwellTimer?.invalidate()
         if let monitor = hoverMonitor {
             NSEvent.removeMonitor(monitor)
+        }
+    }
+
+    // Option-key latch for clicks whose event doesn't carry the modifier
+    // (early release, driver synthesis): a global flags monitor timestamps
+    // every Option press; a press within a short grace window counts.
+    // Needs Accessibility, already required for the inventory.
+    private var flagsMonitor: Any?
+    private var lastOptionActive: Date?
+    private static let optionLatchGrace: TimeInterval = 0.75
+
+    private func installFlagsMonitor() {
+        guard flagsMonitor == nil else { return }
+        flagsMonitor = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
+            if event.modifierFlags.contains(NSEvent.ModifierFlags.option) {
+                self?.lastOptionActive = Date()
+            }
+        }
+    }
+
+    private func removeFlagsMonitor() {
+        if let monitor = flagsMonitor {
+            NSEvent.removeMonitor(monitor)
+            flagsMonitor = nil
         }
     }
 
@@ -202,9 +229,19 @@ class StatusBarController: MenuBarItemProvider {
     @objc func barItemPressed(sender: NSStatusBarButton) {
         if let event = NSApp.currentEvent {
 
-            let isOptionKeyPressed = event.modifierFlags.contains(NSEvent.ModifierFlags.option)
+            let eventHasOption = event.modifierFlags.contains(NSEvent.ModifierFlags.option)
+            let latchHasOption: Bool = {
+                if let last = lastOptionActive, Date().timeIntervalSince(last) < Self.optionLatchGrace {
+                    return true
+                }
+                return false
+            }()
+            let isOptionKeyPressed = eventHasOption || latchHasOption
             let isArrow = (sender == btnExpandCollapse.button)
             AppLog.info("StatusBar: bar pressed (arrow=\(isArrow) type=\(event.type.rawValue) option=\(isOptionKeyPressed))")
+            if latchHasOption, !eventHasOption {
+                AppLog.info("StatusBar: option via flags latch (click event lacked the modifier)")
+            }
 
             if event.type == NSEvent.EventType.leftMouseUp && !isOptionKeyPressed{
                 if isArrow {
@@ -223,6 +260,16 @@ class StatusBarController: MenuBarItemProvider {
     private func showContextMenu(from button: NSStatusBarButton) {
         guard let menu = btnSeparate.menu else { return }
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.maxY + 5), in: button)
+    }
+
+    // Modifier-free reveal path (Preferences button): expands if needed and
+    // shows separators, deterministically. Unlike Option-click it cannot fail
+    // on modifier delivery.
+    @objc private func revealForArranging() {
+        AppLog.info("StatusBar: reveal requested — showing separators")
+        if self.isCollapsed { self.expandMenubar() }
+        self.showSeparators()
+        AppLog.info("StatusBar: separators hidden=\(Preferences.areSeparatorsHidden)")
     }
 
     func showHideSeparatorsAndAlwayHideArea() {

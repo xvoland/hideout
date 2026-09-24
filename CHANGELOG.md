@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.20.17 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Revealing icons no longer depends solely on Option-click. A global
+  flags-changed latch (0.75s grace) now also counts presses where the click
+  event itself lacks the modifier (early release, driver synthesis), and the
+  decision is logged either way. Plus a deterministic fallback that needs no
+  modifier at all: Preferences → **Show All Icons for Arranging** expands and
+  shows separators (diagnostics `diagRev=26`).
+
 ## v1.20.16 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

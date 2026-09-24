@@ -73,6 +73,7 @@ class PreferencesViewController: NSViewController {
         createTutorialView()
         setupEngineNoteUI()
         setupCheckUpdatesUI()
+        setupRevealUI()
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: .prefsChanged, object: nil)
         
         // Lower imageViewTop slightly to avoid overlap with segment buttons
@@ -164,6 +165,32 @@ class PreferencesViewController: NSViewController {
         row.orientation = .horizontal
         row.translatesAutoresizingMaskIntoConstraints = false
         row.addArrangedSubview(checkUpdatesButton)
+        container.addView(row, in: .bottom)
+    }
+
+    // Deterministic reveal that needs no Option key: expands if collapsed and
+    // shows separators so every icon (including always-hidden) can be arranged.
+    // Same action Option-click performs, for setups where the click event
+    // doesn't carry the modifier.
+    private lazy var revealAllButton: NSButton = {
+        let button = NSButton(title: "Show All Icons for Arranging".localized,
+                              target: self,
+                              action: #selector(revealAllPressed))
+        button.bezelStyle = .rounded
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    @objc private func revealAllPressed() {
+        NotificationCenter.default.post(name: .revealForArranging, object: nil)
+    }
+
+    private func setupRevealUI() {
+        guard let container = generalStackView else { return }
+        let row = NSStackView()
+        row.orientation = .horizontal
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(revealAllButton)
         container.addView(row, in: .bottom)
     }
     

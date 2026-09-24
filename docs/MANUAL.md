@@ -11,7 +11,11 @@ Everything Hidden Bar can do, including the parts with no UI.
   the separator's left are hidden when collapsed.
 - **Option-click the arrow or a separator** (`|`): show/hide the separators
   and the always-hidden area without expanding. Showing them releases hiding
-  so everything can be ⌘-dragged; hiding re-enforces it.
+  so everything can be ⌘-dragged; hiding re-enforces it. If Option-click does
+  nothing on your setup (the click event can arrive without the modifier),
+  use Preferences → **Show All Icons for Arranging** instead — same action,
+  no modifier needed. Hold Option until after mouse release, otherwise even a
+  correct press reads as a plain click.
 
 ## Preferences window
 
