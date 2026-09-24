@@ -31,8 +31,8 @@ import AppKit
 //   feeds the allow-list; there is no fail-open.
 // - Sections are read only while nothing is hidden, because hidden items report
 //   stale positions. They are re-read on the next collapse from an unrestricted
-//   bar, so an app launched while collapsed stays hidden until then, the same
-//   as a new icon landing in the hidden section under the old mechanism.
+//   bar; until then an app launched while collapsed is optimistically kept
+//   visible via NSWorkspace launch observation (launchedWhileCollapsed).
 final class NativeVisibilityEngine: MenuBarEngine {
     // System item identifiers to keep visible. Unknown identifiers are ignored,
     // so the window is deliberately wide: Apple extras live past index 63 on
@@ -69,6 +69,19 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private var generation = 0
     private var lastUnavailableReason: String?
 
+    // Base of the currently held restriction (visible-section snapshot, or
+    // visible+hidden for the expanded always-hidden presentation). A launch
+    // re-activation re-allows this base plus launchedWhileCollapsed.
+    private var baseAllowedBundles: [String] = []
+    // Bundles of apps that launched while a restriction is held. The fresh
+    // census cannot classify them (hidden items report stale positions), so
+    // they are optimistically kept visible until the next collapse re-reads
+    // sections from an unrestricted bar. Reset whenever a new base is
+    // established (collapse, expanded presentation) or the restriction drops.
+    // Bundles without menu-bar items are harmless no-ops in the allow-list.
+    private var launchedWhileCollapsed = Set<String>()
+    private var launchObserver: NSObjectProtocol?
+
     private var alwaysHiddenEnabled = false
     private var alwaysHiddenSeparatorHidden = false
 
@@ -88,6 +101,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
         self.itemFrame = itemFrame
         self.isLTR = isLTR
         items.separatorItem.isVisible = false
+        launchObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didLaunchApplicationNotification,
+            object: nil, queue: .main) { [weak self] note in self?.handleAppLaunch(note) }
     }
 
     func collapse(completion: @escaping (CollapseResult) -> Void) {
@@ -116,6 +132,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return completion(.unavailable)
         }
         state = .calibrating
+        // Fresh cycle: the census below classifies every running app, so any
+        // previously launched-while-collapsed entries are superseded.
+        launchedWhileCollapsed = []
         withLayout { [weak self] layout, inventory, _ in
             guard let self = self else { return }
             guard let layout = layout else {
@@ -191,6 +210,8 @@ final class NativeVisibilityEngine: MenuBarEngine {
             guard let layout = layout else {
                 return self.releaseAssertion()
             }
+            // Fresh layout classifies every running app, superseding the set.
+            self.launchedWhileCollapsed = []
             self.activate(allowing: layout.bundles(in: [.visible, .hidden])) { _ in }
         }
     }
@@ -226,13 +247,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // Activates the new restriction before dropping the old one, so switching
     // between collapsed and expanded never flashes the whole bar visible.
     private func activate(allowing bundles: [String], completion: @escaping (Bool) -> Void) {
+        baseAllowedBundles = bundles
         generation += 1
         let generation = self.generation
         // System hosts (MenuBarAgent, Control Center, SystemUIServer) own
         // Apple's extras — including ones Accessibility never exposes (Time
         // Machine) — so they are always kept. No third-party item can squat
-        // these Apple-only namespaces.
-        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
+        // these Apple-only namespaces. Apps launched while collapsed are
+        // optimistically kept visible until the next fresh census.
+        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(launchedWhileCollapsed) + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
         AppLog.info("NativeVisibility: allowing \(allowed)")
         visibility.activate(allowedSystemItems: Self.systemItemsToKeep,
                             allowedBundleIdentifiers: allowed) { [weak self] result in
@@ -251,6 +274,28 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 AppLog.info("NativeVisibility: activation failed: \(error.localizedDescription)")
                 self.releaseAssertion()
                 completion(false)
+            }
+        }
+    }
+
+    // An app that starts while collapsed was not in the census snapshot, so
+    // macOS would hide it. Optimistically keep it visible until the next fresh
+    // census classifies it into its section.
+    private func handleAppLaunch(_ note: Notification) {
+        guard state == .collapsed, assertion != nil else { return }
+        guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+              let bundle = app.bundleIdentifier, !bundle.isEmpty,
+              bundle != ownBundleIdentifier,
+              !baseAllowedBundles.contains(bundle),
+              launchedWhileCollapsed.insert(bundle).inserted else { return }
+        AppLog.info("NativeVisibility: launched while collapsed (\(bundle)) — re-allowing")
+        activate(allowing: baseAllowedBundles) { [weak self] succeeded in
+            guard let self = self else { return }
+            if !succeeded {
+                // Fail open like a failed collapse: never leave icons stuck hidden.
+                AppLog.info("NativeVisibility: re-allow after launch failed — expanding")
+                self.releaseAssertion()
+                self.state = .expanded
             }
         }
     }
@@ -306,11 +351,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
         generation += 1
         assertion?.invalidate()
         assertion = nil
+        launchedWhileCollapsed = []
     }
 
     deinit {
         // Releasing the assertion restores the bar if this engine is discarded
         // (for example when the user switches engines) without an explicit expand.
+        if let launchObserver = launchObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(launchObserver)
+        }
         assertion?.invalidate()
     }
 
