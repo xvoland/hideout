@@ -1,5 +1,43 @@
 # Changelog
 
+## v1.21.0 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+Consolidates the v1.20.1–v1.20.18 stabilization series (same code as v1.20.18
+plus finalized docs). Highlights since v1.20.0:
+
+### Added
+- Icons of newly launched apps appear without expanding first: launches are
+  observed via NSWorkspace and remembered for 120 seconds, and a newcomer
+  watch re-scans the bar every 3s while collapsed — covering slow starters,
+  agent apps (which never post `didLaunch`), pre-observer launches, and icons
+  that appear without a fresh process launch. Bundles already classified keep
+  their zone, so restarting helpers no longer pop always-hidden icons visible.
+
+### Changed
+- The regular `|` separator is the hidden/visible boundary again (upstream
+  UX): visible while expanded with left-click menu support, fresh autosave
+  slot next to the arrow, 8pt wide so it can be seen and ⌘-grabbed. Boundary
+  reads prefer its live frame, then cache, then the arrow.
+- "Always Hidden" holds in both states: frame caching across collapse cycles,
+  healing of a frozen empty zone, one-time separator enforcement on enable,
+  and the separator item is kept (never recreated) so its slot survives
+  toggles.
+- Reveal no longer depends solely on Option-click: a flags-changed latch
+  covers presses whose click event lacks the modifier, and Preferences →
+  **Show All Icons for Arranging** works with no modifier at all. Click
+  handling unified across arrow and both separators, all presses logged.
+
+### Fixed
+- Fail-open hardening: empty censuses never latch a hide-all allow-list;
+  launch-time init races (RTL-default direction, unlaid-out separator frames)
+  eliminated by reading frames and direction after the snapshot; move
+  verification waits out reflow transients and ignores sub-64px reflow jitter
+  (diagnostics `diagRev=27`).
+- Release process is tag-only: branch pushes no longer trigger CI builds.
+
 ## v1.20.18 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
