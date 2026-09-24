@@ -204,9 +204,12 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     func showHideSeparatorsAndAlwayHideArea() {
-        Preferences.areSeparatorsHidden ? self.showSeparators() : self.hideSeparators()
-
+        // Expand first: the hide guard below reads live separator geometry,
+        // which is only trustworthy while expanded (collapsed items report
+        // degenerate frames). Toggling first would silently no-op from a
+        // collapsed bar whenever the always-hidden section is on.
         if self.isCollapsed {self.expandMenubar()}
+        Preferences.areSeparatorsHidden ? self.showSeparators() : self.hideSeparators()
     }
 
     private func showSeparators() {
@@ -214,7 +217,10 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func hideSeparators() {
-        guard self.isBtnAlwaysHiddenValidPosition else {return}
+        guard self.isBtnAlwaysHiddenValidPosition else {
+            AppLog.info("StatusBar: hide separators blocked — always-hidden separator is not on the hidden side of the arrow; ⌘-drag it left of the arrow and retry")
+            return
+        }
         applySeparatorsHidden(true)
     }
 
@@ -447,11 +453,21 @@ extension StatusBarController {
             }
             self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             self.btnAlwaysHidden?.isVisible = true
+            // The zone only holds while expanded when separators are hidden;
+            // without this one-time enforcement the feature silently does
+            // nothing for anyone who never Option-clicked. Later explicit
+            // Option-clicks are untouched (marker).
+            if !Preferences.didEnforceSeparatorsForAlwaysHidden {
+                Preferences.didEnforceSeparatorsForAlwaysHidden = true
+                Preferences.areSeparatorsHidden = true
+                AppLog.info("StatusBar: hiding separators once so the always-hidden section holds while expanded")
+            }
         } else {
             if let existing = self.btnAlwaysHidden {
                 NSStatusBar.system.removeStatusItem(existing)
             }
             self.btnAlwaysHidden = nil
+            Preferences.didEnforceSeparatorsForAlwaysHidden = false
         }
         menuBarEngine.updateAlwaysHiddenSection(
             enabled: Preferences.alwaysHiddenSectionEnabled,

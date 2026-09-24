@@ -24,14 +24,14 @@ Everything Hidden Bar can do, including the parts with no UI.
 | Use full menu bar on expanding | App becomes briefly "regular" while expanded (helps on tight menubars) |
 
 
-> **Always-hidden section, current behavior:** items in the always-hidden zone
-> are reliably pushed off-screen only when "hide separators" is also on
-> (option-click the arrow). With the separators visible, always-hidden items can
-> still appear after expanding. This coupling is a known limitation being
-> reworked alongside the menu-bar redesign; for now, option-click to hide the
-> separators if always-hidden items keep showing. Avoid placing critical icons in
-> the always-hidden zone until the rework lands, since a stuck off-screen item has
-> to be recovered by ⌘-dragging it back (macOS persists its position per app).
+> **Always-hidden section:** enabling it hides the separators once, so the zone
+> holds even when expanded — no option-click needed. To arrange it,
+> option-click the arrow to show the separators (everything becomes visible
+> for ⌘-dragging), then option-click again to re-hide and re-enforce. If
+> hiding does nothing, the always-hidden separator is misplaced: ⌘-drag it
+> left of the arrow and retry (the log says so explicitly). Avoid placing
+> critical icons in the always-hidden zone: a stuck off-screen item has to be
+> recovered by ⌘-dragging it back (macOS persists its position per app).
 
 ## Hiding (macOS 27)
 

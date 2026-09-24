@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.20.8 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always Hidden" now works out of the box. The zone only holds while expanded
+  when separators are hidden, but nothing ever hid them for you — if you never
+  option-clicked, every expand released the restriction and the icons were
+  always visible. Enabling the section now hides the separators once (later
+  option-clicks untouched); option-click itself was reordered to expand first
+  so its placement guard reads live geometry instead of silently no-op'ing
+  from a collapsed bar (a block is now logged explicitly) (diagnostics
+  `diagRev=17`).
+
 ## v1.20.7 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
