@@ -106,6 +106,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // user ⌘-drags icons across. Like the always-hidden one it is hidden while
     // collapsed, so the live frame is only trustworthy while expanded; refresh
     // the cache from a real frame and reuse it otherwise (arrow as last resort).
+    // Separator frames that produced the frozen `layout` below. Our own items
+    // are readable without Accessibility, so every held-path use verifies them:
+    // a dragged (or reflowed) separator silently misclassifies otherwise, and
+    // nothing else would ever notice.
+    private var layoutSeparatorFrame: CGRect?
+    private var layoutAHFrame: CGRect?
     private var cachedSeparatorFrame: CGRect?
     // A repeating poll that runs for as long as the bar stays collapsed. Agent
     // apps (LSUIElement) never post didLaunch, so their icons can only be caught
@@ -282,8 +288,31 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // The sections as the user arranged them. Read fresh only from an
     // unrestricted bar; while a restriction is active the cached ones stand in.
     // Superseded by any later expand or activation, like an activation is.
+    // True only on positive evidence of movement (both frames readable and
+    // apart): an unreadable live frame means "can't tell", never "moved".
+    private func separatorsMovedSinceFreeze() -> Bool {
+        let tolerance: CGFloat = 8
+        if let stored = layoutSeparatorFrame,
+           let sep = items?.separatorItem,
+           let live = itemFrame(sep), live.width > 0,
+           abs(live.midX - stored.midX) > tolerance {
+            AppLog.info("NativeVisibility: main separator moved since freeze (was \(Int(stored.midX)), now \(Int(live.midX))) — re-reading fresh")
+            return true
+        }
+        if alwaysHiddenEnabled,
+           let storedAH = layoutAHFrame,
+           let ah = items?.alwaysHiddenItem,
+           ah.length > 0,
+           let liveAH = itemFrame(ah), liveAH.width > 0,
+           abs(liveAH.midX - storedAH.midX) > tolerance {
+            AppLog.info("NativeVisibility: always-hidden separator moved since freeze (was \(Int(storedAH.midX)), now \(Int(liveAH.midX))) — re-reading fresh")
+            return true
+        }
+        return false
+    }
+
     private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
-        if assertion != nil {
+        if assertion != nil, !separatorsMovedSinceFreeze() {
             // A restriction is already held (e.g. collapse from expanded with
             // separators hidden and always-hidden on): positions would be stale
             // so sections stay cached — but bundle identity is still reliable.
@@ -297,6 +326,13 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 body(self.layout, census, nil)
             }
             return
+        }
+        if assertion != nil {
+            // Separators moved under a held restriction: the frozen sections no
+            // longer match the arrangement. Drop the restriction and fall
+            // through to a fresh census instead of misclassifying silently.
+            releaseAssertion()
+            layout = nil
         }
         // Frames AND layout direction are read only after the snapshot
         // completes. The ~1s Accessibility walk gives AppKit time to lay out
@@ -345,6 +381,8 @@ final class NativeVisibilityEngine: MenuBarEngine {
                                                        excludingBundle: self.ownBundleIdentifier)
             AppLog.info("NativeVisibility: separator at x=\(boundary.midX) ahZone=\(ahDiag); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
             self.layout = layout
+            self.layoutSeparatorFrame = boundary
+            self.layoutAHFrame = alwaysHiddenFrame
             body(layout, inventory, boundary.midX)
         }
     }
@@ -374,6 +412,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
         if healed {
             layout = MenuBarLayout(sections: sections)
+            layoutAHFrame = cachedAlwaysHiddenFrame
             AppLog.info("NativeVisibility: healed always-hidden zone from cached separator frame")
         }
     }

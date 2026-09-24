@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.20.13 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Collapse re-verifies separator positions instead of trusting a frozen layout
+  blindly. Dragging a separator (or a macOS reflow) while a restriction is held
+  silently misclassified from then on, because the held path never re-reads
+  sections — icons could vanish that the arrangement says should show. Now our
+  own separator frames (readable without Accessibility) are compared against
+  the frames that produced the frozen layout, and any real move drops to a
+  fresh census with a log line naming both positions (diagnostics `diagRev=22`).
+
 ## v1.20.12 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
