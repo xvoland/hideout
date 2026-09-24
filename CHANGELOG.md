@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.20.18 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Toggling "Enable hidden section" no longer destroys and recreates its `|`
+  separator. Each recreation made macOS re-slot the item, so it jumped and
+  blinked instead of sitting steady while expanded. The item is now created
+  once and kept (zeroed when disabled, so the slot survives), and only its
+  visibility changes (diagnostics `diagRev=27`).
+
 ## v1.20.17 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

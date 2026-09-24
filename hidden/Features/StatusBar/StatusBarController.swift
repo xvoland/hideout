@@ -513,18 +513,20 @@ extension StatusBarController {
     }
     @objc private func toggleStatusBarIfNeeded() {
         if Preferences.alwaysHiddenSectionEnabled {
-            if let existing = self.btnAlwaysHidden {
-                NSStatusBar.system.removeStatusItem(existing)
+            // Create once and keep: destroying/recreating on every toggle makes
+            // macOS re-slot the item, so the `|` jumps and blinks on each click
+            // instead of sitting steady while expanded.
+            if self.btnAlwaysHidden == nil {
+                self.btnAlwaysHidden = NSStatusBar.system.statusItem(withLength: 20)
+                if let button = btnAlwaysHidden?.button {
+                    button.image = self.imgIconLine
+                    button.appearsDisabled = true
+                    button.target = self
+                    button.action = #selector(self.barItemPressed(sender:))
+                    button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+                }
+                self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             }
-            self.btnAlwaysHidden = NSStatusBar.system.statusItem(withLength: 20)
-            if let button = btnAlwaysHidden?.button {
-                button.image = self.imgIconLine
-                button.appearsDisabled = true
-                button.target = self
-                button.action = #selector(self.barItemPressed(sender:))
-                button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            }
-            self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             self.btnAlwaysHidden?.isVisible = true
             // The zone only holds while expanded when separators are hidden;
             // without this one-time enforcement the feature silently does
@@ -536,10 +538,9 @@ extension StatusBarController {
                 AppLog.info("StatusBar: hiding separators once so the always-hidden section holds while expanded")
             }
         } else {
-            if let existing = self.btnAlwaysHidden {
-                NSStatusBar.system.removeStatusItem(existing)
-            }
-            self.btnAlwaysHidden = nil
+            // Keep the item (the engine zeroes its length below) instead of
+            // removing it: removal makes macOS forget the slot, same reason the
+            // collapse path uses zero width rather than isVisible = false.
             Preferences.didEnforceSeparatorsForAlwaysHidden = false
         }
         menuBarEngine.updateAlwaysHiddenSection(
