@@ -54,7 +54,7 @@ the reflow, so:
   bundle extras hide like normal apps; indexed/host system items (clock,
   Wi-Fi, Bluetooth, battery, Control Center, …) stay. To remove those, use
   System Settings → Control Center ("Don't show in menu bar");
-- everything left of the arrow hides on collapse: macOS hides every item not
+- everything left of the separator hides on collapse: macOS hides every item not
   on the allow-list — app bundles, helper ids and hosted icons alike, given
   reflow time. Allow longer than feels necessary before judging: the
   Accessibility snapshot alone takes up to ~10s and macOS reflows after

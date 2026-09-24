@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.20.5 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- The regular `|` separator is visible again and is the hidden/visible
+  boundary once more (upstream UX): ⌘-drag icons across it, left-click it for
+  the context menu. Since v1.19 the code classified against the arrow while the
+  separator stayed invisible, so dragging icons across the only visible `|`
+  (the always-hidden one) changed nothing on collapse — exactly the reported
+  "nothing happens". The boundary now reads the separator frame (cached while
+  collapsed, arrow as last-resort fallback), both separators show while
+  expanded, and the manual matches the behavior again (diagnostics `diagRev=14`).
+
 ## v1.20.4 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

@@ -15,13 +15,13 @@ import AppKit
 // assessment mode. macOS then hides the rest and reflows the bar itself, so the
 // result does not depend on display width, the notch or the frontmost app's menus.
 //
-// The arrow is the boundary: apps left of it (LTR) are hidden, apps right of it
-// stay visible. The regular separator is not needed and is taken out of the
-// bar; even at zero width macOS keeps a gap for it. The always-hidden
-// separator, when enabled, marks the third section; it shows while expanded so
-// it can be ⌘-dragged, and drops to zero width while collapsed, where macOS
-// has already removed everything it would separate. It keeps its slot because
-// its position is what defines that section.
+// The `|` separator is the boundary: apps left of it (LTR) are hidden, apps
+// right of it stay visible — ⌘-drag icons across it to arrange sections. The
+// arrow is only the toggle. The always-hidden separator, when enabled, marks
+// the third section; it shows while expanded so it can be ⌘-dragged, and drops
+// to zero width while collapsed, where macOS has already removed everything it
+// would separate. It keeps its slot because its position is what defines that
+// section.
 //
 // Limits, all from what macOS 27 exposes:
 // - Hiding is per app: an app with several icons hides or shows them together
@@ -102,6 +102,11 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // always-hidden zone. We refresh it only while it has real length (expanded,
     // or the brief moment before a collapse hides it) and reuse the cache then.
     private var cachedAlwaysHiddenFrame: CGRect?
+    // Cached frame of the regular `|` separator, the hidden/visible boundary the
+    // user ⌘-drags icons across. Like the always-hidden one it is hidden while
+    // collapsed, so the live frame is only trustworthy while expanded; refresh
+    // the cache from a real frame and reuse it otherwise (arrow as last resort).
+    private var cachedSeparatorFrame: CGRect?
     // A repeating poll that runs for as long as the bar stays collapsed. Agent
     // apps (LSUIElement) never post didLaunch, so their icons can only be caught
     // by re-scanning the bar; polling every few seconds makes a freshly
@@ -267,7 +272,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return body(layout, [], nil)
         }
         guard let arrow = items?.toggleItem,
-              let boundary = itemFrame(arrow) else { return body(nil, [], nil) }
+              let arrowFrame = itemFrame(arrow) else { return body(nil, [], nil) }
+        // The `|` separator is the boundary users arrange icons against; the
+        // arrow is only the toggle. Prefer its live frame, then the cache, then
+        // the arrow (pre-v1.20.5 behavior) so a missing frame never blocks.
+        if let sep = items?.separatorItem,
+           let frame = itemFrame(sep), frame.width > 0 {
+            cachedSeparatorFrame = frame
+        }
+        let boundary = cachedSeparatorFrame ?? arrowFrame
         // Refresh the cache only from a real-length frame; never from the
         // collapsed zero-length one, which would corrupt the always-hidden zone.
         if alwaysHiddenEnabled,
@@ -283,13 +296,13 @@ final class NativeVisibilityEngine: MenuBarEngine {
         inventory.snapshot { [weak self] inventory in
             guard let self = self, generation == self.generation else { return }
             let dump = inventory.sorted { $0.frame.midX < $1.frame.midX }.map { "\($0.bundleIdentifier ?? "?")@\(Int($0.frame.midX))" }.joined(separator: " ")
-            AppLog.info("NativeVisibility: inventory [\(dump)] arrowX=\(Int(boundary.midX))")
+            AppLog.info("NativeVisibility: inventory [\(dump)] sepX=\(Int(boundary.midX))")
             let layout = MenuBarLayoutResolver.resolve(inventory: inventory,
                                                        separatorFrame: boundary,
                                                        alwaysHiddenSeparatorFrame: alwaysHiddenFrame,
                                                        isLTR: isLTR,
                                                        excludingBundle: self.ownBundleIdentifier)
-            AppLog.info("NativeVisibility: arrow at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
+            AppLog.info("NativeVisibility: separator at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
             self.layout = layout
             body(layout, inventory, boundary.midX)
         }
@@ -460,14 +473,16 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
     }
 
-    // The always-hidden separator goes to zero width rather than isVisible =
-    // false, which would make macOS forget where the user placed it.
+    // Both separators show while expanded so they can be ⌘-dragged; while
+    // collapsed they hide (the regular one via isVisible, the always-hidden one
+    // via zero width — isVisible = false would make macOS forget where the user
+    // placed it, and its position defines the always-hidden zone).
     private func setSeparatorsVisible(_ visible: Bool) {
-        items?.separatorItem.isVisible = false
+        items?.separatorItem.isVisible = visible
         items?.alwaysHiddenItem?.length = visible && alwaysHiddenEnabled ? expandedLength : 0
     }
 
-    // Any arrangement works: whatever sits left of the arrow is the hidden section.
+    // Any arrangement works: whatever sits left of the separator is the hidden section.
     var isArrangementValid: Bool {
         return true
     }
