@@ -98,6 +98,7 @@ To undo any of them: `defaults delete net.dotoca.hideout <key>`.
 | A ghost "LauncherApplication" login item from old versions | Launch the current version once; it deauthorizes the legacy item automatically |
 | App language stuck | See the `AppleLanguages` command above, or System Settings > General > Language & Region > Applications |
 | Nothing hides on macOS 27 after upgrading Hidden Bar | ⌘-drag icons to the right of the separator once. macOS 27 uses new item names so positions reset like a fresh install |
+| Icons missing after quit/update (bar looks empty) | First click the system `«` overflow — macOS parks displaced icons there and does not always re-seat them when a restriction drops. Drag the ones you want back out. Only then judge hiding |
 | Nothing hides after updating to v1.20.6+ | Same one-time arrangement: the separator got a fresh slot next to the arrow (its old slot went stale while it stayed invisible). ⌘-drag the `\|` where you want the boundary, then collapse |
 | Hidden icons on macOS 27 appear under the system `«` chevron while collapsed | Expected: macOS 27's native overflow is where displaced icons go. Click Hidden Bar's arrow to bring them back onto the bar |
 | A new or just-updated app's icon shows up already hidden | Expected, see "Why new icons start hidden" below; ⌘-drag it to the right of the separator once |
