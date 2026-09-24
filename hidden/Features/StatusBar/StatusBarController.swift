@@ -137,15 +137,24 @@ class StatusBarController: MenuBarItemProvider {
     // (early release, driver synthesis): a global flags monitor timestamps
     // every Option press; a press within a short grace window counts.
     // Needs Accessibility, already required for the inventory.
+    // Diagnostic (diagRev 29): every Option press/release transition is logged,
+    // so slow test presses prove whether the modifier reaches us at all.
     private var flagsMonitor: Any?
     private var lastOptionActive: Date?
+    private var optionFlagHeld = false
     private static let optionLatchGrace: TimeInterval = 0.75
 
     private func installFlagsMonitor() {
         guard flagsMonitor == nil else { return }
         flagsMonitor = NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged) { [weak self] event in
-            if event.modifierFlags.contains(NSEvent.ModifierFlags.option) {
-                self?.lastOptionActive = Date()
+            guard let self = self else { return }
+            let held = event.modifierFlags.contains(NSEvent.ModifierFlags.option)
+            if held {
+                self.lastOptionActive = Date()
+            }
+            if held != self.optionFlagHeld {
+                self.optionFlagHeld = held
+                AppLog.info("StatusBar: option flag \(held ? "down" : "up") (global monitor)")
             }
         }
     }

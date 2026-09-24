@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.21.2 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Added
+- Diagnostic logging for the Option-click investigation: every Option
+  press/release seen by the global flags monitor is now logged
+  (`option flag down/up`). Three slow test presses prove whether the modifier
+  reaches the process at all; latch behavior is unchanged (diagnostics
+  `diagRev=29`).
+
 ## v1.21.1 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
