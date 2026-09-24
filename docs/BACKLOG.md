@@ -67,6 +67,31 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
 - **#242 permanent icon-loss repro.** Needs a throwaway defaults profile (live repro
   risks losing real menu-bar icons). Required before the always-hidden decouple lands.
 
+## Hideout fork — session state 2026-09-24 (develop @ v1.20.18, releasing v1.21.0)
+
+- **Shipped v1.20.1–v1.20.18, consolidated as v1.21.0.** Newcomer visibility
+  while collapsed (NSWorkspace + 120s window + bundle-diff/positional watch,
+  3s polling; classified bundles excluded from the union); separator restored
+  as the visible boundary (fresh `hideout_separator` slot, 8pt width,
+  cache/arrow fallbacks); Always Hidden hardening (frame cache + frozen-zone
+  heal, newcomer union excludes classified bundles, one-time enforcement on
+  enable, keep-don't-recreate separator item); reveal paths (unified click
+  handling, flags latch, Preferences button); fail-open on empty census;
+  init-order RTL/frame races fixed (post-snapshot reads); settle-gated +
+  64px-threshold move verification; CI tag-only (no branch builds).
+- **Still OPEN (unchanged):** version stamping (MARKETING_VERSION 1.18.5 fossil;
+  Dev-suffix + commit-back declined for now — DO NOT implement without an
+  explicit go-ahead); AX-invisible icons (Player ▶, deferred, same path as
+  before); PRIVACY_POLICY one-liner (owner wording); Hideout-source.zip
+  keep-or-drop question; wide-display always-hidden leak.
+- **CLOSED (owner declined):** UpdateChecker docs in MANUAL/README/CHANGELOG;
+  debug-log trim.
+- **Standing (unchanged):** new .swift files need pbxproj registration;
+  verification via CI only (no local Xcode); single-file LSP
+  "cannot find in scope" is noise, verify via build; re-release =
+  `git tag -f vX.Y.Z && git push -f origin vX.Y.Z` (CI rebuilds + republishes);
+  no master merges without explicit request.
+
 ## Hideout fork — session state 2026-09-23 (develop @ 4a3569b)
 
 - **v1.20.0 re-released** (tag force-moved 92ea180 → 4a3569b, full release): update

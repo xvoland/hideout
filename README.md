@@ -46,7 +46,10 @@ Hideout lets you hide menu bar items to give your Mac a cleaner look.
 
 ### Others
 
-The Hideout is notarized before distributed out side App Store. It's safe to use 👍
+These builds are **ad-hoc / unsigned** (`CODE_SIGNING_ALLOWED=NO`) — no Developer ID
+signature, no notarization. macOS ties the Accessibility permission to the code
+signature, so after **every update** re-grant it in System Settings when prompted
+(first collapse asks again); that is expected, not a bug.
 
 #### Using Homebrew
 
@@ -54,7 +57,7 @@ This fork ships its own Homebrew cask so you install **this** build — not the
 upstream one:
 
 ```
-brew install --cask https://raw.githubusercontent.com/xvoland/hideout/main/Casks/hideout.rb
+brew install --cask https://raw.githubusercontent.com/xvoland/hideout/master/Casks/hideout.rb
 ```
 
 This pulls the latest macOS 27 "Golden Gate" build from the
@@ -95,8 +98,15 @@ Native requires the **direct (non-sandboxed) build**, macOS 27+, and Accessibili
 
 ## 🕹 Usage
 
-* `⌘` + drag to move the Hidden icons around in the menu bar.
+* `⌘` + drag icons across the `|` separator: left of it hides on collapse.
+  A second, translucent `|` (enable *Always hidden section* in Preferences)
+  marks a zone that stays hidden even when expanded.
 * Click the Arrow icon to hide menu bar items.
+* **Option-click** the arrow or a separator to show/hide separators for
+  arranging (reveals everything for `⌘`-dragging). If Option-click does
+  nothing on your setup, use Preferences → **Show All Icons for Arranging**.
+* Missing an icon after quit/update? Check the system `«` overflow first —
+  macOS parks displaced icons there and doesn't always re-seat them.
 
 <p align="center">
 	<img src="img/tutorial.gif">

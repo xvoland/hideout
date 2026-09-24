@@ -17,6 +17,7 @@ extension UserDefaults {
         static let isShowPreference = "isShowPreferences"
         static let areSeparatorsHidden = "areSeparatorsHidden"
         static let alwaysHiddenSectionEnabled = "alwaysHiddenSectionEnabled"
+        static let didEnforceSeparatorsForAlwaysHidden = "didEnforceSeparatorsForAlwaysHidden"
         static let useFullStatusBarOnExpandEnabled = "useFullStatusBarOnExpandEnabled"
         static let hoverToExpand = "hoverToExpand"
     }

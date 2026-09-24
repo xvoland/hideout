@@ -114,10 +114,23 @@ enum Preferences {
         get {
             UserDefaults.standard.bool(forKey: UserDefaults.Key.alwaysHiddenSectionEnabled)
         }
-        
+
         set {
             UserDefaults.standard.set(newValue, forKey: UserDefaults.Key.alwaysHiddenSectionEnabled)
             NotificationCenter.default.post(Notification(name: .alwayHideToggle))
+        }
+    }
+
+    // One-time marker: enabling the always-hidden section hides the separators
+    // once, otherwise the zone never holds while expanded (expand releases the
+    // restriction when separators are shown). Later Option-clicks are untouched.
+    static var didEnforceSeparatorsForAlwaysHidden: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: UserDefaults.Key.didEnforceSeparatorsForAlwaysHidden)
+        }
+
+        set {
+            UserDefaults.standard.set(newValue, forKey: UserDefaults.Key.didEnforceSeparatorsForAlwaysHidden)
         }
     }
     

@@ -1,5 +1,294 @@
 # Changelog
 
+## v1.21.0 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+Consolidates the v1.20.1–v1.20.18 stabilization series (same code as v1.20.18
+plus finalized docs). Highlights since v1.20.0:
+
+### Added
+- Icons of newly launched apps appear without expanding first: launches are
+  observed via NSWorkspace and remembered for 120 seconds, and a newcomer
+  watch re-scans the bar every 3s while collapsed — covering slow starters,
+  agent apps (which never post `didLaunch`), pre-observer launches, and icons
+  that appear without a fresh process launch. Bundles already classified keep
+  their zone, so restarting helpers no longer pop always-hidden icons visible.
+
+### Changed
+- The regular `|` separator is the hidden/visible boundary again (upstream
+  UX): visible while expanded with left-click menu support, fresh autosave
+  slot next to the arrow, 8pt wide so it can be seen and ⌘-grabbed. Boundary
+  reads prefer its live frame, then cache, then the arrow.
+- "Always Hidden" holds in both states: frame caching across collapse cycles,
+  healing of a frozen empty zone, one-time separator enforcement on enable,
+  and the separator item is kept (never recreated) so its slot survives
+  toggles.
+- Reveal no longer depends solely on Option-click: a flags-changed latch
+  covers presses whose click event lacks the modifier, and Preferences →
+  **Show All Icons for Arranging** works with no modifier at all. Click
+  handling unified across arrow and both separators, all presses logged.
+
+### Fixed
+- Fail-open hardening: empty censuses never latch a hide-all allow-list;
+  launch-time init races (RTL-default direction, unlaid-out separator frames)
+  eliminated by reading frames and direction after the snapshot; move
+  verification waits out reflow transients and ignores sub-64px reflow jitter
+  (diagnostics `diagRev=27`).
+- Release process is tag-only: branch pushes no longer trigger CI builds.
+
+## v1.20.18 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Toggling "Enable hidden section" no longer destroys and recreates its `|`
+  separator. Each recreation made macOS re-slot the item, so it jumped and
+  blinked instead of sitting steady while expanded. The item is now created
+  once and kept (zeroed when disabled, so the slot survives), and only its
+  visibility changes (diagnostics `diagRev=27`).
+
+## v1.20.17 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Revealing icons no longer depends solely on Option-click. A global
+  flags-changed latch (0.75s grace) now also counts presses where the click
+  event itself lacks the modifier (early release, driver synthesis), and the
+  decision is logged either way. Plus a deterministic fallback that needs no
+  modifier at all: Preferences → **Show All Icons for Arranging** expands and
+  shows separators (diagnostics `diagRev=26`).
+
+## v1.20.16 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- The main `|` separator is now 8pt wide instead of 1pt. A one-pixel boundary
+  control can neither be seen nor ⌘-grabbed, which made its zone
+  unfindable and unarrangeable. Width is runtime-only (position persists per
+  autosave name), neighbours shift once by a few px (diagnostics `diagRev=25`).
+
+## v1.20.15 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Move verification no longer fires on restriction-state reflow. The bar
+  shifts our thin separator between two adjacent slots (~32px apart) depending
+  on whether a restriction is held, so every transition looked like a drag and
+  forced a full re-read with a visible flash. The threshold is now 64px —
+  past any reflow jitter, still far below intentional drags (diagnostics
+  `diagRev=24`).
+
+## v1.20.14 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Move verification no longer fights reflow transients. Comparing a live frame
+  against the frozen one right after a visibility flip or a restriction change
+  caught parked/in-flight positions (e.g. 1060 vs settled 1028) and forced a
+  fresh census on every transition — extra snapshots and churn without new
+  information. Verification now runs only on settled frames (1.5s past the last
+  visibility flip or restriction change); real drags persist, transients don't
+  (diagnostics `diagRev=23`).
+
+## v1.20.13 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Collapse re-verifies separator positions instead of trusting a frozen layout
+  blindly. Dragging a separator (or a macOS reflow) while a restriction is held
+  silently misclassified from then on, because the held path never re-reads
+  sections — icons could vanish that the arrangement says should show. Now our
+  own separator frames (readable without Accessibility) are compared against
+  the frames that produced the frozen layout, and any real move drops to a
+  fresh census with a log line naming both positions (diagnostics `diagRev=22`).
+
+## v1.20.12 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- All icons no longer vanish on launch. Two init-order races combined: the
+  first census ran during AppDelegate init, before the layout direction was
+  resolved (RTL default mirror-classified the whole bar), and it read the
+  just-created separator's unlaid-out frame as the boundary. Frames and
+  direction are now read after the snapshot completes (everything warm and
+  contemporaneous); direction is also set early in init as backup. Every bar
+  press (arrow/separators, any modifiers) is now logged so a missing toggle
+  is provable instead of guessed (diagnostics `diagRev=21`).
+
+## v1.20.11 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always Hidden" zone no longer freezes empty. Right after the separator is
+  (re)created it has no laid-out frame yet, so the seeding census recorded an
+  empty zone — and every later collapse under a held restriction inherited the
+  frozen layout, leaving always-hidden icons visible on every expand. The held
+  path now promotes hidden-zone bundles sitting on the cached frame's
+  always-hidden side (visible bundles are never demoted; the next fresh census
+  supersedes). The census line also reports the zone state (`ahZone=off`,
+  `nil-frame`, or coordinates) (diagnostics `diagRev=20`).
+
+## v1.20.10 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Never hide on a blind snapshot. An empty menu-bar census (cold AX server,
+  timeouts at login) resolved to empty sections and latched an allow-list that
+  hides everything — re-applied from cache on every later expand/collapse, so
+  all icons stayed gone after launch. Both activation paths now refuse an empty
+  inventory and fail open instead (collapse reports unavailable, expanded
+  presentation leaves the bar unrestricted) (diagnostics `diagRev=19`).
+
+## v1.20.9 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Option-click now works on all three bar items (arrow and both `|` separators),
+  not just the arrow. Previously only the arrow had a click handler, so
+  option-clicking a separator went nowhere and there was no way to reveal the
+  always-hidden zone for arranging if you missed the arrow. Plain clicks keep
+  their documented behavior (arrow toggles, separator opens the menu); the
+  toggle path and the expanded hold/release decision are now logged
+  (diagnostics `diagRev=18`).
+
+## v1.20.8 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always Hidden" now works out of the box. The zone only holds while expanded
+  when separators are hidden, but nothing ever hid them for you — if you never
+  option-clicked, every expand released the restriction and the icons were
+  always visible. Enabling the section now hides the separators once (later
+  option-clicks untouched); option-click itself was reordered to expand first
+  so its placement guard reads live geometry instead of silently no-op'ing
+  from a collapsed bar (a block is now logged explicitly) (diagnostics
+  `diagRev=17`).
+
+## v1.20.7 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always Hidden" icons no longer pop back visible on their own. Two leaks fed
+  them into the allow-list: (1) every process launch was tracked for 120s, so
+  helpers/agents that restart often (1Password, SpamSieve, Atoll…) were
+  unioned into every restriction and immediately re-shown while collapsed —
+  now only bundles never classified at the last collapse are tracked, the rest
+  keep their zone; (2) collapsing while a restriction was already held
+  (expanded with separators hidden + always-hidden on) recorded an empty
+  bundle baseline, after which the newcomer watch treated everything as new —
+  now the live inventory (identity stays reliable under a restriction) seeds
+  the baseline while sections stay cached (diagnostics `diagRev=16`).
+
+## v1.20.6 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Collapse hides again. v1.20.5 restored the separator as the boundary, but its
+  autosave slot had gone stale while it stayed invisible (v1.19–v1.20.4) —
+  parked far left of the arranged icons, so the whole bar classified visible
+  and nothing hid. The separator now uses a fresh slot name and lays out
+  adjacent to the arrow; one-time ⌘-drag of the `|` to taste, then collapse
+  (diagnostics `diagRev=15`, census logs `sepX=`).
+
+## v1.20.5 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- The regular `|` separator is visible again and is the hidden/visible
+  boundary once more (upstream UX): ⌘-drag icons across it, left-click it for
+  the context menu. Since v1.19 the code classified against the arrow while the
+  separator stayed invisible, so dragging icons across the only visible `|`
+  (the always-hidden one) changed nothing on collapse — exactly the reported
+  "nothing happens". The boundary now reads the separator frame (cached while
+  collapsed, arrow as last-resort fallback), both separators show while
+  expanded, and the manual matches the behavior again (diagnostics `diagRev=14`).
+
+## v1.20.4 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always hide" section now keeps working across collapse cycles. On macOS 27
+  the whole menu bar is one window, and the always-hidden separator at zero
+  length reports a collapsed (neighbour-snapped) frame, so the second collapse
+  re-classified the always-hidden zone from the wrong position — icons you had
+  parked there started behaving like ordinary hidden icons. The separator frame
+  is now cached while it has real length (expanded, or before a collapse hides
+  it) and reused for the next census instead of the collapsed live frame
+  (diagnostics `diagRev=13`).
+
+## v1.20.3 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Newly launched icons now appear within a few seconds of launch instead of
+  waiting for the next manual collapse. Agent apps (LSUIElement, e.g.
+  BetterDisplay) never post `didLaunch`, so they can only be caught by re-scanning
+  the bar — the newcomer watch now polls every 3s for as long as the bar stays
+  collapsed (previously a handful of one-off checks +12/+30/60/120s, which is why
+  an icon could surface only minutes later). Any bundle absent from the last
+  collapse census is re-allowed; the next collapse re-reads everything from a
+  fresh bar, so a wrongly shown icon self-heals (diagnostics `diagRev=12`).
+
+## v1.20.2 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Newly launched apps now show their icon without expanding first. The previous
+  positional newcomer watch was blind: hidden items report stale frames while
+  the restriction is active, so a freshly hidden icon could never be told apart
+  from a new one. The signal is now the bundle set — any bundle absent from the
+  last collapse census is re-allowed, which also covers launches that predate
+  the observer and icons that appear without a process launch (diagnostics
+  `diagRev=11`).
+
+## v1.20.1 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Added
+- Icons of newly launched apps appear without expanding first. Launches are
+  observed via NSWorkspace and remembered for 120 seconds; while collapsed,
+  the restriction is re-activated to include them, and a positional newcomer
+  watch (+12/+30/+60/+120s) additionally catches slow starters and icons that
+  appear without a fresh process launch. The next collapse re-classifies
+  everything from a fresh census, so a wrongly shown icon self-heals.
+
 ## v1.20.0 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
@@ -20,6 +309,10 @@ Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
   since v1.19 (direct macOS 27 builds). Pre-27 and sandboxed builds report
   hiding unavailable instead of silently falling back; upstream
   dwarvesf/hidden remains the path there.
+
+(Re-released 2026-09-23 on updated code: that build also ships the stable-only
+update checker (launch + weekly, manual check in Preferences), UI grammar
+fixes, and the remaining visible rebrand leftovers.)
 
 ## v1.18.8 (2026-09-23)
 
