@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.22.0 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Changed
+- Restored v1.21.3 behavior: reverted the v1.21.4–v1.21.6 series (AH marker
+  hidden outside arrange mode, marker transition logging, calibrating
+  debounce guards, fresh re-read on app-icon moves). Diagnostics bumped to
+  `diagRev=34` (from reverted 30) solely to distinguish v1.22.0 logs from
+  v1.21.3; behavior code is identical.
+
 ## v1.21.3 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
