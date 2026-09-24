@@ -269,7 +269,18 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // Superseded by any later expand or activation, like an activation is.
     private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
         if assertion != nil {
-            return body(layout, [], nil)
+            // A restriction is already held (e.g. collapse from expanded with
+            // separators hidden and always-hidden on): positions would be stale
+            // so sections stay cached — but bundle identity is still reliable.
+            // Pass the live inventory so callers can baseline bundle sets; an
+            // empty baseline would make the newcomer watch re-allow everything.
+            generation += 1
+            let generation = self.generation
+            inventory.snapshot { [weak self] items in
+                guard let self = self, generation == self.generation else { return }
+                body(self.layout, items, nil)
+            }
+            return
         }
         guard let arrow = items?.toggleItem,
               let arrowFrame = itemFrame(arrow) else { return body(nil, [], nil) }
@@ -348,20 +359,25 @@ final class NativeVisibilityEngine: MenuBarEngine {
         recentLaunches = recentLaunches.filter { $0.value >= cutoff }
     }
 
-    // Every launch is remembered (receipt is logged so delivery is visible);
-    // while collapsed the restriction is additionally re-activated at once so
-    // a fast starter's icon shows without waiting for the next collapse.
+    // The receipt is logged so delivery is visible; only genuinely new bundles
+    // are remembered. A bundle already classified at the last collapse keeps
+    // its zone (visible, hidden or always-hidden) — helpers and agents restart
+    // all the time, and tracking them would union them into every allow-list
+    // for 120s, popping always-hidden icons back visible. While collapsed the
+    // restriction is additionally re-activated at once so a fast starter's icon
+    // shows without waiting for the next collapse.
     private func handleAppLaunch(_ note: Notification) {
         guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
               let bundle = app.bundleIdentifier, !bundle.isEmpty else { return }
         pruneRecentLaunches()
+        AppLog.info("NativeVisibility: launched (\(bundle))")
+        guard !lastCollapseBundles.contains(bundle),
+              !baseAllowedBundles.contains(bundle),
+              bundle != ownBundleIdentifier else { return }
         let alreadyTracked = recentLaunches[bundle] != nil
         recentLaunches[bundle] = Date()
-        AppLog.info("NativeVisibility: launched (\(bundle))")
         guard !alreadyTracked,
-              state == .collapsed, assertion != nil,
-              bundle != ownBundleIdentifier,
-              !baseAllowedBundles.contains(bundle) else { return }
+              state == .collapsed, assertion != nil else { return }
         AppLog.info("NativeVisibility: launched while collapsed (\(bundle)) — re-allowing")
         activate(allowing: baseAllowedBundles) { [weak self] succeeded in
             guard let self = self else { return }

@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.20.7 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always Hidden" icons no longer pop back visible on their own. Two leaks fed
+  them into the allow-list: (1) every process launch was tracked for 120s, so
+  helpers/agents that restart often (1Password, SpamSieve, Atoll…) were
+  unioned into every restriction and immediately re-shown while collapsed —
+  now only bundles never classified at the last collapse are tracked, the rest
+  keep their zone; (2) collapsing while a restriction was already held
+  (expanded with separators hidden + always-hidden on) recorded an empty
+  bundle baseline, after which the newcomer watch treated everything as new —
+  now the live inventory (identity stays reliable under a restriction) seeds
+  the baseline while sections stay cached (diagnostics `diagRev=16`).
+
 ## v1.20.6 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
