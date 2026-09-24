@@ -641,6 +641,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
         items?.alwaysHiddenItem?.length = showAHMarker ? expandedLength : 0
         items?.alwaysHiddenItem?.isVisible = showAHMarker
+        AppLog.info("NativeVisibility: markers regular visible=\(items?.separatorItem.isVisible ?? false), AH visible=\(items?.alwaysHiddenItem?.isVisible ?? false) length=\(Int(items?.alwaysHiddenItem?.length ?? -1))")
     }
 
     // Any arrangement works: whatever sits left of the separator is the hidden section.
