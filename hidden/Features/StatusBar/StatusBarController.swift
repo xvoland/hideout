@@ -168,6 +168,9 @@ class StatusBarController: MenuBarItemProvider {
     private func setupUI() {
         if let button = btnSeparate.button {
             button.image = self.imgIconLine
+            button.target = self
+            button.action = #selector(self.barItemPressed(sender:))
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
         let menu = self.getContextMenu()
         btnSeparate.menu = menu
@@ -178,18 +181,27 @@ class StatusBarController: MenuBarItemProvider {
             button.image = Assets.collapseImage
             button.target = self
 
-            button.action = #selector(self.btnExpandCollapsePressed(sender:))
+            button.action = #selector(self.barItemPressed(sender:))
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
     }
 
-    @objc func btnExpandCollapsePressed(sender: NSStatusBarButton) {
+    // One handler for the arrow and both separators: plain arrow click toggles
+    // collapse, plain separator click shows the menu (as documented), and
+    // Option-click on ANY of them toggles the separators. Previously only the
+    // arrow had an action, so Option-clicking a `|` went nowhere.
+    @objc func barItemPressed(sender: NSStatusBarButton) {
         if let event = NSApp.currentEvent {
 
             let isOptionKeyPressed = event.modifierFlags.contains(NSEvent.ModifierFlags.option)
+            let isArrow = (sender == btnExpandCollapse.button)
 
             if event.type == NSEvent.EventType.leftMouseUp && !isOptionKeyPressed{
-                self.expandCollapseIfNeeded()
+                if isArrow {
+                    self.expandCollapseIfNeeded()
+                } else {
+                    showContextMenu(from: sender)
+                }
             } else if event.type == NSEvent.EventType.rightMouseUp && !isOptionKeyPressed {
                 showContextMenu(from: sender)
             } else {
@@ -210,6 +222,7 @@ class StatusBarController: MenuBarItemProvider {
         // collapsed bar whenever the always-hidden section is on.
         if self.isCollapsed {self.expandMenubar()}
         Preferences.areSeparatorsHidden ? self.showSeparators() : self.hideSeparators()
+        AppLog.info("StatusBar: separators hidden=\(Preferences.areSeparatorsHidden)")
     }
 
     private func showSeparators() {
@@ -450,6 +463,9 @@ extension StatusBarController {
             if let button = btnAlwaysHidden?.button {
                 button.image = self.imgIconLine
                 button.appearsDisabled = true
+                button.target = self
+                button.action = #selector(self.barItemPressed(sender:))
+                button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             }
             self.btnAlwaysHidden?.autosaveName = "hideout_terminate" + StatusBarController.autosaveSuffix
             self.btnAlwaysHidden?.isVisible = true

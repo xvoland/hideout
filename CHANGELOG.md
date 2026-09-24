@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.20.9 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Option-click now works on all three bar items (arrow and both `|` separators),
+  not just the arrow. Previously only the arrow had a click handler, so
+  option-clicking a separator went nowhere and there was no way to reveal the
+  always-hidden zone for arranging if you missed the arrow. Plain clicks keep
+  their documented behavior (arrow toggles, separator opens the menu); the
+  toggle path and the expanded hold/release decision are now logged
+  (diagnostics `diagRev=18`).
+
 ## v1.20.8 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

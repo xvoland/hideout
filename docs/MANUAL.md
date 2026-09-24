@@ -9,8 +9,9 @@ Everything Hidden Bar can do, including the parts with no UI.
   (Preferences, Toggle Auto Collapse, Quit).
 - **⌘-drag** icons in the menu bar to move them across the separator: icons to
   the separator's left are hidden when collapsed.
-- **Option-click the arrow**: show/hide the separators and the always-hidden
-  area without expanding.
+- **Option-click the arrow or a separator** (`|`): show/hide the separators
+  and the always-hidden area without expanding. Showing them releases hiding
+  so everything can be ⌘-dragged; hiding re-enforces it.
 
 ## Preferences window
 

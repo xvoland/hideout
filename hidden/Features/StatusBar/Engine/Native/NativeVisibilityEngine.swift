@@ -250,8 +250,10 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // the restriction altogether.
     private func applyExpandedPresentation() {
         guard alwaysHiddenEnabled && alwaysHiddenSeparatorHidden, visibility.isAvailable, inventory.isAuthorized else {
+            AppLog.info("NativeVisibility: expanded presentation released (alwaysHiddenEnabled=\(alwaysHiddenEnabled) separatorsHidden=\(alwaysHiddenSeparatorHidden))")
             return releaseAssertion()
         }
+        AppLog.info("NativeVisibility: expanded presentation holding visible+hidden (always-hidden stays hidden)")
         withLayout { [weak self] layout, _, _ in
             guard let self = self else { return }
             guard let layout = layout else {
