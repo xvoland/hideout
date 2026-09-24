@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.20.14 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Move verification no longer fights reflow transients. Comparing a live frame
+  against the frozen one right after a visibility flip or a restriction change
+  caught parked/in-flight positions (e.g. 1060 vs settled 1028) and forced a
+  fresh census on every transition — extra snapshots and churn without new
+  information. Verification now runs only on settled frames (1.5s past the last
+  visibility flip or restriction change); real drags persist, transients don't
+  (diagnostics `diagRev=23`).
+
 ## v1.20.13 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

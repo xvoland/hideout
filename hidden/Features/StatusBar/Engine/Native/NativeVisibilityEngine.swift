@@ -288,9 +288,19 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // The sections as the user arranged them. Read fresh only from an
     // unrestricted bar; while a restriction is active the cached ones stand in.
     // Superseded by any later expand or activation, like an activation is.
+    // Anything that reflows the bar (visibility toggles, restriction changes)
+    // makes live separator frames untrustworthy for a beat: a just-reshown
+    // item still reports its parked slot, a just-reflowed one a transient.
+    // Verification runs only against settled frames — otherwise every
+    // transition "detects" a move and re-reads forever (feedback loop).
+    private static let settleInterval: TimeInterval = 1.5
+    private var lastBarDisturbance: Date?
     // True only on positive evidence of movement (both frames readable and
     // apart): an unreadable live frame means "can't tell", never "moved".
     private func separatorsMovedSinceFreeze() -> Bool {
+        if let last = lastBarDisturbance, Date().timeIntervalSince(last) < Self.settleInterval {
+            return false
+        }
         let tolerance: CGFloat = 8
         if let stored = layoutSeparatorFrame,
            let sep = items?.separatorItem,
@@ -442,6 +452,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 let old = self.assertion
                 self.assertion = newAssertion
                 old?.invalidate()
+                // A new restriction reflows the bar: live frames read within
+                // the settle window are transients, not drags.
+                self.lastBarDisturbance = Date()
                 completion(true)
             case .failure(let error):
                 // Fail open: never leave icons hidden after an error.
@@ -592,6 +605,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // via zero width — isVisible = false would make macOS forget where the user
     // placed it, and its position defines the always-hidden zone).
     private func setSeparatorsVisible(_ visible: Bool) {
+        // Stamp only on an actual flip: the parked-while-hidden slot differs
+        // from the shown one, so frames read within the settle window after a
+        // flip are transients, not drags.
+        if items?.separatorItem.isVisible != visible {
+            lastBarDisturbance = Date()
+        }
         items?.separatorItem.isVisible = visible
         items?.alwaysHiddenItem?.length = visible && alwaysHiddenEnabled ? expandedLength : 0
     }
@@ -607,6 +626,8 @@ final class NativeVisibilityEngine: MenuBarEngine {
 
     private func releaseAssertion() {
         stopNewcomerWatch()
+        // Dropping a restriction reflows the bar too (see activate success).
+        lastBarDisturbance = Date()
         generation += 1
         assertion?.invalidate()
         assertion = nil
