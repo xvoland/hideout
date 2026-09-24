@@ -20,8 +20,13 @@ class StatusBarController: MenuBarItemProvider {
     // Created and named in declaration order on purpose: a status item registers
     // with the menu bar under its autosave name, and on macOS 27 every new name
     // lands left of the previous one, so the bar reads separator, arrow.
+    // NOTE: the separator name was `hideout_separate` until v1.20.5. While it
+    // stayed invisible (v1.19–v1.20.4) its slot went stale wherever macOS had
+    // parked it, so reusing it as the boundary classified the whole bar visible.
+    // The renamed slot lays out fresh, adjacent to the arrow; the orphaned old
+    // slot is harmless.
     let btnExpandCollapse = StatusBarController.makeItem("hideout_expandcollapse", length: NSStatusItem.variableLength)
-    let btnSeparate = StatusBarController.makeItem("hideout_separate", length: 1)
+    let btnSeparate = StatusBarController.makeItem("hideout_separator", length: 1)
     var btnAlwaysHidden:NSStatusItem? = nil
 
     //MARK: - MenuBarItemProvider conformance

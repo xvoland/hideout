@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.20.6 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Collapse hides again. v1.20.5 restored the separator as the boundary, but its
+  autosave slot had gone stale while it stayed invisible (v1.19–v1.20.4) —
+  parked far left of the arranged icons, so the whole bar classified visible
+  and nothing hid. The separator now uses a fresh slot name and lays out
+  adjacent to the arrow; one-time ⌘-drag of the `|` to taste, then collapse
+  (diagnostics `diagRev=15`, census logs `sepX=`).
+
 ## v1.20.5 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
