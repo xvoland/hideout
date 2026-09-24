@@ -210,9 +210,14 @@ final class NativeVisibilityEngine: MenuBarEngine {
             }.joined(separator: " ")
             AppLog.info("NativeVisibility: pre-collapse \(preLine)")
              let preBundles = Set(inventory.compactMap { $0.bundleIdentifier })
-            let preCounts = Dictionary(grouping: inventory.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
-            self.lastCollapseBundles = preBundles
-            self.activate(allowing: layout.bundles(in: [.visible])) { [weak self] succeeded in
+             let preCounts = Dictionary(grouping: inventory.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
+             self.lastCollapseBundles = preBundles
+             // Optimism is only for icons not yet registered: anything already in
+             // the census gets its real zone, so drop it from the recent window.
+             // Otherwise a login storm (empty baseline, everything tracked) would
+             // union the whole storm into the first collapse permanently.
+             self.recentLaunches = self.recentLaunches.filter { !preBundles.contains($0.key) }
+             self.activate(allowing: layout.bundles(in: [.visible])) { [weak self] succeeded in
                 guard let self = self else { return }
                 self.state = succeeded ? .collapsed : .expanded
                 if succeeded {
@@ -281,6 +286,8 @@ final class NativeVisibilityEngine: MenuBarEngine {
             // Fresh layout classifies every running app; only the recent window
             // stays unioned for icons that have not registered yet.
             self.pruneRecentLaunches()
+            let present = Set(inventory.compactMap { $0.bundleIdentifier })
+            self.recentLaunches = self.recentLaunches.filter { !present.contains($0.key) }
             self.activate(allowing: layout.bundles(in: [.visible, .hidden])) { _ in }
         }
     }
