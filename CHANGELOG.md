@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.20.4 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always hide" section now keeps working across collapse cycles. On macOS 27
+  the whole menu bar is one window, and the always-hidden separator at zero
+  length reports a collapsed (neighbour-snapped) frame, so the second collapse
+  re-classified the always-hidden zone from the wrong position — icons you had
+  parked there started behaving like ordinary hidden icons. The separator frame
+  is now cached while it has real length (expanded, or before a collapse hides
+  it) and reused for the next census instead of the collapsed live frame
+  (diagnostics `diagRev=13`).
+
 ## v1.20.3 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

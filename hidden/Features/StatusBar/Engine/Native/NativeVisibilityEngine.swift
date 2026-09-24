@@ -96,6 +96,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // but bundle identity is reliable. Any bundle absent here that appears later
     // is a newcomer (launched, or shown without a launch) and is re-allowed.
     private var lastCollapseBundles: Set<String> = []
+    // Cached frame of the always-hidden separator. While collapsed its length is
+    // 0, and on macOS 27 (one menu-bar window) a zero-length live frame collapses
+    // onto a neighbour, so re-reading it on the next collapse mis-locates the
+    // always-hidden zone. We refresh it only while it has real length (expanded,
+    // or the brief moment before a collapse hides it) and reuse the cache then.
+    private var cachedAlwaysHiddenFrame: CGRect?
     // A repeating poll that runs for as long as the bar stays collapsed. Agent
     // apps (LSUIElement) never post didLaunch, so their icons can only be caught
     // by re-scanning the bar; polling every few seconds makes a freshly
@@ -204,6 +210,13 @@ final class NativeVisibilityEngine: MenuBarEngine {
         stopNewcomerWatch()
         setSeparatorsVisible(true)
         items?.alwaysHiddenItem?.isVisible = true
+        // The separator now has full length: capture its frame for the next
+        // collapse so the always-hidden zone is read from a real position.
+        if alwaysHiddenEnabled,
+           let ah = items?.alwaysHiddenItem,
+           let frame = itemFrame(ah), frame.width > 0 {
+            cachedAlwaysHiddenFrame = frame
+        }
         state = .expanded
         applyExpandedPresentation()
     }
@@ -255,7 +268,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
         guard let arrow = items?.toggleItem,
               let boundary = itemFrame(arrow) else { return body(nil, [], nil) }
-        let alwaysHiddenFrame = alwaysHiddenEnabled ? items?.alwaysHiddenItem.flatMap(itemFrame) : nil
+        // Refresh the cache only from a real-length frame; never from the
+        // collapsed zero-length one, which would corrupt the always-hidden zone.
+        if alwaysHiddenEnabled,
+           let ah = items?.alwaysHiddenItem,
+           ah.length > 0,
+           let frame = itemFrame(ah), frame.width > 0 {
+            cachedAlwaysHiddenFrame = frame
+        }
+        let alwaysHiddenFrame = alwaysHiddenEnabled ? (cachedAlwaysHiddenFrame ?? items?.alwaysHiddenItem.flatMap(itemFrame)) : nil
         let isLTR = self.isLTR()
         generation += 1
         let generation = self.generation
