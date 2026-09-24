@@ -35,7 +35,9 @@ import AppKit
 //   kept visible, plus a positional newcomer watch while collapsed — didLaunch
 //   can long precede the icon for slow starters, predate the observer, or be
 //   absent entirely when an already-running app shows its icon; census presence
-//   alone cannot be the signal (hidden icons stay present in AX).
+//   alone cannot be the signal (hidden icons stay present in AX), so the
+//   newcomer watch re-allows any bundle that was not present at the last
+//   collapse instead of relying on position.
 final class NativeVisibilityEngine: MenuBarEngine {
     // System item identifiers to keep visible. Unknown identifiers are ignored,
     // so the window is deliberately wide: Apple extras live past index 63 on
@@ -88,10 +90,12 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private static let recentLaunchWindow: TimeInterval = 120
     private var recentLaunches: [String: Date] = [:]
     private var launchObserver: NSObjectProtocol?
-    // Arrow position of the last collapse census. Only a freshly registered
-    // icon reports a trustworthy x while collapsed (hidden items report stale
-    // positions), so the newcomer watch below compares against this.
-    private var lastArrowX: CGFloat?
+    // Bundles present in the bar at the moment of the last collapse census.
+    // Hidden items report stale positions while a restriction is active, so a
+    // positional test cannot tell a freshly hidden icon from a brand-new one —
+    // but bundle identity is reliable. Any bundle absent here that appears later
+    // is a newcomer (launched, or shown without a launch) and is re-allowed.
+    private var lastCollapseBundles: Set<String> = []
 
     private var alwaysHiddenEnabled = false
     private var alwaysHiddenSeparatorHidden = false
@@ -152,9 +156,8 @@ final class NativeVisibilityEngine: MenuBarEngine {
         // older than the window are superseded, recent ones stay unioned in
         // case their icons have not registered yet.
         pruneRecentLaunches()
-        withLayout { [weak self] layout, inventory, midX in
+        withLayout { [weak self] layout, inventory, _ in
             guard let self = self else { return }
-            self.lastArrowX = midX
             guard let layout = layout else {
                 self.logUnavailableOnce("the arrow's position cannot be read yet")
                 self.state = .expanded
@@ -175,8 +178,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 return "[\(i)]\(id)@\(Int(item.frame.midX)):\(section):visible:true"
             }.joined(separator: " ")
             AppLog.info("NativeVisibility: pre-collapse \(preLine)")
-            let preBundles = Set(inventory.compactMap { $0.bundleIdentifier })
+             let preBundles = Set(inventory.compactMap { $0.bundleIdentifier })
             let preCounts = Dictionary(grouping: inventory.compactMap { $0.bundleIdentifier }, by: { $0 }).mapValues { $0.count }
+            self.lastCollapseBundles = preBundles
             self.activate(allowing: layout.bundles(in: [.visible])) { [weak self] succeeded in
                 guard let self = self else { return }
                 self.state = succeeded ? .collapsed : .expanded
@@ -334,14 +338,13 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
     }
 
-    // Positional newcomer watch. Catches what didLaunch cannot: launches that
-    // predate the observer, icons appearing without a process launch, and
-    // icons registering long after their launch. While collapsed, every so
-    // often, any bundle that is neither allowed nor recent is judged by its
-    // position: a freshly registered icon reports a trustworthy x, and right
-    // of the arrow (LTR) is the visible zone by definition. Left-of-arrow
-    // newcomers are ignored — macOS already hides them correctly. A wrongly
-    // shown icon self-heals on the next collapse (fresh census supersedes).
+    // Newcomer watch. Catches what didLaunch cannot: launches that predate the
+    // observer, icons appearing without a process launch, and icons registering
+    // long after their launch. A positional test is useless here — hidden items
+    // report stale frames while the restriction is active — so the signal is the
+    // bundle set: anything absent from the last collapse census and not already
+    // allowed/recent is a newcomer and is re-allowed. The next collapse re-reads
+    // everything from an unrestricted bar, so a wrongly shown icon self-heals.
     // Bounded: a handful of checks after each collapse/launch, each a no-op
     // unless still collapsed with the restriction held.
     private func scheduleNewcomerWatch() {
@@ -353,24 +356,22 @@ final class NativeVisibilityEngine: MenuBarEngine {
     }
 
     private func newcomerCheck() {
-        guard state == .collapsed, assertion != nil, let arrowX = lastArrowX else { return }
+        guard state == .collapsed, assertion != nil else { return }
         inventory.snapshot { [weak self] items in
             guard let self = self, self.state == .collapsed, self.assertion != nil else { return }
             self.pruneRecentLaunches()
-            let ltr = self.isLTR()
             var found: [String] = []
             for item in items {
                 guard let bundle = item.bundleIdentifier, !bundle.isEmpty,
                       bundle != self.ownBundleIdentifier,
+                      !self.lastCollapseBundles.contains(bundle),
                       !self.baseAllowedBundles.contains(bundle),
                       self.recentLaunches[bundle] == nil else { continue }
-                let inVisibleZone = ltr ? item.frame.midX > arrowX : item.frame.midX < arrowX
-                guard inVisibleZone else { continue }
                 self.recentLaunches[bundle] = Date()
                 found.append(bundle)
             }
             guard !found.isEmpty else { return }
-            AppLog.info("NativeVisibility: newcomers in visible zone (\(found.joined(separator: " "))) — re-allowing")
+            AppLog.info("NativeVisibility: newcomer bundles (\(found.joined(separator: " "))) — re-allowing")
             self.activate(allowing: self.baseAllowedBundles) { [weak self] succeeded in
                 guard let self = self else { return }
                 if succeeded {

@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.20.2 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Newly launched apps now show their icon without expanding first. The previous
+  positional newcomer watch was blind: hidden items report stale frames while
+  the restriction is active, so a freshly hidden icon could never be told apart
+  from a new one. The signal is now the bundle set — any bundle absent from the
+  last collapse census is re-allowed, which also covers launches that predate
+  the observer and icons that appear without a process launch (diagnostics
+  `diagRev=11`).
+
 ## v1.20.1 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
