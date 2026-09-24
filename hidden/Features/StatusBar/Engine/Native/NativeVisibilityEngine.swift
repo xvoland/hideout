@@ -343,6 +343,35 @@ final class NativeVisibilityEngine: MenuBarEngine {
         return false
     }
 
+    // App icons move too — user drags, macOS reflows under a held restriction —
+    // and frozen sections would misclassify them forever (only separator moves
+    // triggered a re-read). Same contract: positive evidence only (a live
+    // position across a frozen boundary by more than the threshold), settle
+    // window honored, unreadable/absent frames mean "can't tell". Bundles the
+    // frozen layout doesn't know (newcomers, system items) belong to other
+    // logic — skip them. Real drags span hundreds of px; reflow stays within
+    // tens (same threshold as separators).
+    private func appsMovedSinceFreeze(census: [MenuBarInventoryItem]) -> Bool {
+        if let last = lastBarDisturbance, Date().timeIntervalSince(last) < Self.settleInterval {
+            return false
+        }
+        guard let frozen = layout, let sep = layoutSeparatorFrame else { return false }
+        let ltr = isLTR()
+        for item in census {
+            guard let bundle = item.bundleIdentifier,
+                  let frozenZone = frozen.sections[bundle] else { continue }
+            if frozenZone == .alwaysHidden, layoutAHFrame == nil { continue }
+            let liveZone = MenuBarLayoutResolver.section(of: item.frame, separatorFrame: sep, alwaysHiddenSeparatorFrame: layoutAHFrame, isLTR: ltr)
+            if liveZone == frozenZone { continue }
+            let near: [CGFloat] = [sep.midX] + (layoutAHFrame.map { [$0.midX] } ?? [])
+            if near.allSatisfy({ abs(item.frame.midX - $0) > Self.moveThreshold }) {
+                AppLog.info("NativeVisibility: \(bundle) moved across the frozen boundary — re-reading fresh")
+                return true
+            }
+        }
+        return false
+    }
+
     private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
         if assertion != nil, !separatorsMovedSinceFreeze() {
             // A restriction is already held (e.g. collapse from expanded with
@@ -355,6 +384,14 @@ final class NativeVisibilityEngine: MenuBarEngine {
             inventory.snapshot { [weak self] census in
                 guard let self = self, generation == self.generation else { return }
                 self.healAlwaysHiddenZone(with: census)
+                if self.appsMovedSinceFreeze(census: census) {
+                    // Fall through to a fresh census below instead of serving
+                    // stale sections (same path as separator moves).
+                    self.releaseAssertion()
+                    self.layout = nil
+                    self.withLayout(body)
+                    return
+                }
                 body(self.layout, census, nil)
             }
             return
