@@ -26,7 +26,11 @@ class StatusBarController: MenuBarItemProvider {
     // The renamed slot lays out fresh, adjacent to the arrow; the orphaned old
     // slot is harmless.
     let btnExpandCollapse = StatusBarController.makeItem("hideout_expandcollapse", length: NSStatusItem.variableLength)
-    let btnSeparate = StatusBarController.makeItem("hideout_separator", length: 1)
+    // Wide enough to see and ⌘-grab: at length 1 the boundary control was
+    // effectively invisible, so the zone it defines could neither be found
+    // nor arranged. Width is runtime-only (position persists per autosave
+    // name), so this shifts neighbours once by a few px.
+    let btnSeparate = StatusBarController.makeItem("hideout_separator", length: 8)
     var btnAlwaysHidden:NSStatusItem? = nil
 
     //MARK: - MenuBarItemProvider conformance

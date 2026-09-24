@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.20.16 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- The main `|` separator is now 8pt wide instead of 1pt. A one-pixel boundary
+  control can neither be seen nor ⌘-grabbed, which made its zone
+  unfindable and unarrangeable. Width is runtime-only (position persists per
+  autosave name), neighbours shift once by a few px (diagnostics `diagRev=25`).
+
 ## v1.20.15 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
