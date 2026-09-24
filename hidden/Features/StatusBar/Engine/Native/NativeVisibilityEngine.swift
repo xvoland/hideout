@@ -234,9 +234,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
     func expand() {
         stopNewcomerWatch()
         setSeparatorsVisible(true)
-        // In arrange mode the separator has full length: capture its frame for
-        // the next collapse so the always-hidden zone is read from a real
-        // position. In normal mode it stays hidden (see setSeparatorsVisible).
+        items?.alwaysHiddenItem?.isVisible = true
+        // The separator now has full length: capture its frame for the next
+        // collapse so the always-hidden zone is read from a real position.
         if alwaysHiddenEnabled,
            let ah = items?.alwaysHiddenItem,
            let frame = itemFrame(ah), frame.width > 0 {
@@ -251,13 +251,6 @@ final class NativeVisibilityEngine: MenuBarEngine {
         alwaysHiddenSeparatorHidden = separatorHidden
         if state != .collapsed {
             setSeparatorsVisible(true)
-        }
-        // Don't pile an async presentation refresh onto an in-flight
-        // calibration (rapid toggles): flags above are authoritative and the
-        // next expand/collapse converges visuals. Same guard as the arrow path.
-        if state == .calibrating {
-            AppLog.info("NativeVisibility: always-hidden update deferred — engine calibrating")
-            return
         }
         if state == .expanded {
             applyExpandedPresentation()
@@ -343,35 +336,6 @@ final class NativeVisibilityEngine: MenuBarEngine {
         return false
     }
 
-    // App icons move too — user drags, macOS reflows under a held restriction —
-    // and frozen sections would misclassify them forever (only separator moves
-    // triggered a re-read). Same contract: positive evidence only (a live
-    // position across a frozen boundary by more than the threshold), settle
-    // window honored, unreadable/absent frames mean "can't tell". Bundles the
-    // frozen layout doesn't know (newcomers, system items) belong to other
-    // logic — skip them. Real drags span hundreds of px; reflow stays within
-    // tens (same threshold as separators).
-    private func appsMovedSinceFreeze(census: [MenuBarInventoryItem]) -> Bool {
-        if let last = lastBarDisturbance, Date().timeIntervalSince(last) < Self.settleInterval {
-            return false
-        }
-        guard let frozen = layout, let sep = layoutSeparatorFrame else { return false }
-        let ltr = isLTR()
-        for item in census {
-            guard let bundle = item.bundleIdentifier,
-                  let frozenZone = frozen.sections[bundle] else { continue }
-            if frozenZone == .alwaysHidden, layoutAHFrame == nil { continue }
-            let liveZone = MenuBarLayoutResolver.section(of: item.frame, separatorFrame: sep, alwaysHiddenSeparatorFrame: layoutAHFrame, isLTR: ltr)
-            if liveZone == frozenZone { continue }
-            let near: [CGFloat] = [sep.midX] + (layoutAHFrame.map { [$0.midX] } ?? [])
-            if near.allSatisfy({ abs(item.frame.midX - $0) > Self.moveThreshold }) {
-                AppLog.info("NativeVisibility: \(bundle) moved across the frozen boundary — re-reading fresh")
-                return true
-            }
-        }
-        return false
-    }
-
     private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
         if assertion != nil, !separatorsMovedSinceFreeze() {
             // A restriction is already held (e.g. collapse from expanded with
@@ -384,14 +348,6 @@ final class NativeVisibilityEngine: MenuBarEngine {
             inventory.snapshot { [weak self] census in
                 guard let self = self, generation == self.generation else { return }
                 self.healAlwaysHiddenZone(with: census)
-                if self.appsMovedSinceFreeze(census: census) {
-                    // Fall through to a fresh census below instead of serving
-                    // stale sections (same path as separator moves).
-                    self.releaseAssertion()
-                    self.layout = nil
-                    self.withLayout(body)
-                    return
-                }
                 body(self.layout, census, nil)
             }
             return
@@ -426,10 +382,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             let boundary = self.cachedSeparatorFrame ?? arrowFrame
             // Refresh the cache only from a real-length frame; never from the
             // collapsed zero-length one, which would corrupt the always-hidden zone.
-            // A zero-width live frame (marker hidden) must not classify: fall
-            // back to the cache, else an empty zone.
-            let liveAHRaw: CGRect? = self.alwaysHiddenEnabled ? self.items?.alwaysHiddenItem.flatMap(self.itemFrame) : nil
-            let liveAHFrame: CGRect? = (liveAHRaw?.width ?? 0) > 0 ? liveAHRaw : nil
+            let liveAHFrame: CGRect? = self.alwaysHiddenEnabled ? self.items?.alwaysHiddenItem.flatMap(self.itemFrame) : nil
             if self.alwaysHiddenEnabled,
                let ah = self.items?.alwaysHiddenItem,
                ah.length > 0,
@@ -662,11 +615,10 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
     }
 
-    // The regular separator shows while expanded so it can be ⌘-dragged; the
-    // always-hidden one only in arrange mode (see below). While collapsed they
-    // hide (the regular one via isVisible, the always-hidden one via zero
-    // width — isVisible = false would make macOS forget where the user placed
-    // it, and its position defines the always-hidden zone).
+    // Both separators show while expanded so they can be ⌘-dragged; while
+    // collapsed they hide (the regular one via isVisible, the always-hidden one
+    // via zero width — isVisible = false would make macOS forget where the user
+    // placed it, and its position defines the always-hidden zone).
     private func setSeparatorsVisible(_ visible: Bool) {
         // Stamp only on an actual flip: the parked-while-hidden slot differs
         // from the shown one, so frames read within the settle window after a
@@ -675,17 +627,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             lastBarDisturbance = Date()
         }
         items?.separatorItem.isVisible = visible
-        // The always-hidden marker shows only in arrange mode (separators
-        // shown) — day-to-day bars stay clean, including while expanded.
-        // Length and visibility move together; the slot and the cached frame
-        // survive either way (collapse cycles prove it).
-        let showAHMarker = visible && alwaysHiddenEnabled && !alwaysHiddenSeparatorHidden
-        if let ahVisible = items?.alwaysHiddenItem?.isVisible, ahVisible != showAHMarker {
-            lastBarDisturbance = Date()
-        }
-        items?.alwaysHiddenItem?.length = showAHMarker ? expandedLength : 0
-        items?.alwaysHiddenItem?.isVisible = showAHMarker
-        AppLog.info("NativeVisibility: markers regular visible=\(items?.separatorItem.isVisible ?? false), AH visible=\(items?.alwaysHiddenItem?.isVisible ?? false) length=\(Int(items?.alwaysHiddenItem?.length ?? -1))")
+        items?.alwaysHiddenItem?.length = visible && alwaysHiddenEnabled ? expandedLength : 0
     }
 
     // Any arrangement works: whatever sits left of the separator is the hidden section.

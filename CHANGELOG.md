@@ -1,42 +1,5 @@
 # Changelog
 
-## v1.21.6 (2026-09-24)
-
-Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
-[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
-
-### Fixed
-- Collapse re-reads fresh when app icons moved since the frozen layout.
-  Frozen sections previously ignored icon drags and reflows (only separator
-  moves triggered a re-read), so a held-path collapse could misclassify moved
-  icons indefinitely. Same safety contract: positive evidence only, settle
-  window honored, newcomers skipped (diagnostics `diagRev=33`).
-
-## v1.21.5 (2026-09-24)
-
-Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
-[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
-
-### Fixed
-- Rapid double-toggles no longer pile overlapping restriction sessions onto an
-  in-flight calibration. The separators toggle, the reveal action, and the
-  always-hidden section update now ignore presses while the engine is
-  calibrating (with a log line), mirroring the existing arrow-press guard —
-  flags stay authoritative and visuals converge on the next expand/collapse
-  (diagnostics `diagRev=32`).
-
-## v1.21.4 (2026-09-24)
-
-Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
-[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
-
-### Changed
-- The always-hidden zone's `|` marker now stays hidden in day-to-day use
-  (including while expanded) and appears only in arrange mode (Option-click
-  or Preferences → Show All Icons for Arranging). Length and visibility move
-  together so the slot and the cached frame survive; the zone census ignores
-  a zero-width live frame and falls back to the cache (diagnostics `diagRev=31`).
-
 ## v1.21.3 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
