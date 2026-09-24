@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.21.6 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Collapse re-reads fresh when app icons moved since the frozen layout.
+  Frozen sections previously ignored icon drags and reflows (only separator
+  moves triggered a re-read), so a held-path collapse could misclassify moved
+  icons indefinitely. Same safety contract: positive evidence only, settle
+  window honored, newcomers skipped (diagnostics `diagRev=33`).
+
 ## v1.21.5 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
