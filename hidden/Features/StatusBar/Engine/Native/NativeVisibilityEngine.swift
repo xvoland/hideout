@@ -31,8 +31,9 @@ import AppKit
 //   feeds the allow-list; there is no fail-open.
 // - Sections are read only while nothing is hidden, because hidden items report
 //   stale positions. They are re-read on the next collapse from an unrestricted
-//   bar; until then an app launched while collapsed is optimistically kept
-//   visible via NSWorkspace launch observation (launchedWhileCollapsed).
+//   bar; until then recent launches (120s window, any state) are optimistically
+//   kept visible — didLaunch can long precede the icon for slow starters, and
+//   census presence cannot be the signal (hidden icons stay present in AX).
 final class NativeVisibilityEngine: MenuBarEngine {
     // System item identifiers to keep visible. Unknown identifiers are ignored,
     // so the window is deliberately wide: Apple extras live past index 63 on
@@ -71,15 +72,19 @@ final class NativeVisibilityEngine: MenuBarEngine {
 
     // Base of the currently held restriction (visible-section snapshot, or
     // visible+hidden for the expanded always-hidden presentation). A launch
-    // re-activation re-allows this base plus launchedWhileCollapsed.
+    // re-activation re-allows this base plus recent launches.
     private var baseAllowedBundles: [String] = []
-    // Bundles of apps that launched while a restriction is held. The fresh
-    // census cannot classify them (hidden items report stale positions), so
-    // they are optimistically kept visible until the next collapse re-reads
-    // sections from an unrestricted bar. Reset whenever a new base is
-    // established (collapse, expanded presentation) or the restriction drops.
-    // Bundles without menu-bar items are harmless no-ops in the allow-list.
-    private var launchedWhileCollapsed = Set<String>()
+    // Every launch is remembered for a bounded window, in any state. didLaunch
+    // fires at process start, which for slow starters (BetterDisplay needs
+    // tens of seconds before its icon registers) can long precede the icon —
+    // so launch-while-collapsed alone misses them. Presence in the census
+    // cannot be the signal either: hidden-section icons stay present in AX
+    // while collapsed. The allow-list unions recent launches; the next fresh
+    // census classifies properly and supersedes the optimism (a wrongly shown
+    // icon self-heals on the following collapse). Bundles without menu-bar
+    // items are harmless no-ops in the allow-list.
+    private static let recentLaunchWindow: TimeInterval = 120
+    private var recentLaunches: [String: Date] = [:]
     private var launchObserver: NSObjectProtocol?
 
     private var alwaysHiddenEnabled = false
@@ -132,9 +137,10 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return completion(.unavailable)
         }
         state = .calibrating
-        // Fresh cycle: the census below classifies every running app, so any
-        // previously launched-while-collapsed entries are superseded.
-        launchedWhileCollapsed = []
+        // Fresh cycle: the census below classifies every running app; entries
+        // older than the window are superseded, recent ones stay unioned in
+        // case their icons have not registered yet.
+        pruneRecentLaunches()
         withLayout { [weak self] layout, inventory, _ in
             guard let self = self else { return }
             guard let layout = layout else {
@@ -210,8 +216,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
             guard let layout = layout else {
                 return self.releaseAssertion()
             }
-            // Fresh layout classifies every running app, superseding the set.
-            self.launchedWhileCollapsed = []
+            // Fresh layout classifies every running app; only the recent window
+            // stays unioned for icons that have not registered yet.
+            self.pruneRecentLaunches()
             self.activate(allowing: layout.bundles(in: [.visible, .hidden])) { _ in }
         }
     }
@@ -248,14 +255,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // between collapsed and expanded never flashes the whole bar visible.
     private func activate(allowing bundles: [String], completion: @escaping (Bool) -> Void) {
         baseAllowedBundles = bundles
+        pruneRecentLaunches()
         generation += 1
         let generation = self.generation
         // System hosts (MenuBarAgent, Control Center, SystemUIServer) own
         // Apple's extras — including ones Accessibility never exposes (Time
         // Machine) — so they are always kept. No third-party item can squat
-        // these Apple-only namespaces. Apps launched while collapsed are
-        // optimistically kept visible until the next fresh census.
-        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(launchedWhileCollapsed) + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
+        // these Apple-only namespaces. Recent launches are optimistically kept
+        // visible until the next fresh census classifies them.
+        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(recentLaunches.keys) + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
         AppLog.info("NativeVisibility: allowing \(allowed)")
         visibility.activate(allowedSystemItems: Self.systemItemsToKeep,
                             allowedBundleIdentifiers: allowed) { [weak self] result in
@@ -278,16 +286,25 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
     }
 
-    // An app that starts while collapsed was not in the census snapshot, so
-    // macOS would hide it. Optimistically keep it visible until the next fresh
-    // census classifies it into its section.
+    private func pruneRecentLaunches() {
+        let cutoff = Date().addingTimeInterval(-Self.recentLaunchWindow)
+        recentLaunches = recentLaunches.filter { $0.value >= cutoff }
+    }
+
+    // Every launch is remembered (receipt is logged so delivery is visible);
+    // while collapsed the restriction is additionally re-activated at once so
+    // a fast starter's icon shows without waiting for the next collapse.
     private func handleAppLaunch(_ note: Notification) {
-        guard state == .collapsed, assertion != nil else { return }
         guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-              let bundle = app.bundleIdentifier, !bundle.isEmpty,
+              let bundle = app.bundleIdentifier, !bundle.isEmpty else { return }
+        pruneRecentLaunches()
+        let alreadyTracked = recentLaunches[bundle] != nil
+        recentLaunches[bundle] = Date()
+        AppLog.info("NativeVisibility: launched (\(bundle))")
+        guard !alreadyTracked,
+              state == .collapsed, assertion != nil,
               bundle != ownBundleIdentifier,
-              !baseAllowedBundles.contains(bundle),
-              launchedWhileCollapsed.insert(bundle).inserted else { return }
+              !baseAllowedBundles.contains(bundle) else { return }
         AppLog.info("NativeVisibility: launched while collapsed (\(bundle)) — re-allowing")
         activate(allowing: baseAllowedBundles) { [weak self] succeeded in
             guard let self = self else { return }
@@ -351,7 +368,6 @@ final class NativeVisibilityEngine: MenuBarEngine {
         generation += 1
         assertion?.invalidate()
         assertion = nil
-        launchedWhileCollapsed = []
     }
 
     deinit {
