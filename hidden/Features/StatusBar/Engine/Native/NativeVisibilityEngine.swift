@@ -291,9 +291,10 @@ final class NativeVisibilityEngine: MenuBarEngine {
             // empty baseline would make the newcomer watch re-allow everything.
             generation += 1
             let generation = self.generation
-            inventory.snapshot { [weak self] items in
+            inventory.snapshot { [weak self] census in
                 guard let self = self, generation == self.generation else { return }
-                body(self.layout, items, nil)
+                self.healAlwaysHiddenZone(with: census)
+                body(self.layout, census, nil)
             }
             return
         }
@@ -309,13 +310,20 @@ final class NativeVisibilityEngine: MenuBarEngine {
         let boundary = cachedSeparatorFrame ?? arrowFrame
         // Refresh the cache only from a real-length frame; never from the
         // collapsed zero-length one, which would corrupt the always-hidden zone.
+        let liveAHFrame: CGRect? = alwaysHiddenEnabled ? items?.alwaysHiddenItem.flatMap(itemFrame) : nil
         if alwaysHiddenEnabled,
            let ah = items?.alwaysHiddenItem,
            ah.length > 0,
            let frame = itemFrame(ah), frame.width > 0 {
             cachedAlwaysHiddenFrame = frame
         }
-        let alwaysHiddenFrame = alwaysHiddenEnabled ? (cachedAlwaysHiddenFrame ?? items?.alwaysHiddenItem.flatMap(itemFrame)) : nil
+        let alwaysHiddenFrame = alwaysHiddenEnabled ? (cachedAlwaysHiddenFrame ?? liveAHFrame) : nil
+        let ahDiag: String
+        switch (alwaysHiddenEnabled, alwaysHiddenFrame) {
+        case (false, _): ahDiag = "off"
+        case (true, .some(let f)): ahDiag = "x=\(Int(f.midX))w=\(Int(f.width))"
+        case (true, nil): ahDiag = "nil-frame"
+        }
         let isLTR = self.isLTR()
         generation += 1
         let generation = self.generation
@@ -328,9 +336,38 @@ final class NativeVisibilityEngine: MenuBarEngine {
                                                        alwaysHiddenSeparatorFrame: alwaysHiddenFrame,
                                                        isLTR: isLTR,
                                                        excludingBundle: self.ownBundleIdentifier)
-            AppLog.info("NativeVisibility: separator at x=\(boundary.midX); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
+            AppLog.info("NativeVisibility: separator at x=\(boundary.midX) ahZone=\(ahDiag); visible \(layout.bundles(in: [.visible])), hidden \(layout.bundles(in: [.hidden])), always hidden \(layout.bundles(in: [.alwaysHidden]))")
             self.layout = layout
             body(layout, inventory, boundary.midX)
+        }
+    }
+
+    // Heals a frozen layout whose always-hidden zone predates a usable
+    // separator frame: right after the separator is (re)created it has no
+    // laid-out frame yet, so the seeding census records an empty zone and every
+    // later held-path collapse inherits it. Once the cached frame validates,
+    // promote hidden-zone bundles sitting on its always-hidden side. Visible
+    // bundles are never demoted, and the next fresh census supersedes
+    // unconditionally.
+    private func healAlwaysHiddenZone(with census: [MenuBarInventoryItem]) {
+        guard let ahFrame = cachedAlwaysHiddenFrame,
+              let frozen = layout,
+              frozen.bundles(in: [.alwaysHidden]).isEmpty else { return }
+        let ltr = isLTR()
+        var sections = frozen.sections
+        var healed = false
+        for item in census {
+            guard let bundle = item.bundleIdentifier,
+                  sections[bundle] == .hidden else { continue }
+            let onAHHiddenSide = ltr ? item.frame.midX < ahFrame.midX : item.frame.midX > ahFrame.midX
+            if onAHHiddenSide {
+                sections[bundle] = .alwaysHidden
+                healed = true
+            }
+        }
+        if healed {
+            layout = MenuBarLayout(sections: sections)
+            AppLog.info("NativeVisibility: healed always-hidden zone from cached separator frame")
         }
     }
 

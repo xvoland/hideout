@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.20.11 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- "Always Hidden" zone no longer freezes empty. Right after the separator is
+  (re)created it has no laid-out frame yet, so the seeding census recorded an
+  empty zone — and every later collapse under a held restriction inherited the
+  frozen layout, leaving always-hidden icons visible on every expand. The held
+  path now promotes hidden-zone bundles sitting on the cached frame's
+  always-hidden side (visible bundles are never demoted; the next fresh census
+  supersedes). The census line also reports the zone state (`ahZone=off`,
+  `nil-frame`, or coordinates) (diagnostics `diagRev=20`).
+
 ## v1.20.10 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
