@@ -35,8 +35,7 @@ Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarv
 Hideout lets you hide menu bar items to give your Mac a cleaner look.
 
 <p align="center">
-	<img width="400" src="img/screen1.png">
-	<img width="400" src="img/screen2.png">
+	<img src="img/screen01.png">
 </p>
 
 ## 🚀 Install
