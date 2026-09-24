@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.21.1 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Classified bundles no longer leak into the allow-list through the recent
+  window. On a fresh process every login-storm launch was tracked (empty
+  baseline), so the first collapse unioned the whole storm — including
+  always-hidden helpers — into the restriction permanently. Now any bundle
+  already present in the census is dropped from the recent window before
+  activating; optimism covers only icons not yet registered (diagnostics
+  `diagRev=28`).
+
 ## v1.21.0 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
