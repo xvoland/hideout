@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.20.3 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Newly launched icons now appear within a few seconds of launch instead of
+  waiting for the next manual collapse. Agent apps (LSUIElement, e.g.
+  BetterDisplay) never post `didLaunch`, so they can only be caught by re-scanning
+  the bar — the newcomer watch now polls every 3s for as long as the bar stays
+  collapsed (previously a handful of one-off checks +12/+30/60/120s, which is why
+  an icon could surface only minutes later). Any bundle absent from the last
+  collapse census is re-allowed; the next collapse re-reads everything from a
+  fresh bar, so a wrongly shown icon self-heals (diagnostics `diagRev=12`).
+
 ## v1.20.2 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

@@ -96,6 +96,11 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // but bundle identity is reliable. Any bundle absent here that appears later
     // is a newcomer (launched, or shown without a launch) and is re-allowed.
     private var lastCollapseBundles: Set<String> = []
+    // A repeating poll that runs for as long as the bar stays collapsed. Agent
+    // apps (LSUIElement) never post didLaunch, so their icons can only be caught
+    // by re-scanning the bar; polling every few seconds makes a freshly
+    // registered icon appear promptly instead of waiting for the next collapse.
+    private var watchTimer: Timer?
 
     private var alwaysHiddenEnabled = false
     private var alwaysHiddenSeparatorHidden = false
@@ -188,7 +193,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
                     self.setSeparatorsVisible(false)
                     self.items?.alwaysHiddenItem?.isVisible = false
                     self.logPostCollapse(pre: preBundles, preCounts: preCounts, generation: self.generation)
-                    self.scheduleNewcomerWatch()
+                    self.startNewcomerWatch()
                 }
                 completion(succeeded ? .collapsed : .unavailable)
             }
@@ -196,6 +201,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
     }
 
     func expand() {
+        stopNewcomerWatch()
         setSeparatorsVisible(true)
         items?.alwaysHiddenItem?.isVisible = true
         state = .expanded
@@ -326,9 +332,9 @@ final class NativeVisibilityEngine: MenuBarEngine {
         activate(allowing: baseAllowedBundles) { [weak self] succeeded in
             guard let self = self else { return }
             if succeeded {
-                // The icon may still register later (slow starter): the watch
-                // below catches it by position once it appears.
-                self.scheduleNewcomerWatch()
+                // The icon may still register later (slow starter / agent app):
+                // the continuous watch catches it within a few seconds.
+                self.startNewcomerWatch()
             } else {
                 // Fail open like a failed collapse: never leave icons stuck hidden.
                 AppLog.info("NativeVisibility: re-allow after launch failed — expanding")
@@ -338,27 +344,44 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
     }
 
-    // Newcomer watch. Catches what didLaunch cannot: launches that predate the
-    // observer, icons appearing without a process launch, and icons registering
-    // long after their launch. A positional test is useless here — hidden items
-    // report stale frames while the restriction is active — so the signal is the
-    // bundle set: anything absent from the last collapse census and not already
-    // allowed/recent is a newcomer and is re-allowed. The next collapse re-reads
-    // everything from an unrestricted bar, so a wrongly shown icon self-heals.
-    // Bounded: a handful of checks after each collapse/launch, each a no-op
-    // unless still collapsed with the restriction held.
-    private func scheduleNewcomerWatch() {
-        for offset in [12.0, 30.0, 60.0, 120.0] {
-            DispatchQueue.main.asyncAfter(deadline: .now() + offset) { [weak self] in
-                self?.newcomerCheck()
-            }
+    // Newcomer watch. Catches what didLaunch cannot: agent apps (LSUIElement)
+    // never post a launch notification, and icons also register long after their
+    // launch. A positional test is useless here — hidden items report stale
+    // frames while the restriction is active — so the signal is the bundle set:
+    // anything absent from the last collapse census and not already allowed is a
+    // newcomer and is re-allowed. The next collapse re-reads everything from an
+    // unrestricted bar, so a wrongly shown icon self-heals. Runs continuously
+    // while collapsed so a new icon shows within a few seconds, not on the next
+    // manual collapse.
+    private func startNewcomerWatch() {
+        stopNewcomerWatch()
+        AppLog.info("NativeVisibility: newcomer watch started")
+        // Immediate first pass catches an icon that registered in the brief gap
+        // between the collapse census and now; then poll every 3s while collapsed.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.newcomerCheck()
+        }
+        watchTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] timer in
+            guard let self = self else { timer.invalidate(); return }
+            self.newcomerCheck()
         }
     }
 
+    private func stopNewcomerWatch() {
+        watchTimer?.invalidate()
+        watchTimer = nil
+    }
+
     private func newcomerCheck() {
-        guard state == .collapsed, assertion != nil else { return }
+        guard state == .collapsed, assertion != nil else {
+            stopNewcomerWatch()
+            return
+        }
         inventory.snapshot { [weak self] items in
-            guard let self = self, self.state == .collapsed, self.assertion != nil else { return }
+            guard let self = self, self.state == .collapsed, self.assertion != nil else {
+                self?.stopNewcomerWatch()
+                return
+            }
             self.pruneRecentLaunches()
             var found: [String] = []
             for item in items {
@@ -375,7 +398,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             self.activate(allowing: self.baseAllowedBundles) { [weak self] succeeded in
                 guard let self = self else { return }
                 if succeeded {
-                    self.scheduleNewcomerWatch()
+                    self.startNewcomerWatch()
                 } else {
                     AppLog.info("NativeVisibility: re-allow after watch failed — expanding")
                     self.releaseAssertion()
@@ -433,6 +456,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
     }
 
     private func releaseAssertion() {
+        stopNewcomerWatch()
         generation += 1
         assertion?.invalidate()
         assertion = nil
@@ -441,6 +465,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
     deinit {
         // Releasing the assertion restores the bar if this engine is discarded
         // (for example when the user switches engines) without an explicit expand.
+        watchTimer?.invalidate()
         if let launchObserver = launchObserver {
             NSWorkspace.shared.notificationCenter.removeObserver(launchObserver)
         }
