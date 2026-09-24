@@ -252,6 +252,13 @@ final class NativeVisibilityEngine: MenuBarEngine {
         if state != .collapsed {
             setSeparatorsVisible(true)
         }
+        // Don't pile an async presentation refresh onto an in-flight
+        // calibration (rapid toggles): flags above are authoritative and the
+        // next expand/collapse converges visuals. Same guard as the arrow path.
+        if state == .calibrating {
+            AppLog.info("NativeVisibility: always-hidden update deferred — engine calibrating")
+            return
+        }
         if state == .expanded {
             applyExpandedPresentation()
         }

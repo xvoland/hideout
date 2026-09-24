@@ -280,12 +280,24 @@ class StatusBarController: MenuBarItemProvider {
     // on modifier delivery.
     @objc private func revealForArranging() {
         AppLog.info("StatusBar: reveal requested — showing separators")
+        if menuBarEngine.state == .calibrating {
+            AppLog.info("StatusBar: reveal ignored — engine calibrating")
+            return
+        }
         if self.isCollapsed { self.expandMenubar() }
         self.showSeparators()
         AppLog.info("StatusBar: separators hidden=\(Preferences.areSeparatorsHidden)")
     }
 
     func showHideSeparatorsAndAlwayHideArea() {
+        // Never pile onto an in-flight calibration (rapid double toggles):
+        // the async census/activation behind it is already committed, and a
+        // second overlapping restriction session risks wedging the menu bar
+        // server with stale allow-lists. Same guard as the arrow path.
+        if menuBarEngine.state == .calibrating {
+            AppLog.info("StatusBar: separators toggle ignored — engine calibrating")
+            return
+        }
         // Expand first: the hide guard below reads live separator geometry,
         // which is only trustworthy while expanded (collapsed items report
         // degenerate frames). Toggling first would silently no-op from a

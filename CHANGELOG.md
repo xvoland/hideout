@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.21.5 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Rapid double-toggles no longer pile overlapping restriction sessions onto an
+  in-flight calibration. The separators toggle, the reveal action, and the
+  always-hidden section update now ignore presses while the engine is
+  calibrating (with a log line), mirroring the existing arrow-press guard —
+  flags stay authoritative and visuals converge on the next expand/collapse
+  (diagnostics `diagRev=32`).
+
 ## v1.21.4 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
