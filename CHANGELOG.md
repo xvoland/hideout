@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.20.10 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Never hide on a blind snapshot. An empty menu-bar census (cold AX server,
+  timeouts at login) resolved to empty sections and latched an allow-list that
+  hides everything — re-applied from cache on every later expand/collapse, so
+  all icons stayed gone after launch. Both activation paths now refuse an empty
+  inventory and fail open instead (collapse reports unavailable, expanded
+  presentation leaves the bar unrestricted) (diagnostics `diagRev=19`).
+
 ## v1.20.9 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

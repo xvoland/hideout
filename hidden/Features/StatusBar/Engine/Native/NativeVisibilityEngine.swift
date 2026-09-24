@@ -179,6 +179,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
                 self.state = .expanded
                 return completion(.unavailable)
             }
+            // Never hide on a blind snapshot: an empty census (cold AX server,
+            // timeouts at login) would resolve to empty sections and latch an
+            // allow-list that hides everything, re-applied on every later
+            // expand/collapse from cache. Fail open instead — the user retries.
+            guard !inventory.isEmpty else {
+                self.logUnavailableOnce("the menu-bar census came back empty — refusing to hide blind")
+                self.state = .expanded
+                return completion(.unavailable)
+            }
             // Per-icon pre-collapse census: ordinal left-to-right, section
             // (VISIBLE/HIDDEN/ALWAYSHIDDEN from the layout above), and the
             // visible flag (everything reads from an unrestricted bar here).
@@ -254,9 +263,13 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return releaseAssertion()
         }
         AppLog.info("NativeVisibility: expanded presentation holding visible+hidden (always-hidden stays hidden)")
-        withLayout { [weak self] layout, _, _ in
+        withLayout { [weak self] layout, inventory, _ in
             guard let self = self else { return }
             guard let layout = layout else {
+                return self.releaseAssertion()
+            }
+            guard !inventory.isEmpty else {
+                AppLog.info("NativeVisibility: expanded presentation skipped — census came back empty, leaving the bar unrestricted")
                 return self.releaseAssertion()
             }
             // Fresh layout classifies every running app; only the recent window
