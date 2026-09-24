@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.20.1 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Added
+- Icons of newly launched apps appear without expanding first. Launches are
+  observed via NSWorkspace and remembered for 120 seconds; while collapsed,
+  the restriction is re-activated to include them, and a positional newcomer
+  watch (+12/+30/+60/+120s) additionally catches slow starters and icons that
+  appear without a fresh process launch. The next collapse re-classifies
+  everything from a fresh census, so a wrongly shown icon self-heals.
+
 ## v1.20.0 (2026-09-23)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
@@ -20,6 +33,10 @@ Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
   since v1.19 (direct macOS 27 builds). Pre-27 and sandboxed builds report
   hiding unavailable instead of silently falling back; upstream
   dwarvesf/hidden remains the path there.
+
+(Re-released 2026-09-23 on updated code: that build also ships the stable-only
+update checker (launch + weekly, manual check in Preferences), UI grammar
+fixes, and the remaining visible rebrand leftovers.)
 
 ## v1.18.8 (2026-09-23)
 
