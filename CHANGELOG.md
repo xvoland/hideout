@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.20.12 (2026-09-24)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- All icons no longer vanish on launch. Two init-order races combined: the
+  first census ran during AppDelegate init, before the layout direction was
+  resolved (RTL default mirror-classified the whole bar), and it read the
+  just-created separator's unlaid-out frame as the boundary. Frames and
+  direction are now read after the snapshot completes (everything warm and
+  contemporaneous); direction is also set early in init as backup. Every bar
+  press (arrow/separators, any modifiers) is now logged so a missing toggle
+  is provable instead of guessed (diagnostics `diagRev=21`).
+
 ## v1.20.11 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

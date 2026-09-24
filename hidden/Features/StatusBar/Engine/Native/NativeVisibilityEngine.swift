@@ -298,37 +298,44 @@ final class NativeVisibilityEngine: MenuBarEngine {
             }
             return
         }
-        guard let arrow = items?.toggleItem,
-              let arrowFrame = itemFrame(arrow) else { return body(nil, [], nil) }
-        // The `|` separator is the boundary users arrange icons against; the
-        // arrow is only the toggle. Prefer its live frame, then the cache, then
-        // the arrow (pre-v1.20.5 behavior) so a missing frame never blocks.
-        if let sep = items?.separatorItem,
-           let frame = itemFrame(sep), frame.width > 0 {
-            cachedSeparatorFrame = frame
-        }
-        let boundary = cachedSeparatorFrame ?? arrowFrame
-        // Refresh the cache only from a real-length frame; never from the
-        // collapsed zero-length one, which would corrupt the always-hidden zone.
-        let liveAHFrame: CGRect? = alwaysHiddenEnabled ? items?.alwaysHiddenItem.flatMap(itemFrame) : nil
-        if alwaysHiddenEnabled,
-           let ah = items?.alwaysHiddenItem,
-           ah.length > 0,
-           let frame = itemFrame(ah), frame.width > 0 {
-            cachedAlwaysHiddenFrame = frame
-        }
-        let alwaysHiddenFrame = alwaysHiddenEnabled ? (cachedAlwaysHiddenFrame ?? liveAHFrame) : nil
-        let ahDiag: String
-        switch (alwaysHiddenEnabled, alwaysHiddenFrame) {
-        case (false, _): ahDiag = "off"
-        case (true, .some(let f)): ahDiag = "x=\(Int(f.midX))w=\(Int(f.width))"
-        case (true, nil): ahDiag = "nil-frame"
-        }
-        let isLTR = self.isLTR()
+        // Frames AND layout direction are read only after the snapshot
+        // completes. The ~1s Accessibility walk gives AppKit time to lay out
+        // freshly shown items (a just-created separator reports a degenerate
+        // frame synchronously) and lets applicationDidFinishLaunching resolve
+        // the real layout direction first — reading it during init sees the
+        // false default and mirror-classifies the whole bar. Positions are
+        // then contemporaneous with the inventory itself.
         generation += 1
         let generation = self.generation
         inventory.snapshot { [weak self] inventory in
             guard let self = self, generation == self.generation else { return }
+            guard let arrow = self.items?.toggleItem,
+                  let arrowFrame = self.itemFrame(arrow) else { return body(nil, [], nil) }
+            // The `|` separator is the boundary users arrange icons against; the
+            // arrow is only the toggle. Prefer its live frame, then the cache, then
+            // the arrow (pre-v1.20.5 behavior) so a missing frame never blocks.
+            if let sep = self.items?.separatorItem,
+               let frame = self.itemFrame(sep), frame.width > 0 {
+                self.cachedSeparatorFrame = frame
+            }
+            let boundary = self.cachedSeparatorFrame ?? arrowFrame
+            // Refresh the cache only from a real-length frame; never from the
+            // collapsed zero-length one, which would corrupt the always-hidden zone.
+            let liveAHFrame: CGRect? = self.alwaysHiddenEnabled ? self.items?.alwaysHiddenItem.flatMap(self.itemFrame) : nil
+            if self.alwaysHiddenEnabled,
+               let ah = self.items?.alwaysHiddenItem,
+               ah.length > 0,
+               let frame = self.itemFrame(ah), frame.width > 0 {
+                self.cachedAlwaysHiddenFrame = frame
+            }
+            let alwaysHiddenFrame = self.alwaysHiddenEnabled ? (self.cachedAlwaysHiddenFrame ?? liveAHFrame) : nil
+            let ahDiag: String
+            switch (self.alwaysHiddenEnabled, alwaysHiddenFrame) {
+            case (false, _): ahDiag = "off"
+            case (true, .some(let f)): ahDiag = "x=\(Int(f.midX))w=\(Int(f.width))"
+            case (true, nil): ahDiag = "nil-frame"
+            }
+            let isLTR = self.isLTR()
             let dump = inventory.sorted { $0.frame.midX < $1.frame.midX }.map { "\($0.bundleIdentifier ?? "?")@\(Int($0.frame.midX))" }.joined(separator: " ")
             AppLog.info("NativeVisibility: inventory [\(dump)] sepX=\(Int(boundary.midX))")
             let layout = MenuBarLayoutResolver.resolve(inventory: inventory,

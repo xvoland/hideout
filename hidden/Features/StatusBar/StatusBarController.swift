@@ -84,6 +84,11 @@ class StatusBarController: MenuBarItemProvider {
     init() {
         // Identity migration first: everything below reads Preferences.
         Preferences.migrateFromLegacyDomainIfNeeded()
+        // Layout direction before anything reads it: the first census can run
+        // during this init (always-hidden presentation at launch) while
+        // AppDelegate hasn't finished launching yet, and the flag defaults to
+        // false (RTL) — reading it then mirror-classifies the whole bar.
+        Constant.isUsingLTRLanguage = (NSApplication.shared.userInterfaceLayoutDirection == .leftToRight)
         menuBarEngine = NativeVisibilityEngine(items: self)
         AppLog.info("MenuBarEngine: native diagRev=\(BuildInfo.diagnosticsRevision) nativeAvailable=\(NativeVisibilityEngine.nativeVisibilityAvailable)")
         setupUI()
@@ -195,6 +200,7 @@ class StatusBarController: MenuBarItemProvider {
 
             let isOptionKeyPressed = event.modifierFlags.contains(NSEvent.ModifierFlags.option)
             let isArrow = (sender == btnExpandCollapse.button)
+            AppLog.info("StatusBar: bar pressed (arrow=\(isArrow) type=\(event.type.rawValue) option=\(isOptionKeyPressed))")
 
             if event.type == NSEvent.EventType.leftMouseUp && !isOptionKeyPressed{
                 if isArrow {
