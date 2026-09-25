@@ -43,7 +43,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
     // so the window is deliberately wide: Apple extras live past index 63 on
     // 27.0 (Time Machine vanished with 0..<64 and still with 0..<256), and
     // numbering differs per Mac.
-    static let systemItemsToKeep = Array(0..<4096)
+    static let systemItemsToKeep = Array(0..<1_000_000)
 
     // Whether the running build can offer native hiding at all (direct,
     // non-sandboxed build linked with HIDDENBAR_NATIVE_VISIBILITY on 27).
@@ -454,7 +454,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
         // Machine) — so they are always kept. No third-party item can squat
         // these Apple-only namespaces. Recent launches are optimistically kept
         // visible until the next fresh census classifies them.
-        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(recentLaunches.keys) + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
+        // Every Apple-owned bundle is kept visible wherever the user placed it:
+        // system extras (Now Playing, MenuBarAgent, Passwords…) are not hidden by
+        // bundle and are driven by slot index, so a system item left of the
+        // separator must still survive a collapse. Without this, dynamic extras
+        // (Now Playing only appears while media plays) drop out of the index range
+        // and vanish when collapsed, then reappear — the Player ping-pong.
+        let apples = (bundles + (self.layout?.sections.keys ?? []))
+            .filter { $0.hasPrefix("com.apple.") }
+        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(recentLaunches.keys) + apples + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
         AppLog.info("NativeVisibility: allowing \(allowed)")
         visibility.activate(allowedSystemItems: Self.systemItemsToKeep,
                             allowedBundleIdentifiers: allowed) { [weak self] result in

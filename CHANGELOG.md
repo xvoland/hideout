@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.22.1 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- System menu-bar items (Now Playing/Player, MenuBarAgent, Passwords and other
+  `com.apple.*` extras) no longer vanish when the bar is collapsed. They are now
+  always kept visible by bundle, and the system-slot index range was widened far
+  past the previous guess so dynamic extras that appear only while media plays are
+  held too. `diagRev` bumped to 35.
+
 ## v1.22.0 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
