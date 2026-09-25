@@ -56,6 +56,10 @@ This pulls the latest macOS 27 "Golden Gate" build from the
 xattr -dr com.apple.quarantine /Applications/Hideout.app
 ```
 
+<p align="center">
+	<img src="img/screen00.png">
+</p>
+
 
 #### Manual download
 
