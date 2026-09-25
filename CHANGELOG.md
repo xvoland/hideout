@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.22.3 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Second build fix for the v1.22.1 system-item change: the optional
+  `layout?.sections.keys` coercion now maps to `[String]` cleanly. Behavior
+  unchanged — system menu-bar items (Player, MenuBarAgent, Passwords) no longer
+  vanish on collapse. `diagRev` stays 35.
+
 ## v1.22.2 (2026-09-25)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
