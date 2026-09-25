@@ -122,11 +122,11 @@ pre-Ventura builds). Later versions require macOS 13 because autostart moved to 
 - [VimMotion](https://github.com/dwarvesf/VimMotionPublic) Vim style shortcut for MacOS
 
 
-> [⚠️ WARNING: UNOFFICIAL BUILD]
+> ⚠️ ** WARNING: UNOFFICIAL BUILD **
 > 
 > This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**.
 > 
-> It is **not** the official Dwarves Foundation release.
+> It is **NOT** the official Dwarves Foundation release.
 > Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
 
 ## Maintainer (this fork)
