@@ -16,38 +16,27 @@
   </a>
 </p>
 
+## Hideout - A Cleaner Mac Menu Bar
+Hideout is a lightweight macOS utility that lets you hide unwanted menu bar icons and keep your Mac interface clean and organized.
+
+It is designed for people who have too many background apps, system utilities, and status icons competing for space in the macOS menu bar.
+
 <p align="center">
 	<img src="img/tutorial.gif">
 </p>
 
-> [!WARNING]
-> **⚠️ UNOFFICIAL BUILD.** This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
-
-## Maintainer (this fork)
-
-| Role | Name | Contact |
-| --- | --- | --- |
-| Fork maintainer, build & macOS 27 verification | Vitalii Tereshchuk (xVoLAnD) | https://dotoca.net |
-
-Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation. The macOS 27 Golden Gate hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus); this fork packages, builds, and verifies it for macOS 27.
-
-## Hideout
-Hideout lets you hide menu bar items to give your Mac a cleaner look.
 
 <p align="center">
 	<img src="img/screen01.png">
 </p>
 
+
 ## 🚀 Install
 
-###  App Store
-
-[![AppStore](img/appstore.svg)](https://itunes.apple.com/app/hidden-bar/id1452453066)
-
-### Others
-
 These builds are **ad-hoc / unsigned** (`CODE_SIGNING_ALLOWED=NO`) — no Developer ID
-signature, no notarization. macOS ties the Accessibility permission to the code
+signature, no notarization. (Support the project to purchase a signature from Apple.)
+
+macOS ties the Accessibility permission to the code
 signature, so after **every update** re-grant it in System Settings when prompted
 (first collapse asks again); that is expected, not a bug.
 
@@ -61,16 +50,12 @@ brew install --cask https://raw.githubusercontent.com/xvoland/hideout/master/Cas
 ```
 
 This pulls the latest macOS 27 "Golden Gate" build from the
-[xvoland/hidden Releases](https://github.com/xvoland/hideout/releases) page. The
-build is **unsigned**, so before the first launch run:
+[xvoland/hidden Releases](https://github.com/xvoland/hideout/releases) page. The build is **unsigned**, so before the first launch run:
 
 ```
 xattr -dr com.apple.quarantine /Applications/Hideout.app
 ```
 
-> ⚠️ Do **not** use `brew install --cask hiddenbar` — that installs the upstream
-> Dwarves Foundation release, which does **not** include the macOS 27 fork
-> changes. The command above is the one for this fork.
 
 #### Manual download
 
@@ -131,6 +116,20 @@ pre-Ventura builds). Later versions require macOS 13 because autostart moved to 
 - [Blurred](https://github.com/dwarvesf/Blurred) - A macOS utility that helps reduce distraction by dimming your inactive noise
 - [Micro Sniff](https://github.com/dwarvesf/micro-sniff) - An ultra-light macOS utility that notify whenever your micro-device is being used
 - [VimMotion](https://github.com/dwarvesf/VimMotionPublic) Vim style shortcut for MacOS
-## License
 
+
+> [!UNOFFICIAL BUILD]
+> This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
+
+## Maintainer (this fork)
+
+| Role | Name | Contact |
+| --- | --- | --- |
+| Fork maintainer, build & macOS 27 verification | Vitalii Tereshchuk (xVoLAnD) | https://dotoca.net |
+
+Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation. The macOS 27 Golden Gate hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus); this fork packages, builds, and verifies it for macOS 27.
+
+
+## License
 MIT &copy; [Dwarves Foundation](https://github.com/dwarvesf)
+
