@@ -460,7 +460,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         // separator must still survive a collapse. Without this, dynamic extras
         // (Now Playing only appears while media plays) drop out of the index range
         // and vanish when collapsed, then reappear — the Player ping-pong.
-        let apples = (bundles + (self.layout?.sections.keys ?? []))
+        let apples = (bundles + Array(self.layout?.sections.keys ?? []))
             .filter { $0.hasPrefix("com.apple.") }
         let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(recentLaunches.keys) + apples + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
         AppLog.info("NativeVisibility: allowing \(allowed)")

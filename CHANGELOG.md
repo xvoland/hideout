@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.22.2 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Build fix for v1.22.1: `Array(self.layout?.sections.keys)` coercion (the
+  previous attempt passed a `Dictionary.Keys?` where an `Array<String>` was
+  expected). Behavior unchanged from v1.22.1 — system menu-bar items (Player,
+  MenuBarAgent, Passwords) no longer vanish on collapse. `diagRev` stays 35.
+
 ## v1.22.1 (2026-09-25)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
