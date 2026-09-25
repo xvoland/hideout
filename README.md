@@ -122,18 +122,15 @@ pre-Ventura builds). Later versions require macOS 13 because autostart moved to 
 - [VimMotion](https://github.com/dwarvesf/VimMotionPublic) Vim style shortcut for MacOS
 
 
+> [!WARNING: UNOFFICIAL BUILD]
+> This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**. It is **not** the official Dwarves Foundation release.
+> Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
+
 ## Maintainer (this fork)
-
-> **⚠️ UNOFFICIAL BUILD.**
-> 
-> This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net, with added support for **macOS 27 Golden Gate**.
-> 
-> It is **not** the official Dwarves Foundation release. The macOS 27 hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus). Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
-
 
 | Role | Name | Contact |
 | --- | --- | --- |
-| Fork maintainer, build & macOS 27 verification | Vitalii Tereshchuk (xVoLAnD) | https://dotoca.net |
+| Fork maintainer, build & macOS 27 verification | Vitalii Tereshchuk (xVoLAnD) | https://dotoca.net/hideout |
 
 Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation. The macOS 27 Golden Gate hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus); this fork packages, builds, and verifies it for macOS 27.
 
