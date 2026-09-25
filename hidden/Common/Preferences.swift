@@ -144,6 +144,24 @@ enum Preferences {
         }
     }
 
+    // Whether system-owned menu-bar items (Now Playing/Player, MenuBarAgent,
+    // Passwords and other com.apple.* extras) are always kept visible on
+    // collapse, regardless of which section the user dragged them into. Off by
+    // default: system items follow the normal section rules, so a system extra
+    // left of the separator hides with the rest. On because some system extras
+    // (Now Playing) are not exposed to Accessibility and cannot be re-allowed by
+    // bundle, so they vanish when collapsed — flip this on to force-keep them.
+    static var keepSystemItemsVisible: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: UserDefaults.Key.keepSystemItemsVisible)
+        }
+
+        set {
+            UserDefaults.standard.set(newValue, forKey: UserDefaults.Key.keepSystemItemsVisible)
+            NotificationCenter.default.post(Notification(name: .prefsChanged))
+        }
+    }
+
     static var lastCollapsedState: Bool {
         get {
             return UserDefaults.standard.bool(forKey: "lastCollapsedState")

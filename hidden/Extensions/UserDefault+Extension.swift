@@ -20,5 +20,6 @@ extension UserDefaults {
         static let didEnforceSeparatorsForAlwaysHidden = "didEnforceSeparatorsForAlwaysHidden"
         static let useFullStatusBarOnExpandEnabled = "useFullStatusBarOnExpandEnabled"
         static let hoverToExpand = "hoverToExpand"
+        static let keepSystemItemsVisible = "keepSystemItemsVisible"
     }
 }

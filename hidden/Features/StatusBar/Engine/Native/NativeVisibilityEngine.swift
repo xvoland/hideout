@@ -61,6 +61,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
     private let ownBundleIdentifier: String?
     private let itemFrame: (NSStatusItem) -> CGRect?
     private let isLTR: () -> Bool
+    private let keepSystemItemsVisible: () -> Bool
 
     private let expandedLength: CGFloat = 20
 
@@ -130,13 +131,15 @@ final class NativeVisibilityEngine: MenuBarEngine {
             guard let button = $0.button, let origin = button.getOrigin else { return nil }
             return CGRect(origin: origin, size: button.bounds.size)
          },
-         isLTR: @escaping () -> Bool = { Constant.isUsingLTRLanguage }) {
+         isLTR: @escaping () -> Bool = { Constant.isUsingLTRLanguage },
+         keepSystemItemsVisible: @escaping () -> Bool = { false }) {
         self.items = items
         self.inventory = inventory
         self.visibility = visibility
         self.ownBundleIdentifier = ownBundleIdentifier
         self.itemFrame = itemFrame
         self.isLTR = isLTR
+        self.keepSystemItemsVisible = keepSystemItemsVisible
         items.separatorItem.isVisible = false
         launchObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didLaunchApplicationNotification,
@@ -454,7 +457,20 @@ final class NativeVisibilityEngine: MenuBarEngine {
         // Machine) — so they are always kept. No third-party item can squat
         // these Apple-only namespaces. Recent launches are optimistically kept
         // visible until the next fresh census classifies them.
-        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(recentLaunches.keys) + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
+        // Apple-owned bundles are kept visible only when the user opts in
+        // (Preferences → "Always keep system items visible"). System extras
+        // (Now Playing/Player, MenuBarAgent, Passwords…) are not exposed to
+        // Accessibility and cannot be re-allowed by bundle, so without this they
+        // vanish when collapsed. Off by default to preserve the normal section
+        // behavior for system items.
+        let systemExtras: [String]
+        if keepSystemItemsVisible() {
+            let layoutBundles: [String] = self.layout?.sections.keys.map { $0 } ?? []
+            systemExtras = (bundles + layoutBundles).filter { $0.hasPrefix("com.apple.") }
+        } else {
+            systemExtras = []
+        }
+        let allowed = ((ownBundleIdentifier.map { [$0] } ?? []) + bundles + Array(recentLaunches.keys) + systemExtras + Array(MenuBarLayoutResolver.systemItemOwners)).sorted()
         AppLog.info("NativeVisibility: allowing \(allowed)")
         visibility.activate(allowedSystemItems: Self.systemItemsToKeep,
                             allowedBundleIdentifiers: allowed) { [weak self] result in

@@ -1,5 +1,52 @@
 # Changelog
 
+## v1.22.4 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Changed
+- New Preferences toggle **"Always keep system menu-bar items visible"**
+  (off by default). When on, all `com.apple.*` extras (MenuBarAgent, Passwords,
+  Now Playing/Player and similar) survive a collapse regardless of which section
+  they are dragged into — useful because some system extras are not exposed to
+  Accessibility and otherwise vanish when collapsed. Off preserves the usual
+  section behavior. `diagRev` bumped to 36.
+
+## v1.22.3 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Second build fix for the v1.22.1 system-item change: the optional
+  `layout?.sections.keys` coercion now maps to `[String]` cleanly. Behavior
+  unchanged — system menu-bar items (Player, MenuBarAgent, Passwords) no longer
+  vanish on collapse. `diagRev` stays 35.
+
+## v1.22.2 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- Build fix for v1.22.1: `Array(self.layout?.sections.keys)` coercion (the
+  previous attempt passed a `Dictionary.Keys?` where an `Array<String>` was
+  expected). Behavior unchanged from v1.22.1 — system menu-bar items (Player,
+  MenuBarAgent, Passwords) no longer vanish on collapse. `diagRev` stays 35.
+
+## v1.22.1 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Fixed
+- System menu-bar items (Now Playing/Player, MenuBarAgent, Passwords and other
+  `com.apple.*` extras) no longer vanish when the bar is collapsed. They are now
+  always kept visible by bundle, and the system-slot index range was widened far
+  past the previous guess so dynamic extras that appear only while media plays are
+  held too. `diagRev` bumped to 35.
+
 ## v1.22.0 (2026-09-24)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

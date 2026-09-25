@@ -93,7 +93,8 @@ class StatusBarController: MenuBarItemProvider {
         // AppDelegate hasn't finished launching yet, and the flag defaults to
         // false (RTL) — reading it then mirror-classifies the whole bar.
         Constant.isUsingLTRLanguage = (NSApplication.shared.userInterfaceLayoutDirection == .leftToRight)
-        menuBarEngine = NativeVisibilityEngine(items: self)
+        menuBarEngine = NativeVisibilityEngine(items: self,
+                                               keepSystemItemsVisible: { Preferences.keepSystemItemsVisible })
         AppLog.info("MenuBarEngine: native diagRev=\(BuildInfo.diagnosticsRevision) nativeAvailable=\(NativeVisibilityEngine.nativeVisibilityAvailable)")
         setupUI()
         setupAlwayHideStatusBar()
