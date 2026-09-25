@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.22.4 (2026-09-25)
+
+Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on
+[v1.10](https://github.com/dwarvesf/hidden/releases/tag/v1.10).)
+
+### Changed
+- New Preferences toggle **"Always keep system menu-bar items visible"**
+  (off by default). When on, all `com.apple.*` extras (MenuBarAgent, Passwords,
+  Now Playing/Player and similar) survive a collapse regardless of which section
+  they are dragged into — useful because some system extras are not exposed to
+  Accessibility and otherwise vanish when collapsed. Off preserves the usual
+  section behavior. `diagRev` bumped to 36.
+
 ## v1.22.3 (2026-09-25)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

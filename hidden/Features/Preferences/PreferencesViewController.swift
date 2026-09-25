@@ -37,6 +37,17 @@ class PreferencesViewController: NSViewController {
     @IBOutlet weak var checkBoxUseFullStatusbar: NSButton!
     @IBOutlet weak var timePopup: NSPopUpButton!
 
+    // Keep system menu-bar items (Now Playing/Player, MenuBarAgent, Passwords…)
+    // visible on collapse regardless of section. Built in code (AGENTS.md:
+    // prefer Swift over the storyboard).
+    private lazy var checkBoxKeepSystemItems: NSButton = {
+        let button = NSButton(checkboxWithTitle: "Always keep system menu-bar items visible".localized,
+                              target: self,
+                              action: #selector(keepSystemItemsChanged(_:)))
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
     // Hiding status line. The engine selector (Auto/Native/Legacy) was removed
     // in v1.19 — hiding is always native. Only the note stays, as a static
     // status line.
@@ -74,6 +85,7 @@ class PreferencesViewController: NSViewController {
         setupEngineNoteUI()
         setupCheckUpdatesUI()
         setupRevealUI()
+        setupKeepSystemItemsUI()
         NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: .prefsChanged, object: nil)
         
         // Lower imageViewTop slightly to avoid overlap with segment buttons
@@ -116,6 +128,10 @@ class PreferencesViewController: NSViewController {
     }
     @IBAction func useFullStatusBarOnExpandChanged(_ sender: NSButton) {
         Preferences.useFullStatusBarOnExpandEnabled = sender.state == .on
+    }
+
+    @objc private func keepSystemItemsChanged(_ sender: NSButton) {
+        Preferences.keepSystemItemsVisible = sender.state == .on
     }
     
     
@@ -193,6 +209,15 @@ class PreferencesViewController: NSViewController {
         row.addArrangedSubview(revealAllButton)
         container.addView(row, in: .bottom)
     }
+
+    private func setupKeepSystemItemsUI() {
+        guard let container = generalStackView else { return }
+        let row = NSStackView()
+        row.orientation = .horizontal
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(checkBoxKeepSystemItems)
+        container.addView(row, in: .bottom)
+    }
     
     // When the set shortcut button is pressed start listening for the new shortcut
     @IBAction func register(_ sender: Any) {
@@ -259,6 +284,7 @@ class PreferencesViewController: NSViewController {
         checkBoxAutoHide.state = Preferences.isAutoHide ? .on : .off
         checkBoxShowPreferences.state = Preferences.isShowPreference ? .on : .off
         checkBoxShowAlwaysHiddenSection.state = Preferences.alwaysHiddenSectionEnabled ? .on : .off
+        checkBoxKeepSystemItems.state = Preferences.keepSystemItemsVisible ? .on : .off
         timePopup.selectItem(at: SelectedSecond.secondToPossition(seconds: Preferences.numberOfSecondForAutoHide))
         updateEngineNote()
 
