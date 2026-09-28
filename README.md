@@ -21,6 +21,10 @@ Hideout is a lightweight macOS utility that lets you hide unwanted menu bar icon
 
 It is designed for people who have too many background apps, system utilities, and status icons competing for space in the macOS menu bar.
 
+Includes compatibility work for macOS 27 "Golden Gate" and **wide screens** like ***QHD, UltraWide QHD, 4K UHD, Super UltraWide, 5K2K/WUQHD\***, etc.
+
+
+
 <p align="center">
 	<img src="img/tutorial.gif">
 </p>
