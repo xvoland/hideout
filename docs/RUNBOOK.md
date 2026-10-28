@@ -1,21 +1,23 @@
 # Maintainer runbook
 
-Build, verify, and release Hidden Bar. Assumes current Xcode on macOS 13+.
+Build, verify, and release Hideout. Assumes current Xcode on macOS 13+.
 
 ## Build
 
 ```sh
 # CI-style build, no signing required
-xcodebuild -project 'Hidden Bar.xcodeproj' -scheme 'Hidden Bar' \
-  -configuration Debug CODE_SIGNING_ALLOWED=NO build
+xcodebuild -project 'Hideout.xcodeproj' -scheme 'Hideout' \
+  -configuration Release-Direct CODE_SIGNING_ALLOWED=NO build
 
 # runnable local build (uses your Apple Development identity)
-xcodebuild -project 'Hidden Bar.xcodeproj' -scheme 'Hidden Bar' \
-  -configuration Debug build
+xcodebuild -project 'Hideout.xcodeproj' -scheme 'Hideout' \
+  -configuration Debug-Direct build
 ```
 
 Both must exit 0 with **no** `MACOSX_DEPLOYMENT_TARGET` override; the floor is
-13.0 in the project file. The single expected warning is the deliberately
+13.0 in the project file. Native hiding needs a `*-Direct` configuration
+(`HIDDENBAR_NATIVE_VISIBILITY`); plain `Debug`/`Release` are sandboxed and
+report hiding as unavailable. The single expected warning is the deliberately
 deprecated `SMLoginItemSetEnabled(false)` call that cleans up legacy installs.
 
 ## Behavioral verification (no test target exists; this is the methodology)
@@ -46,24 +48,36 @@ Standard checks before any release:
   events);
 - autostart pref on -> `AutoStart: SMAppService.mainApp.status = 1` on stderr;
   off -> `= 0` (run the binary directly to capture stderr);
-- localization tables stay parseable: `plutil -lint hidden/*.lproj/*.strings`.
+- localization tables stay parseable: `plutil -lint hidden/*.lproj/*.strings`;
+- right-clicking the arrow opens the tray panel: grouped cards render in light
+  and dark appearance; About links open the fork repo,
+  <https://dotoca.net/hideout>, `mailto:adv@dotoca.net` and upstream; the
+  pointer becomes a hand over them; the inline always-hidden tutorial text is
+  legible on the gray card; both credit lines show without truncation.
 
-When testing on a machine that runs Hidden Bar daily: export the prefs domain
+When testing on a machine that runs Hideout daily: export the prefs domain
 first (`defaults export net.dotoca.hideout backup.plist`), quit the
 installed app, test the dev build, then re-import and relaunch.
 
 ## Release
 
 1. Verify the stack: every PR reviewed, builds green, behavioral checks above run.
-2. Bump `MARKETING_VERSION` (both Hidden Bar configurations) and
-   `CURRENT_PROJECT_VERSION` in the project file.
-3. Archive + notarize (Developer ID), staple, zip, GitHub release with notes
-   listing closed issues.
+2. Tag and push; CI builds and publishes automatically:
+   - `git tag vX.Y.Z-goldengate-test && git push origin vX.Y.Z-goldengate-test`
+     publishes a prerelease;
+   - `git tag vX.Y.Z && git push origin vX.Y.Z` publishes a full release.
+
+   The version comes from the tag via `.github/scripts/bump-version.sh`; the
+   workflow builds `Release-Direct`, packages `Hideout.app`, a DMG and a source
+   archive, and creates the GitHub release.
+3. Builds are **ad-hoc / unsigned**. Tell users to clear quarantine with
+   `xattr -dr com.apple.quarantine "Hideout.app"`. Notarization is not wired
+   up (it needs a Developer ID certificate and secrets).
 4. App Store (separate lane): the MAS listing has lagged GitHub since v1.8
    (issues #281/#202); decide deliberately whether a release goes there too.
 5. Homebrew: upstream has the official cask (`brew install --cask hiddenbar`);
-    this fork's macOS 27 build ships via its own cask — see the
-    [Casks](https://github.com/xvoland/hidden/blob/main/Casks) directory in this repo.
+   this fork's macOS 27 build ships via its own cask — see the
+   [Casks](https://github.com/xvoland/hidden/blob/main/Casks) directory in this repo.
 6. Before any public release after the SMAppService migration: one
    upgrade-path run from a launcher-era build (v1.9 or older) verifying System
    Settings shows no ghost LauncherApplication login item.

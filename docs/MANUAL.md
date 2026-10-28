@@ -1,6 +1,6 @@
 # Manual
 
-Everything Hidden Bar can do, including the parts with no UI.
+Everything Hideout can do, including the parts with no UI.
 
 ## Basics
 
@@ -20,17 +20,29 @@ Everything Hidden Bar can do, including the parts with no UI.
 
 ## Tray panel
 
+**Right-click the arrow** to open the panel; **Escape** or a click outside
+closes it. Settings are grouped into **General**, **Hiding Behavior**,
+**Keyboard Shortcut**, **Menu Bar Preview**, and **About**, with **Check for
+Updates…** and **Quit** pinned in the footer. Drag the grip under the footer
+to change the height; it is remembered across launches.
+
 | Setting | What it does |
 |---|---|
+| **General** | |
 | Start Hideout when I log in | Login item via System Settings (macOS 13+ `SMAppService`); revocable in System Settings > General > Login Items |
 | Open the panel on launch | Show the tray panel at app start |
+| **Hiding Behavior** | |
 | Automatically hide icons | Re-hide automatically; **Hide after** picks the delay (disabled, but remembered, when the toggle is off) |
-| Toggle Hideout | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18); **Set Shortcut** records, the clear button removes it |
-| Always-hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow. The **?** button shows the setup steps |
+| Always-hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow. The **?** button shows the setup steps inline in the card |
 | Keep system icons visible | System extras survive a collapse regardless of their section |
 | Use the full menu bar when expanding | Activate Hideout like a regular app while expanded (helps on tight menubars) |
+| **Keyboard Shortcut** | |
+| Toggle Hideout | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18); **Set Shortcut** records, the clear button removes it |
+| **Menu Bar Preview** | |
 | Menu Bar Preview | Illustrative strip that labels the Hidden / Always Hidden / Visible zones — not a live mirror of the system bar |
-| Menu bar height | Drag the grip at the panel's bottom edge; the height is remembered |
+| **About** | |
+| GitHub / Website / Contact / Upstream | Links open the fork repository, <https://dotoca.net/hideout>, the maintainer email, and the original Dwarves Foundation project. The pointer becomes a hand over each link |
+| Credits | Two lines: the 2026 fork maintainer (Vitalii Tereshchuk / xVoLAnD) and the 2019 Dwarves Foundation MIT notice |
 
 
 > **Always-hidden section:** enabling it hides the separators once, so the zone
@@ -51,7 +63,7 @@ the reflow, so:
 
 - hiding is **independent of display width, the notch, and the frontmost app's
   menus**;
-- it requires the **direct build** of Hidden Bar (the GitHub/ad-hoc, unsigned
+- it requires the **direct build** of Hideout (the GitHub/ad-hoc, unsigned
   release) on **macOS 27**, plus the **Accessibility** permission (read once,
   to learn which apps you placed in each section). On the first collapse macOS
   prompts you; until granted, hiding reports "unavailable" and the bar is left
@@ -102,22 +114,23 @@ To undo any of them: `defaults delete net.dotoca.hideout <key>`.
 | Symptom | Fix |
 |---|---|
 | Icons I want visible got hidden after an update | ⌘-drag them to the right of the separator |
-| Login item missing after denying it once | System Settings > General > Login Items: re-enable Hidden Bar, then toggle the pref off/on |
+| Login item missing after denying it once | System Settings > General > Login Items: re-enable Hideout, then toggle the pref off/on |
 | A ghost "LauncherApplication" login item from old versions | Launch the current version once; it deauthorizes the legacy item automatically |
 | App language stuck | See the `AppleLanguages` command above, or System Settings > General > Language & Region > Applications |
-| Nothing hides on macOS 27 after upgrading Hidden Bar | ⌘-drag icons to the right of the separator once. macOS 27 uses new item names so positions reset like a fresh install |
+| Nothing hides on macOS 27 after upgrading Hideout | ⌘-drag icons to the right of the separator once. macOS 27 uses new item names so positions reset like a fresh install |
 | Icons missing after quit/update (bar looks empty) | First click the system `«` overflow — macOS parks displaced icons there and does not always re-seat them when a restriction drops. Drag the ones you want back out. Only then judge hiding |
 | Nothing hides after updating to v1.20.6+ | Same one-time arrangement: the separator got a fresh slot next to the arrow (its old slot went stale while it stayed invisible). ⌘-drag the `\|` where you want the boundary, then collapse |
-| Hidden icons on macOS 27 appear under the system `«` chevron while collapsed | Expected: macOS 27's native overflow is where displaced icons go. Click Hidden Bar's arrow to bring them back onto the bar |
+| Hidden icons on macOS 27 appear under the system `«` chevron while collapsed | Expected: macOS 27's native overflow is where displaced icons go. Click Hideout's arrow to bring them back onto the bar |
 | A new or just-updated app's icon shows up already hidden | Expected, see "Why new icons start hidden" below; ⌘-drag it to the right of the separator once |
 | App won't open: "damaged" or "unidentified developer" | The fork build is **unsigned**. Remove the quarantine flag before first launch: `xattr -dr com.apple.quarantine /Applications/Hidden\ Bar.app`, then open it |
 
 ### Why new icons start hidden
 
-Hidden Bar hides icons by widening its separator so everything to the *left* of
-it slides off-screen. macOS always inserts a brand-new menu-bar icon at the
-far-left slot, which is inside that hidden zone, so a freshly launched or updated
-app can appear "swallowed". This is macOS positioning behavior, not Hidden Bar
+Hideout asks macOS (native hiding, v1.19+) to keep only the allow-listed icons
+visible: your own items and system hosts, plus every app placed in the visible
+section. macOS always inserts a brand-new menu-bar icon at the far-left slot,
+which is on the hidden side of the separator, so a freshly launched or updated
+app can appear "swallowed". This is macOS positioning behavior, not Hideout
 moving your icon: there is no way for one app to reposition another app's menu-bar
 icon. The one-time fix is to ⌘-drag the icon to the right of the separator;
 macOS remembers that placement per app. A built-in way to keep chosen icons

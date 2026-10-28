@@ -1,6 +1,6 @@
 # Architecture
 
-Hidden Bar is a single-process AppKit menubar utility (one dependency:
+Hideout is a single-process AppKit menubar utility (a fork of Hidden Bar; one dependency:
 [HotKey](https://github.com/soffes/HotKey)). There is no helper app, no
 daemon, no network. Everything happens inside three `NSStatusItem`s (arrow,
 separator, optional always-hidden marker) and one transient tray panel.
@@ -67,7 +67,11 @@ flowchart TD
   (a transient `NSPopover` anchored to the arrow, built in code). It replaced
   the storyboard Preferences window; its height is draggable and remembered.
   The controller hosts a scrollable document of grouped cards (`PanelCardView`)
-  with a fixed header/footer; `TrayPanelPreview` is illustrative only.
+  with a fixed header/footer; `TrayPanelPreview` is illustrative only. Rows use
+  semantic light/dark colors and hairline separators, and `LinkButton` adds the
+  pointing-hand cursor to About links. About links are hardcoded (Website →
+  <https://dotoca.net/hideout>), and the credits keep both the 2026 fork
+  maintainer line and the 2019 Dwarves Foundation MIT line.
 
 ## Behavior layers on the core trick
 
@@ -114,7 +118,8 @@ the Accessibility server and the private `MenuBarClientCore` for native hiding) 
 is distributed unsigned (`xattr -dr com.apple.quarantine` after install). The only
 dependency is HotKey (a small Carbon `RegisterEventHotKey` wrapper) locked by the
 committed `Package.resolved`. The opt-in hover monitor observes pointer position
-only and discards event payloads. About-window links are hardcoded. A full-tree
+only and discards event payloads. About links are hardcoded (Website →
+<https://dotoca.net/hideout>, GitHub, maintainer email, upstream). A full-tree
 audit (2026-06) scored 9/10 with hygiene-level findings only.
 
 ## Known architectural limits
