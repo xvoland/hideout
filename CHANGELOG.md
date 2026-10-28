@@ -25,6 +25,9 @@
   item is renamed to **Settings…**.
 - New settings labels are localized in all bundled languages where a
   translation already existed; untranslated helper text falls back to English.
+- Removed dead code and resources left over from the Preferences window:
+  unused date helpers, obsolete `Main.strings` entries for deleted scenes,
+  unreferenced images, labels and a duplicate layout-direction pass.
 - About links and the always-hidden help text are easier to use: **Website**
   opens <https://dotoca.net/hideout>, links show the pointing-hand cursor, the
   help text uses the primary label color, and the credit reads as two lines

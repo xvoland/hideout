@@ -57,9 +57,11 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
             AXUIElementSetMessagingTimeout(element, messagingTimeout)
             var barValue: CFTypeRef?
             guard AXUIElementCopyAttributeValue(element, "AXExtrasMenuBar" as CFString, &barValue) == .success,
-                  let bar = barValue else { continue }
+                  let barValue = barValue,
+                  CFGetTypeID(barValue) == AXUIElementGetTypeID() else { continue }
+            let bar = barValue as! AXUIElement
             var childrenValue: CFTypeRef?
-            guard AXUIElementCopyAttributeValue(bar as! AXUIElement, kAXChildrenAttribute as CFString, &childrenValue) == .success,
+            guard AXUIElementCopyAttributeValue(bar, kAXChildrenAttribute as CFString, &childrenValue) == .success,
                   let children = childrenValue as? [AXUIElement] else { continue }
             for child in children {
                 guard let frame = frame(of: child) else { continue }
@@ -75,11 +77,15 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
         var positionValue: CFTypeRef?
         var sizeValue: CFTypeRef?
         guard AXUIElementCopyAttributeValue(element, kAXPositionAttribute as CFString, &positionValue) == .success,
-              AXUIElementCopyAttributeValue(element, kAXSizeAttribute as CFString, &sizeValue) == .success else { return nil }
+              AXUIElementCopyAttributeValue(element, kAXSizeAttribute as CFString, &sizeValue) == .success,
+              let positionValue = positionValue,
+              let sizeValue = sizeValue,
+              CFGetTypeID(positionValue) == AXValueGetTypeID(),
+              CFGetTypeID(sizeValue) == AXValueGetTypeID() else { return nil }
         var position = CGPoint.zero
         var size = CGSize.zero
-        AXValueGetValue(positionValue as! AXValue, .cgPoint, &position)
-        AXValueGetValue(sizeValue as! AXValue, .cgSize, &size)
+        guard AXValueGetValue(positionValue as! AXValue, .cgPoint, &position),
+              AXValueGetValue(sizeValue as! AXValue, .cgSize, &size) else { return nil }
         return CGRect(origin: position, size: size)
     }
 }

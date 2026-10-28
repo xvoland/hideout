@@ -6,7 +6,6 @@
   Copyright © 2020 Dwarves Foundation. All rights reserved.
 */
 
-"Preferences..." = "Voreinstellungen…";
 "Toggle Auto Collapse" = "Automatisch einklappen";
 "Enable Auto Collapse" = "Automatisch einklappen einschalten";
 "Disable Auto Collapse" = "Automatisch einklappen ausschalten";
@@ -23,25 +22,13 @@ Zum Anzeigen der permanent ausgeblendeten Symbole:
 ";
 
 /* Tray panel */
-"Settings" = "Einstellungen";
 "Start Hideout when I log in" = "Hideout bei der Anmeldung starten";
 "Open the panel on launch" = "Panel beim Start öffnen";
-"Use the full MenuBar on expanding" = "Beim Erweitern die gesamte Menübreite benutzen";
-"Enable always hidden section" = "Permanent ausgeblendeten Teil aktivieren";
-"Automatically hide icon(s) after:" = "Symbole automatisch ausblenden nach:";
-"Always keep system menu-bar items visible" = "Systemeinträge der Menüleiste immer sichtbar halten";
-"Global Shortcut" = "Globaler Shortcut";
 "Hidden" = "Versteckt";
-"Shown" = "Sichtbar";
-"⭐️ Always Hidden" = "⭐️Immer ausgeblendet";
-"Menu bar" = "Menüleiste";
 "Menu bar hidden" = "Menüleiste ausgeblendet";
 "Menu bar visible" = "Menüleiste sichtbar";
 "About" = "Über";
-"This fork is fully open source" = "Dieser Fork ist vollständig Open Source";
-"Contact the maintainer" = "E-Mail an den Maintainer";
 "Know more about the fork" = "Mehr über den Fork erfahren";
-"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Einstellungen…";
 
 /* Tray panel redesign */

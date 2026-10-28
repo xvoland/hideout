@@ -6,7 +6,6 @@
   Copyright © 2020 Dwarves Foundation. All rights reserved.
 */
 
-"Preferences..." = "Postavke …";
 "Toggle Auto Collapse" = "Uklj/Isklj automatsko sklapanje";
 "Enable Auto Collapse" = "Uključi automatsko sklapanje";
 "Disable Auto Collapse" = "Isključi automatsko sklapanje";
@@ -23,25 +22,13 @@
 ";
 
 /* Tray panel */
-"Settings" = "Postavke";
 "Start Hideout when I log in" = "Pokreni Hideout pri prijavi";
 "Open the panel on launch" = "Otvori ploču pri pokretanju";
-"Use the full MenuBar on expanding" = "Koristi cijelu traku izbornika pri rasklapanju";
-"Enable always hidden section" = "Uključi uvijek skriveni odjeljak";
-"Automatically hide icon(s) after:" = "Sakrij ikone automatski nakon:";
-"Always keep system menu-bar items visible" = "Uvijek prikaži sistemske stavke trake izbornika";
-"Global Shortcut" = "Globalni prečac";
 "Hidden" = "Skriveno";
-"Shown" = "Prikazano";
-"⭐️ Always Hidden" = "⭐️Uvijek skriveno";
-"Menu bar" = "Traka izbornika";
 "Menu bar hidden" = "Traka izbornika skrivena";
 "Menu bar visible" = "Traka izbornika vidljiva";
 "About" = "Informacije";
-"This fork is fully open source" = "Ovaj fork je potpuno otvorenog koda";
-"Contact the maintainer" = "Kontaktiraj održavatelja";
 "Know more about the fork" = "Saznaj više o forku";
-"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Postavke…";
 
 /* Tray panel redesign */

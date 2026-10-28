@@ -181,7 +181,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         // older than the window are superseded, recent ones stay unioned in
         // case their icons have not registered yet.
         pruneRecentLaunches()
-        withLayout { [weak self] layout, inventory, _ in
+        withLayout { [weak self] layout, inventory in
             guard let self = self else { return }
             guard let layout = layout else {
                 self.logUnavailableOnce("the arrow's position cannot be read yet")
@@ -277,7 +277,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             return releaseAssertion()
         }
         AppLog.info("NativeVisibility: expanded presentation holding visible+hidden (always-hidden stays hidden)")
-        withLayout { [weak self] layout, inventory, _ in
+        withLayout { [weak self] layout, inventory in
             guard let self = self else { return }
             guard let layout = layout else {
                 return self.releaseAssertion()
@@ -339,7 +339,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         return false
     }
 
-    private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem], CGFloat?) -> Void) {
+    private func withLayout(_ body: @escaping (MenuBarLayout?, [MenuBarInventoryItem]) -> Void) {
         if assertion != nil, !separatorsMovedSinceFreeze() {
             // A restriction is already held (e.g. collapse from expanded with
             // separators hidden and always-hidden on): positions would be stale
@@ -351,7 +351,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             inventory.snapshot { [weak self] census in
                 guard let self = self, generation == self.generation else { return }
                 self.healAlwaysHiddenZone(with: census)
-                body(self.layout, census, nil)
+                body(self.layout, census)
             }
             return
         }
@@ -374,7 +374,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         inventory.snapshot { [weak self] inventory in
             guard let self = self, generation == self.generation else { return }
             guard let arrow = self.items?.toggleItem,
-                  let arrowFrame = self.itemFrame(arrow) else { return body(nil, [], nil) }
+                  let arrowFrame = self.itemFrame(arrow) else { return body(nil, []) }
             // The `|` separator is the boundary users arrange icons against; the
             // arrow is only the toggle. Prefer its live frame, then the cache, then
             // the arrow (pre-v1.20.5 behavior) so a missing frame never blocks.
@@ -411,7 +411,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             self.layout = layout
             self.layoutSeparatorFrame = boundary
             self.layoutAHFrame = alwaysHiddenFrame
-            body(layout, inventory, boundary.midX)
+            body(layout, inventory)
         }
     }
 

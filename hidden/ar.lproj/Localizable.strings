@@ -6,7 +6,6 @@
   Copyright © 2020 Dwarves Foundation. All rights reserved.
 */
 
-"Preferences..." = "تفضيلات...";
 "Toggle Auto Collapse" = "بدل حالة الطي التلقائي";
 "Enable Auto Collapse" = "مكن الطي التلقائي";
 "Disable Auto Collapse" = "عطل الطي التلقائي";
@@ -24,25 +23,13 @@
 ";
 
 /* Tray panel */
-"Settings" = "الإعدادات";
 "Start Hideout when I log in" = "تشغيل Hideout عند تسجيل الدخول";
 "Open the panel on launch" = "فتح اللوحة عند بدء التشغيل";
-"Use the full MenuBar on expanding" = "استخدم كامل شريط القائمة عند التوسيع";
-"Enable always hidden section" = "تمكين القسم المخفي دائما";
-"Automatically hide icon(s) after:" = "أخف الأيقونة تلقائيا بعد:";
-"Always keep system menu-bar items visible" = "إبقاء عناصر شريط القوائم النظامية ظاهرة دائمًا";
-"Global Shortcut" = "الاختصارات المعممة";
 "Hidden" = "مخفي";
-"Shown" = "ظاهر";
-"⭐️ Always Hidden" = "⭐️مخفي دائما";
-"Menu bar" = "شريط القوائم";
 "Menu bar hidden" = "شريط القوائم مخفي";
 "Menu bar visible" = "شريط القوائم ظاهر";
 "About" = "حول";
-"This fork is fully open source" = "هذا الفرع مفتوح المصدر بالكامل";
-"Contact the maintainer" = "راسل المشرف";
 "Know more about the fork" = "إعرف المزيد عن الفرع";
-"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "الإعدادات…";
 
 /* Tray panel redesign */

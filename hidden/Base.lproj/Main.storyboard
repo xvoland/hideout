@@ -74,7 +74,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="arrow" width="12" height="71"/>
         <image name="ic_logo" width="1024" height="1024"/>
         <image name="ico_1" width="10" height="14"/>
         <image name="ico_2" width="11" height="14"/>
@@ -84,10 +83,5 @@
         <image name="ico_6" width="12" height="12"/>
         <image name="ico_7" width="13" height="12"/>
         <image name="ico_collapse" width="7" height="12"/>
-        <image name="ico_compass" width="372" height="384"/>
-        <image name="ico_email" width="384" height="384"/>
-        <image name="ico_github" width="496" height="484"/>
-        <image name="ico_twitter" width="512" height="416"/>
-        <image name="seprated" width="2" height="13"/>
     </resources>
 </document>

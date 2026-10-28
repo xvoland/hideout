@@ -32,7 +32,6 @@ class AppDelegate: NSObject, NSApplicationDelegate{
         registerDefaultValues()
         setupHotKey()
         openSettingsPanelIfNeeded()
-        detectLTRLang()
         UpdateChecker.shared.checkIfDue()
     }
     
@@ -82,12 +81,4 @@ class AppDelegate: NSObject, NSApplicationDelegate{
         guard let globalKey = Preferences.globalKey else {return}
         hotKey = HotKey(keyCombo: KeyCombo(carbonKeyCode: globalKey.keyCode, carbonModifiers: globalKey.carbonFlags))
     }
-    
-    func detectLTRLang() {
-        // Languages like Arabic uses right to left (RTL) writing direction,
-        // so some behavier of the app needs to be changed in these cases
-        
-        Constant.isUsingLTRLanguage = (NSApplication.shared.userInterfaceLayoutDirection == .leftToRight)
-    }
-   
 }

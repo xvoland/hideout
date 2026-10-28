@@ -26,7 +26,7 @@ enum MenuBarSection: Int, Comparable {
 
 // One status item another app owns. On macOS 27 Accessibility exposes no title or
 // identifier for these, so the owning bundle and the frame are all there is.
-struct MenuBarInventoryItem: Equatable {
+struct MenuBarInventoryItem {
     let bundleIdentifier: String?
     let frame: CGRect
 }
@@ -40,7 +40,7 @@ protocol MenuBarInventoryProviding: AnyObject {
     func snapshot(completion: @escaping ([MenuBarInventoryItem]) -> Void)
 }
 
-struct MenuBarLayout: Equatable {
+struct MenuBarLayout {
     // One section per owning bundle, because hiding is per bundle.
     var sections: [String: MenuBarSection]
 

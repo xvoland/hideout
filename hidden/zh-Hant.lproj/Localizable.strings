@@ -6,7 +6,6 @@
   Copyright © 2020 Dwarves Foundation. All rights reserved.
 */
 
-"Preferences..." = "偏好設定⋯";
 "Quit" = "結束";
 "Toggle Auto Collapse" = "開關自動收合";
 "Enable Auto Collapse" = "開啟自動收合";
@@ -31,25 +30,13 @@
 ";
 
 /* Tray panel */
-"Settings" = "設定";
 "Start Hideout when I log in" = "登入時啟動 Hideout";
 "Open the panel on launch" = "啟動時開啟面板";
-"Use the full MenuBar on expanding" = "展開隱藏區時淨空選單列";
-"Enable always hidden section" = "啟用持續隱藏區域";
-"Automatically hide icon(s) after:" = "自動隱藏圖示的時間間隔：";
-"Always keep system menu-bar items visible" = "永遠顯示系統選單列項目";
-"Global Shortcut" = "全域快捷鍵";
 "Hidden" = "隱藏區";
-"Shown" = "顯示區";
-"⭐️ Always Hidden" = "⭐️ 持續隱藏";
-"Menu bar" = "選單列";
 "Menu bar hidden" = "選單列已隱藏";
 "Menu bar visible" = "選單列可見";
 "About" = "關於";
-"This fork is fully open source" = "這個分支完全開源";
-"Contact the maintainer" = "聯絡維護者";
 "Know more about the fork" = "了解這個分支";
-"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "設定…";
 
 /* Tray panel redesign */

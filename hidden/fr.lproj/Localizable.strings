@@ -6,7 +6,6 @@
   Copyright © 2020 Dwarves Foundation. All rights reserved.
 */
 
-"Preferences..." = "Réglages...";
 "Toggle Auto Collapse" = "Activer la réduction automatique";
 "Enable Auto Collapse" = "Activer la réduction automatique";
 "Disable Auto Collapse" = "Désactiver la réduction automatique";
@@ -25,24 +24,13 @@ Utilisez la fonction de section toujours cachée pour garder vos icônes bien ra
 "Disable Auto Collapse" = "Désactiver la réduction automatique";
 
 /* Tray panel */
-"Settings" = "Réglages";
 "Start Hideout when I log in" = "Ouvrir Hideout à l'ouverture de session";
 "Open the panel on launch" = "Ouvrir le panneau au démarrage";
-"Enable always hidden section" = "Activer la section toujours cachée";
-"Automatically hide icon(s) after:" = "Masquer automatiquement l'icône après :";
-"Always keep system menu-bar items visible" = "Toujours garder les éléments système de la barre des menus visibles";
-"Global Shortcut" = "Raccourci global";
 "Hidden" = "Cachés";
-"Shown" = "Montrés";
-"⭐️ Always Hidden" = "⭐️Toujours caché";
-"Menu bar" = "Barre des menus";
 "Menu bar hidden" = "Barre des menus masquée";
 "Menu bar visible" = "Barre des menus visible";
 "About" = "À propos";
-"This fork is fully open source" = "Ce fork est entièrement open source";
-"Contact the maintainer" = "Contacter le mainteneur";
 "Know more about the fork" = "En savoir plus sur le fork";
-"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Réglages…";
 
 /* Tray panel redesign */

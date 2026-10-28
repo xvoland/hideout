@@ -94,18 +94,6 @@ final class TrayPanelViewController: NSViewController {
         refreshControls()
     }
 
-    override func cancelOperation(_ sender: Any?) {
-        onRequestClose?()
-    }
-
-    override func keyDown(with event: NSEvent) {
-        if event.keyCode == 53 {
-            onRequestClose?()
-        } else {
-            super.keyDown(with: event)
-        }
-    }
-
     // MARK: - Presentation
 
     func prepareForPresentation() {

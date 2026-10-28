@@ -20,8 +20,6 @@ final class TrayPanelGripView: NSView {
     private var isHovered = false
     private var tracking: NSTrackingArea?
 
-    override var acceptsFirstResponder: Bool { false }
-
     override func resetCursorRects() {
         addCursorRect(bounds, cursor: .resizeUpDown)
     }
