@@ -43,3 +43,16 @@ Zum Anzeigen der permanent ausgeblendeten Symbole:
 "Know more about the fork" = "Mehr über den Fork erfahren";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Einstellungen…";
+
+/* Tray panel redesign */
+"General" = "Einstellungen";
+"Keyboard Shortcut" = "Globaler Shortcut";
+"Visible" = "Sichtbar";
+"Automatically hide icons" = "Symbole automatisch ausblenden";
+"Always-hidden section" = "Permanent ausgeblendeter Bereich";
+"Keep system icons visible" = "Systemeinträge der Menüleiste immer sichtbar halten";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "Beim Erweitern die gesamte Menübreite benutzen";
+
+"Always Hidden" = "Permanent versteckt";

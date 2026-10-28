@@ -66,6 +66,8 @@ flowchart TD
 - **`TrayPanelController` / `TrayPanelViewController`**: the only UI surface
   (a transient `NSPopover` anchored to the arrow, built in code). It replaced
   the storyboard Preferences window; its height is draggable and remembered.
+  The controller hosts a scrollable document of grouped cards (`PanelCardView`)
+  with a fixed header/footer; `TrayPanelPreview` is illustrative only.
 
 ## Behavior layers on the core trick
 

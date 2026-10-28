@@ -3,6 +3,17 @@
 ## Unreleased
 
 ### Changed
+- The tray panel is redesigned as a native utility popover: a compact header,
+  grouped settings cards (**General**, **Hiding Behavior**, **Keyboard
+  Shortcut**, **Menu Bar Preview**, **About**) and a fixed footer with
+  **Check for Updates…** and **Quit**. Rows use hairline separators, semantic
+  light/dark colors, and system controls; long labels wrap for localization.
+- The auto-hide delay now sits beside its toggle and is de-emphasized (not
+  reset) while automatic hiding is off. The shortcut row shows the recorded
+  combination in a key-cap with **Set Shortcut**/**Cancel** and a clear action.
+- The menu-bar preview is a single card that labels each zone **Hidden**,
+  **Always Hidden** (when enabled) and **Visible**; it remains illustrative,
+  not a live mirror of the system bar.
 - The Preferences window is gone. **Right-click the arrow** to open a compact
   tray panel (an `NSPopover` anchored to the status item) with every setting,
   the menu-bar illustration, the global-shortcut recorder, update check,

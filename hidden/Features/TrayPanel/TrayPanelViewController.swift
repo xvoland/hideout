@@ -27,27 +27,33 @@ final class TrayPanelViewController: NSViewController {
 
     var heightLimit: CGFloat = 0
 
-    private(set) var currentHeight: CGFloat = 600
-    private let minimumPanelHeight: CGFloat = 380
+    private(set) var currentHeight: CGFloat = 680
+    private let minimumPanelHeight: CGFloat = 460
 
     // MARK: - Views
 
     private let scrollView = NSScrollView()
-    private let contentStack = NSStackView()
+    private let document = FlippedView()
     private let preview = TrayPanelPreview()
     private let statusLabel = NSTextField(labelWithString: "")
 
-    private var loginCheck: NSButton!
-    private var showOnLaunchCheck: NSButton!
-    private var fullStatusBarCheck: NSButton!
-    private var alwaysHiddenCheck: NSButton!
-    private var keepSystemItemsCheck: NSButton!
-    private var autoHideCheck: NSButton!
+    /// Last section added to the document; used to stack the next one below.
+    private weak var lastSection: NSView?
+
+    private var loginSwitch: NSSwitch!
+    private var showOnLaunchSwitch: NSSwitch!
+    private var autoHideSwitch: NSSwitch!
+    private var alwaysHiddenSwitch: NSSwitch!
+    private var keepSystemSwitch: NSSwitch!
+    private var fullMenuBarSwitch: NSSwitch!
+
+    private var delayLabel: NSTextField!
     private var delayPopup: NSPopUpButton!
     private var engineNote: NSTextField!
-    private var shortcutButton: NSButton!
+
+    private var shortcutChip: ShortcutChipView!
+    private var changeButton: NSButton!
     private var clearButton: NSButton!
-    private var versionLabel: NSTextField!
 
     // MARK: - Shortcut recording
 
@@ -58,15 +64,14 @@ final class TrayPanelViewController: NSViewController {
     // MARK: - Inline help
 
     private var helpRow: NSStackView!
+    private var helpRowHeight: NSLayoutConstraint?
 
     // MARK: - Life cycle
 
     override func loadView() {
-        let root = NSVisualEffectView()
-        root.material = .popover
-        root.blendingMode = .behindWindow
-        root.state = .followsWindowActiveState
-        view = root
+        // The popover supplies its own material; a clear root lets that show
+        // through instead of stacking a second vibrancy layer on top.
+        view = NSView()
     }
 
     override func viewDidLoad() {
@@ -128,6 +133,7 @@ final class TrayPanelViewController: NSViewController {
         let grip = TrayPanelGripView()
         grip.translatesAutoresizingMaskIntoConstraints = false
         grip.toolTip = "Drag to resize the panel".localized
+        grip.setAccessibilityLabel("Resize the panel".localized)
         grip.onDrag = { [weak self] delta, commit in
             self?.gripChanged(delta: delta, commit: commit)
         }
@@ -139,15 +145,7 @@ final class TrayPanelViewController: NSViewController {
         scrollView.drawsBackground = false
         scrollView.borderType = .noBorder
 
-        contentStack.orientation = .vertical
-        contentStack.alignment = .width
-        contentStack.spacing = 9
-        contentStack.edgeInsets = NSEdgeInsets(top: 2, left: 14, bottom: 12, right: 14)
-        contentStack.translatesAutoresizingMaskIntoConstraints = false
-
-        let document = FlippedView()
         document.translatesAutoresizingMaskIntoConstraints = false
-        document.addSubview(contentStack)
         scrollView.documentView = document
 
         view.addSubview(header)
@@ -156,11 +154,11 @@ final class TrayPanelViewController: NSViewController {
         view.addSubview(grip)
 
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: view.topAnchor, constant: 12),
-            header.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 14),
-            header.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -14),
+            header.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
+            header.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            header.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            scrollView.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 8),
+            scrollView.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 10),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.heightAnchor.constraint(greaterThanOrEqualToConstant: 120),
@@ -175,11 +173,6 @@ final class TrayPanelViewController: NSViewController {
             grip.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             grip.heightAnchor.constraint(equalToConstant: 10),
 
-            contentStack.topAnchor.constraint(equalTo: document.topAnchor),
-            contentStack.leadingAnchor.constraint(equalTo: document.leadingAnchor),
-            contentStack.trailingAnchor.constraint(equalTo: document.trailingAnchor),
-            contentStack.bottomAnchor.constraint(equalTo: document.bottomAnchor),
-
             document.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
             document.leadingAnchor.constraint(equalTo: scrollView.contentView.leadingAnchor),
             document.trailingAnchor.constraint(equalTo: scrollView.contentView.trailingAnchor),
@@ -189,18 +182,20 @@ final class TrayPanelViewController: NSViewController {
 
     private func makeHeader() -> NSView {
         let logo = NSImageView()
+        logo.identifier = NSUserInterfaceItemIdentifier("ic_logo")
         logo.image = NSImage(named: NSImage.Name("ic_logo"))
         logo.imageScaling = .scaleProportionallyUpOrDown
         logo.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            logo.widthAnchor.constraint(equalToConstant: 30),
-            logo.heightAnchor.constraint(equalToConstant: 30)
+            logo.widthAnchor.constraint(equalToConstant: 40),
+            logo.heightAnchor.constraint(equalToConstant: 40)
         ])
 
         let title = NSTextField(labelWithString: Constant.appName)
-        title.font = .systemFont(ofSize: 15, weight: .semibold)
+        title.font = .systemFont(ofSize: 20, weight: .semibold)
+        title.textColor = .labelColor
 
-        statusLabel.font = .systemFont(ofSize: 11)
+        statusLabel.font = .systemFont(ofSize: 12)
         statusLabel.textColor = .secondaryLabelColor
         statusLabel.lineBreakMode = .byTruncatingTail
 
@@ -209,12 +204,15 @@ final class TrayPanelViewController: NSViewController {
         titles.alignment = .leading
         titles.spacing = 1
         titles.translatesAutoresizingMaskIntoConstraints = false
-        titles.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        let row = NSStackView(views: [logo, titles])
+        let spacer = NSView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let row = NSStackView(views: [logo, titles, spacer])
         row.orientation = .horizontal
         row.alignment = .centerY
-        row.spacing = 9
+        row.spacing = 11
         row.translatesAutoresizingMaskIntoConstraints = false
         return row
     }
@@ -224,33 +222,11 @@ final class TrayPanelViewController: NSViewController {
         divider.boxType = .separator
         divider.translatesAutoresizingMaskIntoConstraints = false
 
-        let arrange = NSButton(title: "Show All Icons".localized,
-                               target: self,
-                               action: #selector(arrangePressed))
-        arrange.bezelStyle = .rounded
-        arrange.controlSize = .small
-        arrange.toolTip = "Show All Icons for Arranging".localized
-
         let updates = NSButton(title: "Check for Updates…".localized,
                                target: self,
                                action: #selector(checkUpdatesPressed))
         updates.bezelStyle = .rounded
         updates.controlSize = .small
-
-        let topRow = NSStackView(views: [arrange, updates])
-        topRow.orientation = .horizontal
-        topRow.alignment = .centerY
-        topRow.spacing = 8
-        topRow.distribution = .fillEqually
-        topRow.translatesAutoresizingMaskIntoConstraints = false
-
-        let github = NSButton(title: "GitHub", target: self, action: #selector(openGitHub))
-        github.bezelStyle = .inline
-        github.controlSize = .small
-
-        let site = NSButton(title: "dotoca.net", target: self, action: #selector(openMaintainerSite))
-        site.bezelStyle = .inline
-        site.controlSize = .small
 
         let quit = NSButton(title: "Quit".localized, target: self, action: #selector(quitPressed))
         quit.bezelStyle = .rounded
@@ -260,17 +236,16 @@ final class TrayPanelViewController: NSViewController {
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
         spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
-        let bottomRow = NSStackView(views: [github, site, spacer, quit])
-        bottomRow.orientation = .horizontal
-        bottomRow.alignment = .centerY
-        bottomRow.spacing = 8
-        bottomRow.translatesAutoresizingMaskIntoConstraints = false
+        let row = NSStackView(views: [updates, spacer, quit])
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 8
+        row.translatesAutoresizingMaskIntoConstraints = false
 
         let container = NSView()
         container.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(divider)
-        container.addSubview(topRow)
-        container.addSubview(bottomRow)
+        container.addSubview(row)
 
         NSLayoutConstraint.activate([
             divider.topAnchor.constraint(equalTo: container.topAnchor),
@@ -278,14 +253,10 @@ final class TrayPanelViewController: NSViewController {
             divider.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             divider.heightAnchor.constraint(equalToConstant: 1),
 
-            topRow.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 10),
-            topRow.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 14),
-            topRow.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -14),
-
-            bottomRow.topAnchor.constraint(equalTo: topRow.bottomAnchor, constant: 8),
-            bottomRow.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 14),
-            bottomRow.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -14),
-            bottomRow.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -10)
+            row.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 10),
+            row.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 20),
+            row.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -20),
+            row.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8)
         ])
 
         return container
@@ -294,38 +265,84 @@ final class TrayPanelViewController: NSViewController {
     // MARK: - Content
 
     private func populateContent() {
-        contentStack.addArrangedSubview(sectionTitle("Settings".localized))
+        addSection("General".localized, views: [generalCard()])
+        addSection("Hiding Behavior".localized,
+                   views: [hidingCard(), engineNoteLabel()])
+        addSection("Keyboard Shortcut".localized, views: [shortcutCard()])
+        addSection("Menu Bar Preview".localized,
+                   accessory: textButton("Show All Icons".localized,
+                                         action: #selector(arrangePressed),
+                                         tooltip: "Show All Icons for Arranging".localized),
+                   views: [preview])
+        addSection("About".localized, views: [aboutCard()])
+        finishContentLayout()
+    }
 
-        loginCheck = checkbox("Start Hideout when I log in".localized, action: #selector(loginChanged))
-        contentStack.addArrangedSubview(loginCheck)
+    private func addSection(_ title: String, accessory: NSView? = nil, views: [NSView]) {
+        let stack = NSStackView(views: [sectionHeader(title, accessory: accessory)] + views)
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 8
+        stack.translatesAutoresizingMaskIntoConstraints = false
 
-        showOnLaunchCheck = checkbox("Open the panel on launch".localized, action: #selector(showOnLaunchChanged))
-        contentStack.addArrangedSubview(showOnLaunchCheck)
+        // `.width` alignment does not reliably stretch every arranged view
+        // (cards with content-driven width stayed narrow), so pin each child
+        // to the section's width explicitly.
+        for view in stack.arrangedSubviews {
+            view.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+        }
 
-        fullStatusBarCheck = checkbox("Use the full MenuBar on expanding".localized, action: #selector(fullStatusBarChanged))
-        contentStack.addArrangedSubview(fullStatusBarCheck)
+        document.addSubview(stack)
 
-        alwaysHiddenCheck = checkbox("Enable always hidden section".localized, action: #selector(alwaysHiddenChanged))
-        contentStack.addArrangedSubview(row(alwaysHiddenCheck, helpButton()))
+        let top: NSLayoutConstraint
+        if let lastSection = lastSection {
+            top = stack.topAnchor.constraint(equalTo: lastSection.bottomAnchor, constant: 18)
+        } else {
+            top = stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 2)
+        }
 
-        // Inline instead of a nested popover: the panel itself is transient, so
-        // a popover anchored inside it would be dismissed by the same click
-        // that should open it.
-        let helpLabel = NSTextField(wrappingLabelWithString: "Tutorial text".localized)
-        helpLabel.font = .systemFont(ofSize: 10)
-        helpLabel.textColor = .secondaryLabelColor
-        helpLabel.maximumNumberOfLines = 0
-        helpLabel.preferredMaxLayoutWidth = 294
-        helpRow = NSStackView(views: [helpLabel])
-        helpRow.orientation = .vertical
-        helpRow.alignment = .leading
-        helpRow.edgeInsets = NSEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
-        helpRow.translatesAutoresizingMaskIntoConstraints = false
-        helpRow.isHidden = true
-        contentStack.addArrangedSubview(helpRow)
+        NSLayoutConstraint.activate([
+            top,
+            stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 20),
+            stack.trailingAnchor.constraint(equalTo: document.trailingAnchor, constant: -20)
+        ])
+        lastSection = stack
+    }
 
-        autoHideCheck = checkbox("Automatically hide icon(s) after:".localized, action: #selector(autoHideChanged))
-        contentStack.addArrangedSubview(autoHideCheck)
+    /// Closes the document's height around the last section.
+    private func finishContentLayout() {
+        guard let lastSection = lastSection else { return }
+        lastSection.bottomAnchor.constraint(equalTo: document.bottomAnchor, constant: -16).isActive = true
+    }
+
+    private func generalCard() -> NSView {
+        loginSwitch = toggle(action: #selector(loginChanged),
+                             label: "Start Hideout when I log in".localized)
+        showOnLaunchSwitch = toggle(action: #selector(showOnLaunchChanged),
+                                    label: "Open the panel on launch".localized)
+
+        let login = settingRow(title: "Start Hideout when I log in".localized,
+                               control: loginSwitch)
+        let launch = settingRow(title: "Open the panel on launch".localized,
+                                control: showOnLaunchSwitch)
+
+        return card([login, separator(), launch])
+    }
+
+    private func hidingCard() -> NSView {
+        autoHideSwitch = toggle(action: #selector(autoHideChanged),
+                                label: "Automatically hide icons".localized)
+        autoHideSwitch.toolTip = "Hide menu bar icons automatically after a delay.".localized
+
+        let autoHide = settingRow(
+            title: "Automatically hide icons".localized,
+            subtitle: "Hide selected menu bar icons after a period of inactivity.".localized,
+            control: autoHideSwitch
+        )
+
+        delayLabel = NSTextField(labelWithString: "Hide after".localized)
+        delayLabel.font = .systemFont(ofSize: 12)
+        delayLabel.textColor = .secondaryLabelColor
 
         delayPopup = NSPopUpButton(frame: .zero, pullsDown: false)
         delayPopup.addItems(withTitles: ["5 seconds".localized,
@@ -337,110 +354,306 @@ final class TrayPanelViewController: NSViewController {
         delayPopup.action = #selector(delayChanged)
         delayPopup.controlSize = .small
         delayPopup.font = .systemFont(ofSize: 11)
-        let delayRow = NSStackView(views: [delayPopup])
+        delayPopup.setAccessibilityLabel("Auto-hide delay".localized)
+
+        let delaySpacer = NSView()
+        delaySpacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        delaySpacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let delayRow = NSStackView(views: [delayLabel, delaySpacer, delayPopup])
         delayRow.orientation = .horizontal
         delayRow.alignment = .centerY
-        delayRow.edgeInsets = NSEdgeInsets(top: 0, left: 18, bottom: 0, right: 0)
+        delayRow.spacing = 8
+        delayRow.edgeInsets = NSEdgeInsets(top: 0, left: 0, bottom: 9, right: 0)
         delayRow.translatesAutoresizingMaskIntoConstraints = false
-        contentStack.addArrangedSubview(delayRow)
 
-        keepSystemItemsCheck = checkbox("Always keep system menu-bar items visible".localized, action: #selector(keepSystemItemsChanged))
-        contentStack.addArrangedSubview(keepSystemItemsCheck)
+        alwaysHiddenSwitch = toggle(action: #selector(alwaysHiddenChanged),
+                                    label: "Always-hidden section".localized)
+        alwaysHiddenSwitch.toolTip = "A second hidden zone whose icons stay hidden even when the bar is expanded.".localized
 
-        engineNote = NSTextField(wrappingLabelWithString: "")
-        engineNote.font = .systemFont(ofSize: 10)
-        engineNote.textColor = .secondaryLabelColor
-        engineNote.maximumNumberOfLines = 3
-        engineNote.preferredMaxLayoutWidth = 312
-        contentStack.addArrangedSubview(engineNote)
+        let alwaysHidden = settingRow(
+            title: "Always-hidden section".localized,
+            subtitle: "Keep selected icons hidden from the regular menu bar.".localized,
+            control: alwaysHiddenSwitch,
+            accessory: helpButton()
+        )
 
-        contentStack.addArrangedSubview(sectionTitle("Global Shortcut".localized))
+        helpRow = makeHelpRow()
+        // A hidden row would still report its label's intrinsic height inside
+        // the card's explicit layout, leaving an empty band; pin it to zero.
+        helpRowHeight = helpRow.heightAnchor.constraint(equalToConstant: 0)
+        helpRowHeight?.isActive = true
 
-        shortcutButton = NSButton(title: "Set Shortcut".localized,
-                                  target: self,
-                                  action: #selector(beginShortcutRecording))
-        shortcutButton.bezelStyle = .rounded
-        shortcutButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        keepSystemSwitch = toggle(action: #selector(keepSystemItemsChanged),
+                                  label: "Keep system icons visible".localized)
+        keepSystemSwitch.toolTip = "macOS system items stay visible when Hideout collapses the bar.".localized
 
-        clearButton = NSButton(title: "⌫", target: self, action: #selector(clearShortcut))
-        clearButton.bezelStyle = .rounded
-        clearButton.toolTip = "Clear Shortcut".localized
-        clearButton.translatesAutoresizingMaskIntoConstraints = false
-        clearButton.widthAnchor.constraint(equalToConstant: 38).isActive = true
+        let keepSystem = settingRow(
+            title: "Keep system icons visible".localized,
+            subtitle: "Prevent macOS system menu bar items from being hidden.".localized,
+            control: keepSystemSwitch
+        )
 
-        let shortcutRow = NSStackView(views: [shortcutButton, clearButton])
-        shortcutRow.orientation = .horizontal
-        shortcutRow.alignment = .centerY
-        shortcutRow.spacing = 6
-        shortcutRow.translatesAutoresizingMaskIntoConstraints = false
-        contentStack.addArrangedSubview(shortcutRow)
+        fullMenuBarSwitch = toggle(action: #selector(fullMenuBarChanged),
+                                   label: "Use the full menu bar when expanding".localized)
+        fullMenuBarSwitch.toolTip = "Activate Hideout like a regular app while the menu bar is expanded.".localized
 
-        let hint = NSTextField(wrappingLabelWithString: "Click the button, then press the keys.".localized)
-        hint.font = .systemFont(ofSize: 10)
-        hint.textColor = .tertiaryLabelColor
-        hint.maximumNumberOfLines = 2
-        hint.preferredMaxLayoutWidth = 312
-        contentStack.addArrangedSubview(hint)
+        let fullMenuBar = settingRow(
+            title: "Use the full menu bar when expanding".localized,
+            subtitle: "Activate Hideout like a regular app while the menu bar is expanded.".localized,
+            control: fullMenuBarSwitch
+        )
 
-        contentStack.addArrangedSubview(sectionTitle("Menu bar".localized))
-        contentStack.addArrangedSubview(preview)
-
-        addAboutSection()
+        return card([autoHide, delayRow, separator(), alwaysHidden, helpRow,
+                     separator(), keepSystem, separator(), fullMenuBar])
     }
 
-    private func addAboutSection() {
-        contentStack.addArrangedSubview(sectionTitle("About".localized))
+    private func makeHelpRow() -> NSStackView {
+        let label = NSTextField(wrappingLabelWithString: "Tutorial text".localized)
+        label.font = .systemFont(ofSize: 10)
+        label.textColor = .secondaryLabelColor
+        label.maximumNumberOfLines = 0
+        label.preferredMaxLayoutWidth = 296
 
+        let row = NSStackView(views: [label])
+        row.orientation = .vertical
+        row.alignment = .leading
+        row.edgeInsets = NSEdgeInsets(top: 2, left: 0, bottom: 10, right: 0)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.isHidden = true
+        return row
+    }
+
+    private func engineNoteLabel() -> NSView {
+        engineNote = NSTextField(wrappingLabelWithString: "")
+        engineNote.font = .systemFont(ofSize: 10)
+        engineNote.textColor = .tertiaryLabelColor
+        engineNote.maximumNumberOfLines = 2
+        engineNote.preferredMaxLayoutWidth = 320
+
+        let row = NSStackView(views: [engineNote])
+        row.orientation = .horizontal
+        row.alignment = .top
+        row.edgeInsets = NSEdgeInsets(top: -2, left: 12, bottom: 0, right: 12)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        return row
+    }
+
+    private func shortcutCard() -> NSView {
+        let title = NSTextField(labelWithString: "Toggle Hideout".localized)
+        title.font = .systemFont(ofSize: 13)
+        title.textColor = .labelColor
+
+        shortcutChip = ShortcutChipView()
+        shortcutChip.translatesAutoresizingMaskIntoConstraints = false
+        shortcutChip.setAccessibilityRole(.staticText)
+
+        changeButton = NSButton(title: "Set Shortcut".localized,
+                                target: self,
+                                action: #selector(shortcutButtonPressed))
+        changeButton.bezelStyle = .rounded
+        changeButton.controlSize = .small
+        changeButton.toolTip = "Click the button, then press the keys.".localized
+
+        let clearImage = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: nil) ?? NSImage()
+        clearButton = NSButton(image: clearImage, target: self, action: #selector(clearShortcut))
+        clearButton.isBordered = false
+        clearButton.bezelStyle = .inline
+        clearButton.imagePosition = .imageOnly
+        clearButton.contentTintColor = .tertiaryLabelColor
+        clearButton.toolTip = "Clear Shortcut".localized
+        clearButton.setAccessibilityLabel("Clear Shortcut".localized)
+        clearButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            clearButton.widthAnchor.constraint(equalToConstant: 18),
+            clearButton.heightAnchor.constraint(equalToConstant: 18)
+        ])
+
+        let spacer = NSView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let row = NSStackView(views: [title, spacer, shortcutChip, changeButton, clearButton])
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 6
+        row.edgeInsets = NSEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        row.translatesAutoresizingMaskIntoConstraints = false
+
+        return card([row])
+    }
+
+    private func aboutCard() -> NSView {
         let version = Bundle.main.releaseVersionNumber ?? "—"
         let build = Bundle.main.buildVersionNumber ?? "—"
-        versionLabel = NSTextField(labelWithString: "\(Constant.appName) \(version) (\(build))")
+
+        let versionLabel = NSTextField(labelWithString: "\("Version".localized) \(version) (\(build))")
         versionLabel.font = .systemFont(ofSize: 11)
         versionLabel.textColor = .secondaryLabelColor
-        contentStack.addArrangedSubview(versionLabel)
 
-        contentStack.addArrangedSubview(linkRow(icon: "ico_compass",
-                                                title: "Maintained by Vitalii Tereshchuk (xVoLAnD)".localized,
-                                                href: "https://dotoca.net/"))
-        contentStack.addArrangedSubview(linkRow(icon: "ico_github",
-                                                title: "This fork is fully open source".localized,
-                                                href: "https://github.com/xvoland/hidden"))
-        contentStack.addArrangedSubview(linkRow(icon: "ico_twitter",
-                                                title: "Upstream project".localized,
-                                                href: "https://github.com/dwarvesf/hidden"))
-        contentStack.addArrangedSubview(linkRow(icon: "ico_email",
-                                                title: "Contact the maintainer".localized,
-                                                href: "mailto:adv@dotoca.net"))
+        let links = NSStackView(views: [
+            textButton("GitHub", action: #selector(openGitHub), tooltip: "https://github.com/xvoland/hidden"),
+            textButton("Website", action: #selector(openMaintainerSite), tooltip: "https://dotoca.net/"),
+            textButton("Contact", action: #selector(openContact), tooltip: "adv@dotoca.net"),
+            textButton("Upstream", action: #selector(openUpstream), tooltip: "https://github.com/dwarvesf/hidden")
+        ])
+        links.orientation = .horizontal
+        links.alignment = .centerY
+        links.spacing = 14
+        links.translatesAutoresizingMaskIntoConstraints = false
 
-        let copyright = NSTextField(wrappingLabelWithString: "Copyright © 2019 Dwarves Foundation. All rights reserved. MIT licensed.")
+        let credit = HyperlinkTextField()
+        credit.href = "https://dotoca.net/"
+        credit.stringValue = "Maintained by Vitalii Tereshchuk (xVoLAnD)"
+        credit.isEditable = false
+        credit.isSelectable = false
+        credit.isBordered = false
+        credit.drawsBackground = false
+        credit.font = .systemFont(ofSize: 10)
+        credit.textColor = .secondaryLabelColor
+        credit.lineBreakMode = .byTruncatingTail
+
+        let copyright = NSTextField(labelWithString: "© 2019 Dwarves Foundation · MIT license")
         copyright.font = .systemFont(ofSize: 10)
         copyright.textColor = .tertiaryLabelColor
-        copyright.maximumNumberOfLines = 2
-        copyright.preferredMaxLayoutWidth = 312
-        contentStack.addArrangedSubview(copyright)
+
+        let stack = NSStackView(views: [versionLabel, links, credit, copyright])
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 6
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        return card([stack], insets: NSEdgeInsets(top: 12, left: 12, bottom: 12, right: 12))
     }
 
     // MARK: - View helpers
 
-    private func sectionTitle(_ title: String) -> NSTextField {
-        let label = NSTextField(labelWithString: title.uppercased())
-        label.font = .systemFont(ofSize: 10, weight: .semibold)
-        label.textColor = .tertiaryLabelColor
-        return label
+    private func sectionHeader(_ title: String, accessory: NSView? = nil) -> NSView {
+        let label = NSTextField(labelWithString: title)
+        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = .secondaryLabelColor
+
+        let row = NSStackView()
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 8
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(label)
+
+        if let accessory = accessory {
+            let spacer = NSView()
+            spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            row.addArrangedSubview(spacer)
+            row.addArrangedSubview(accessory)
+        }
+
+        return row
     }
 
-    private func checkbox(_ title: String, action: Selector) -> NSButton {
-        let button = NSButton(checkboxWithTitle: title, target: self, action: action)
-        button.font = .systemFont(ofSize: 13)
+    /// Groups rows on a single card surface. Rows draw their own separators;
+    /// each one is pinned to the card so its controls line up at the edges.
+    private func card(_ rows: [NSView], insets: NSEdgeInsets = NSEdgeInsets(top: 2, left: 12, bottom: 2, right: 12)) -> NSView {
+        let card = PanelCardView()
+        var previous: NSView?
+
+        for row in rows {
+            row.translatesAutoresizingMaskIntoConstraints = false
+            card.addSubview(row)
+
+            let top = previous.map {
+                row.topAnchor.constraint(equalTo: $0.bottomAnchor)
+            } ?? row.topAnchor.constraint(equalTo: card.topAnchor, constant: insets.top)
+
+            NSLayoutConstraint.activate([
+                top,
+                row.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: insets.left),
+                row.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -insets.right)
+            ])
+            previous = row
+        }
+
+        previous?.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -insets.bottom).isActive = true
+        return card
+    }
+
+    private func settingRow(title: String,
+                            subtitle: String? = nil,
+                            control: NSView? = nil,
+                            accessory: NSView? = nil) -> NSView {
+        let titleLabel = NSTextField(labelWithString: title)
+        titleLabel.font = .systemFont(ofSize: 13)
+        titleLabel.textColor = .labelColor
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.maximumNumberOfLines = 3
+        titleLabel.preferredMaxLayoutWidth = 232
+
+        let texts = NSStackView()
+        texts.orientation = .vertical
+        texts.alignment = .leading
+        texts.spacing = 2
+        texts.translatesAutoresizingMaskIntoConstraints = false
+        texts.addArrangedSubview(titleLabel)
+
+        if let subtitle = subtitle {
+            let subtitleLabel = NSTextField(wrappingLabelWithString: subtitle)
+            subtitleLabel.font = .systemFont(ofSize: 11)
+            subtitleLabel.textColor = .secondaryLabelColor
+            subtitleLabel.maximumNumberOfLines = 3
+            subtitleLabel.preferredMaxLayoutWidth = 240
+            texts.addArrangedSubview(subtitleLabel)
+        }
+
+        let row = NSStackView()
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 6
+        row.edgeInsets = NSEdgeInsets(top: 9, left: 0, bottom: 9, right: 0)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(texts)
+
+        if let accessory = accessory {
+            row.addArrangedSubview(accessory)
+        }
+
+        let spacer = NSView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        row.addArrangedSubview(spacer)
+
+        if let control = control {
+            row.addArrangedSubview(control)
+        }
+
+        return row
+    }
+
+    private func separator() -> NSView {
+        let box = NSBox()
+        box.boxType = .separator
+        box.translatesAutoresizingMaskIntoConstraints = false
+        box.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        return box
+    }
+
+    private func toggle(action: Selector, label: String) -> NSSwitch {
+        let toggle = NSSwitch()
+        toggle.target = self
+        toggle.action = action
+        toggle.setAccessibilityLabel(label)
+        toggle.translatesAutoresizingMaskIntoConstraints = false
+        return toggle
+    }
+
+    private func textButton(_ title: String, action: Selector, tooltip: String? = nil) -> NSButton {
+        let button = NSButton(title: title, target: self, action: action)
+        button.isBordered = false
+        button.bezelStyle = .inline
+        button.font = .systemFont(ofSize: 11)
+        button.contentTintColor = .controlAccentColor
+        button.toolTip = tooltip
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
-    }
-
-    private func row(_ first: NSView, _ second: NSView) -> NSStackView {
-        let stack = NSStackView(views: [first, second])
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = 4
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
     }
 
     private func helpButton() -> NSButton {
@@ -451,43 +664,13 @@ final class TrayPanelViewController: NSViewController {
         button.imagePosition = .imageOnly
         button.contentTintColor = .secondaryLabelColor
         button.toolTip = "How the always hidden section works".localized
+        button.setAccessibilityLabel("How the always hidden section works".localized)
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            button.widthAnchor.constraint(equalToConstant: 18),
-            button.heightAnchor.constraint(equalToConstant: 18)
+            button.widthAnchor.constraint(equalToConstant: 16),
+            button.heightAnchor.constraint(equalToConstant: 16)
         ])
         return button
-    }
-
-    private func linkRow(icon: String, title: String, href: String) -> NSView {
-        let imageView = NSImageView()
-        imageView.image = NSImage(named: NSImage.Name(icon))
-        imageView.imageScaling = .scaleProportionallyDown
-        imageView.contentTintColor = .secondaryLabelColor
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: 14),
-            imageView.heightAnchor.constraint(equalToConstant: 14)
-        ])
-
-        let link = HyperlinkTextField()
-        link.href = href
-        link.stringValue = title
-        link.isEditable = false
-        link.isSelectable = false
-        link.isBordered = false
-        link.drawsBackground = false
-        link.font = .systemFont(ofSize: 11)
-        link.textColor = .linkColor
-        link.lineBreakMode = .byTruncatingTail
-        link.setContentHuggingPriority(.defaultLow, for: .horizontal)
-
-        let stack = NSStackView(views: [imageView, link])
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = 8
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
     }
 
     // MARK: - Refresh
@@ -495,20 +678,26 @@ final class TrayPanelViewController: NSViewController {
     @objc private func refreshControls() {
         guard isViewLoaded else { return }
 
-        loginCheck.state = Preferences.isAutoStart ? .on : .off
-        showOnLaunchCheck.state = Preferences.isShowPreference ? .on : .off
-        fullStatusBarCheck.state = Preferences.useFullStatusBarOnExpandEnabled ? .on : .off
-        alwaysHiddenCheck.state = Preferences.alwaysHiddenSectionEnabled ? .on : .off
-        keepSystemItemsCheck.state = Preferences.keepSystemItemsVisible ? .on : .off
-        autoHideCheck.state = Preferences.isAutoHide ? .on : .off
+        loginSwitch.state = Preferences.isAutoStart ? .on : .off
+        showOnLaunchSwitch.state = Preferences.isShowPreference ? .on : .off
+        autoHideSwitch.state = Preferences.isAutoHide ? .on : .off
+        alwaysHiddenSwitch.state = Preferences.alwaysHiddenSectionEnabled ? .on : .off
+        keepSystemSwitch.state = Preferences.keepSystemItemsVisible ? .on : .off
+        fullMenuBarSwitch.state = Preferences.useFullStatusBarOnExpandEnabled ? .on : .off
 
         delayPopup.selectItem(at: SelectedSecond.secondToPossition(seconds: Preferences.numberOfSecondForAutoHide))
-        delayPopup.isEnabled = Preferences.isAutoHide
+        updateDelayAvailability()
 
         preview.refresh(alwaysHidden: Preferences.alwaysHiddenSectionEnabled)
         updateEngineNote()
         updateShortcut()
         updateStatus()
+    }
+
+    private func updateDelayAvailability() {
+        let enabled = Preferences.isAutoHide
+        delayPopup.isEnabled = enabled
+        delayLabel.textColor = enabled ? .secondaryLabelColor : .tertiaryLabelColor
     }
 
     private func updateEngineNote() {
@@ -531,40 +720,47 @@ final class TrayPanelViewController: NSViewController {
         guard isViewLoaded, !isListening else { return }
 
         if let key = Preferences.globalKey, key.description.count > 1 {
-            shortcutButton.title = key.description
+            shortcutChip.title = key.description
+            shortcutChip.recording = false
+            let label = "Current shortcut".localized
+            shortcutChip.setAccessibilityLabel("\(label): \(key.description)")
             clearButton.isEnabled = true
+            clearButton.contentTintColor = .tertiaryLabelColor
         } else {
-            shortcutButton.title = "Set Shortcut".localized
+            shortcutChip.title = "Not set".localized
+            shortcutChip.recording = false
+            shortcutChip.setAccessibilityLabel("No shortcut set".localized)
             clearButton.isEnabled = false
+            clearButton.contentTintColor = .quaternaryLabelColor
         }
     }
 
     // MARK: - Actions
 
     @objc private func loginChanged() {
-        Preferences.isAutoStart = loginCheck.state == .on
+        Preferences.isAutoStart = loginSwitch.state == .on
     }
 
     @objc private func showOnLaunchChanged() {
-        Preferences.isShowPreference = showOnLaunchCheck.state == .on
+        Preferences.isShowPreference = showOnLaunchSwitch.state == .on
     }
 
-    @objc private func fullStatusBarChanged() {
-        Preferences.useFullStatusBarOnExpandEnabled = fullStatusBarCheck.state == .on
+    @objc private func autoHideChanged() {
+        Preferences.isAutoHide = autoHideSwitch.state == .on
+        updateDelayAvailability()
     }
 
     @objc private func alwaysHiddenChanged() {
-        Preferences.alwaysHiddenSectionEnabled = alwaysHiddenCheck.state == .on
+        Preferences.alwaysHiddenSectionEnabled = alwaysHiddenSwitch.state == .on
         preview.refresh(alwaysHidden: Preferences.alwaysHiddenSectionEnabled)
     }
 
     @objc private func keepSystemItemsChanged() {
-        Preferences.keepSystemItemsVisible = keepSystemItemsCheck.state == .on
+        Preferences.keepSystemItemsVisible = keepSystemSwitch.state == .on
     }
 
-    @objc private func autoHideChanged() {
-        Preferences.isAutoHide = autoHideCheck.state == .on
-        delayPopup.isEnabled = Preferences.isAutoHide
+    @objc private func fullMenuBarChanged() {
+        Preferences.useFullStatusBarOnExpandEnabled = fullMenuBarSwitch.state == .on
     }
 
     @objc private func delayChanged() {
@@ -596,6 +792,14 @@ final class TrayPanelViewController: NSViewController {
         open("https://dotoca.net/")
     }
 
+    @objc private func openContact() {
+        open("mailto:adv@dotoca.net")
+    }
+
+    @objc private func openUpstream() {
+        open("https://github.com/dwarvesf/hidden")
+    }
+
     private func open(_ string: String) {
         guard let url = URL(string: string) else { return }
         NSWorkspace.shared.open(url)
@@ -603,12 +807,21 @@ final class TrayPanelViewController: NSViewController {
 
     // MARK: - Shortcut recording
 
-    @objc private func beginShortcutRecording() {
+    @objc private func shortcutButtonPressed() {
+        if isListening {
+            endShortcutRecording(restoreTitle: true)
+        } else {
+            beginShortcutRecording()
+        }
+    }
+
+    private func beginShortcutRecording() {
         guard listeningMonitor == nil else { return }
 
         isListening = true
-        shortcutButton.highlight(true)
-        shortcutButton.title = "Type a shortcut…".localized
+        shortcutChip.recording = true
+        shortcutChip.title = "Type a shortcut…".localized
+        changeButton.title = "Cancel".localized
         clearButton.isEnabled = false
 
         listeningMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { [weak self] event in
@@ -624,6 +837,11 @@ final class TrayPanelViewController: NSViewController {
             self.capture(event)
             return nil
         }
+
+        // The recorder owns Escape while listening; leaving the panel's own
+        // Escape monitor installed could close the panel right after a cancel.
+        removeEscapeMonitor()
+        view.window?.makeFirstResponder(nil)
     }
 
     private func updateModifierDisplay(_ event: NSEvent) {
@@ -636,7 +854,7 @@ final class TrayPanelViewController: NSViewController {
                                             carbonFlags: 0,
                                             characters: nil,
                                             keyCode: UInt32(event.keyCode))
-        shortcutButton.title = bind.description.isEmpty
+        shortcutChip.title = bind.description.isEmpty
             ? "Type a shortcut…".localized
             : bind.description
     }
@@ -662,7 +880,7 @@ final class TrayPanelViewController: NSViewController {
         if bind.description.count <= 1 {
             clearShortcut()
         } else {
-            shortcutButton.title = bind.description
+            shortcutChip.title = bind.description
             clearButton.isEnabled = true
         }
     }
@@ -673,10 +891,12 @@ final class TrayPanelViewController: NSViewController {
             listeningMonitor = nil
         }
         isListening = false
-        shortcutButton?.highlight(false)
+        changeButton?.title = "Set Shortcut".localized
+        shortcutChip?.recording = false
         if restoreTitle {
             updateShortcut()
         }
+        installEscapeMonitor()
     }
 
     @objc private func clearShortcut() {
@@ -688,10 +908,13 @@ final class TrayPanelViewController: NSViewController {
     // MARK: - Help
 
     @objc private func showAlwaysHiddenHelp(_ sender: NSButton) {
-        helpRow.isHidden.toggle()
-        sender.toolTip = (helpRow.isHidden
-            ? "How the always hidden section works"
-            : "Hide the always hidden help").localized
+        let show = helpRow.isHidden
+        helpRow.isHidden = !show
+        helpRowHeight?.isActive = !show
+        sender.toolTip = (show
+            ? "Hide the always hidden help"
+            : "How the always hidden section works").localized
+        view.layoutSubtreeIfNeeded()
     }
 
     // MARK: - Resize grip

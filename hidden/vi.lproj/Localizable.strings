@@ -43,3 +43,16 @@ Các bước thực hiện:
 "Know more about the fork" = "Tìm hiểu thêm về bản fork";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Tuỳ chọn…";
+
+/* Tray panel redesign */
+"General" = "Tuỳ chọn";
+"Keyboard Shortcut" = "Phím tắt";
+"Visible" = "Hiện";
+"Automatically hide icons" = "Tự động ẩn biểu tượng";
+"Always-hidden section" = "Mục luôn ẩn";
+"Keep system icons visible" = "Luôn hiển thị các mục hệ thống trên thanh menu";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "Sử dụng toàn thanh công cụ khi mở rộng";
+
+"Always Hidden" = "Luôn ẩn";

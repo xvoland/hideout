@@ -45,3 +45,16 @@
 "Know more about the fork" = "了解此分支";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "设置…";
+
+/* Tray panel redesign */
+"General" = "设置";
+"Keyboard Shortcut" = "全局快捷键";
+"Visible" = "显示";
+"Automatically hide icons" = "自动隐藏图标";
+"Always-hidden section" = "持续隐藏区域";
+"Keep system icons visible" = "始终显示系统菜单栏项目";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "展开隐藏区域时使用完整的菜单栏";
+
+"Always Hidden" = "持续隐藏";

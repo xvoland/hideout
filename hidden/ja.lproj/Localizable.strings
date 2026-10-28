@@ -42,3 +42,16 @@
 "Know more about the fork" = "フォークについて詳しく";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "設定…";
+
+/* Tray panel redesign */
+"General" = "設置";
+"Keyboard Shortcut" = "グローバルショートカット";
+"Visible" = "表示";
+"Automatically hide icons" = "アイコンを自動的に非表示にする";
+"Always-hidden section" = "常に非表示にするセクション";
+"Keep system icons visible" = "システムのメニューバー項目を常に表示";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "アイコンを表示する時に Hidden のメニューバーも表示";
+
+"Always Hidden" = "常に非表示";

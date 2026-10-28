@@ -44,3 +44,16 @@
 "Know more about the fork" = "إعرف المزيد عن الفرع";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "الإعدادات…";
+
+/* Tray panel redesign */
+"General" = "الإعدادات";
+"Keyboard Shortcut" = "الاختصارات المعممة";
+"Visible" = "ظاهر";
+"Automatically hide icons" = "إخفاء الرموز تلقائيًا";
+"Always-hidden section" = "القسم المخفي دائمًا";
+"Keep system icons visible" = "إبقاء عناصر شريط القوائم النظامية ظاهرة دائمًا";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "استخدم كامل شريط القائمة عند التوسيع";
+
+"Always Hidden" = "مخفي دائمًا";

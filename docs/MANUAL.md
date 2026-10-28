@@ -24,11 +24,12 @@ Everything Hidden Bar can do, including the parts with no UI.
 |---|---|
 | Start Hideout when I log in | Login item via System Settings (macOS 13+ `SMAppService`); revocable in System Settings > General > Login Items |
 | Open the panel on launch | Show the tray panel at app start |
-| Auto collapse | Re-hide automatically after the chosen delay |
-| Global shortcut | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18) |
-| Enable always hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow |
-| Use full menu bar on expanding | App becomes briefly "regular" while expanded (helps on tight menubars) |
-| Always keep system menu-bar items visible | System extras survive a collapse regardless of their section |
+| Automatically hide icons | Re-hide automatically; **Hide after** picks the delay (disabled, but remembered, when the toggle is off) |
+| Toggle Hideout | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18); **Set Shortcut** records, the clear button removes it |
+| Always-hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow. The **?** button shows the setup steps |
+| Keep system icons visible | System extras survive a collapse regardless of their section |
+| Use the full menu bar when expanding | Activate Hideout like a regular app while expanded (helps on tight menubars) |
+| Menu Bar Preview | Illustrative strip that labels the Hidden / Always Hidden / Visible zones — not a live mirror of the system bar |
 | Menu bar height | Drag the grip at the panel's bottom edge; the height is remembered |
 
 

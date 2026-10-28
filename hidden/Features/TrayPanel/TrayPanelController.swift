@@ -18,10 +18,10 @@ final class TrayPanelController: NSObject, NSPopoverDelegate {
     static let shared = TrayPanelController()
 
     /// The panel's fixed width. Its height changes with the grip.
-    static let width: CGFloat = 340
+    static let width: CGFloat = 360
 
-    private static let minimumHeight: CGFloat = 380
-    private static let defaultHeight: CGFloat = 600
+    private static let minimumHeight: CGFloat = 460
+    private static let defaultHeight: CGFloat = 680
     private static let maximumScreenShare: CGFloat = 0.8
 
     private let popover = NSPopover()

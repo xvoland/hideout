@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA100000000000000000001A /* TrayPanelChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000019 /* TrayPanelChrome.swift */; };
 		AA1000000000000000000012 /* TrayPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000011 /* TrayPanelController.swift */; };
 		AA1000000000000000000014 /* TrayPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000013 /* TrayPanelViewController.swift */; };
 		AA1000000000000000000016 /* TrayPanelPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000015 /* TrayPanelPreview.swift */; };
@@ -45,6 +46,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AA1000000000000000000019 /* TrayPanelChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelChrome.swift; sourceTree = "<group>"; };
 		AA1000000000000000000011 /* TrayPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelController.swift; sourceTree = "<group>"; };
 		AA1000000000000000000013 /* TrayPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelViewController.swift; sourceTree = "<group>"; };
 		AA1000000000000000000015 /* TrayPanelPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelPreview.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 				AA1000000000000000000013 /* TrayPanelViewController.swift */,
 				AA1000000000000000000015 /* TrayPanelPreview.swift */,
 				AA1000000000000000000017 /* TrayPanelGripView.swift */,
+				AA1000000000000000000019 /* TrayPanelChrome.swift */,
 			);
 			path = TrayPanel;
 			sourceTree = "<group>";
@@ -379,6 +382,7 @@
 				AA1000000000000000000014 /* TrayPanelViewController.swift in Sources */,
 				AA1000000000000000000016 /* TrayPanelPreview.swift in Sources */,
 				AA1000000000000000000018 /* TrayPanelGripView.swift in Sources */,
+				AA100000000000000000001A /* TrayPanelChrome.swift in Sources */,
 				AA1E0007240F0A1100B0C3D7 /* MenuBarLayout.swift in Sources */,
 				AA1E0008240F0A1100B0C3D8 /* AccessibilityMenuBarInventory.swift in Sources */,
 				AA1E0001240F0A1100B0C3D1 /* MenuBarEngine.swift in Sources */,

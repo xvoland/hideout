@@ -44,3 +44,16 @@ Utilisez la fonction de section toujours cachée pour garder vos icônes bien ra
 "Know more about the fork" = "En savoir plus sur le fork";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Réglages…";
+
+/* Tray panel redesign */
+"General" = "Réglages";
+"Keyboard Shortcut" = "Raccourci global";
+"Visible" = "Visibles";
+"Automatically hide icons" = "Masquer automatiquement les icônes";
+"Always-hidden section" = "Section toujours masquée";
+"Keep system icons visible" = "Toujours garder les éléments système de la barre des menus visibles";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "Use the full menu bar when expanding";
+
+"Always Hidden" = "Toujours cachés";

@@ -43,3 +43,16 @@
 "Know more about the fork" = "Saznaj više o forku";
 "MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
 "Settings…" = "Postavke…";
+
+/* Tray panel redesign */
+"General" = "Postavke";
+"Keyboard Shortcut" = "Globalni prečac";
+"Visible" = "Prikazano";
+"Automatically hide icons" = "Automatski sakrij ikone";
+"Always-hidden section" = "Uvijek skriveni odjeljak";
+"Keep system icons visible" = "Uvijek prikaži sistemske stavke trake izbornika";
+
+/* Tray panel redesign */
+"Use the full menu bar when expanding" = "Koristi cijelu traku izbornika pri rasklapanju";
+
+"Always Hidden" = "Uvijek skriveno";
