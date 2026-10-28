@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.24.0 (2026-10-28)
 
 ### Changed
 - The tray panel is redesigned as a native utility popover: a compact header,
