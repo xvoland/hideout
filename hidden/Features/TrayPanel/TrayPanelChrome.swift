@@ -148,3 +148,13 @@ final class ShortcutChipView: NSView {
         applyColors()
     }
 }
+
+/// A borderless text button that behaves like a link, including the
+/// pointing-hand cursor that AppKit does not add to plain buttons.
+final class LinkButton: NSButton {
+
+    override func resetCursorRects() {
+        super.resetCursorRects()
+        addCursorRect(bounds, cursor: .pointingHand)
+    }
+}

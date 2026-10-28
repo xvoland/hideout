@@ -25,6 +25,10 @@
   item is renamed to **Settings…**.
 - New settings labels are localized in all bundled languages where a
   translation already existed; untranslated helper text falls back to English.
+- About links and the always-hidden help text are easier to use: **Website**
+  opens <https://dotoca.net/hideout>, links show the pointing-hand cursor, the
+  help text uses the primary label color, and the credit reads as two lines
+  (2026 maintainer, 2019 Dwarves Foundation / MIT).
 
 
 ## v1.22.4 (2026-09-25)

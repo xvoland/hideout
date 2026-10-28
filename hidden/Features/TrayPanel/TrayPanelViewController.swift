@@ -410,8 +410,8 @@ final class TrayPanelViewController: NSViewController {
 
     private func makeHelpRow() -> NSStackView {
         let label = NSTextField(wrappingLabelWithString: "Tutorial text".localized)
-        label.font = .systemFont(ofSize: 10)
-        label.textColor = .secondaryLabelColor
+        label.font = .systemFont(ofSize: 11)
+        label.textColor = .labelColor
         label.maximumNumberOfLines = 0
         label.preferredMaxLayoutWidth = 296
 
@@ -493,7 +493,7 @@ final class TrayPanelViewController: NSViewController {
 
         let links = NSStackView(views: [
             textButton("GitHub", action: #selector(openGitHub), tooltip: "https://github.com/xvoland/hidden"),
-            textButton("Website", action: #selector(openMaintainerSite), tooltip: "https://dotoca.net/"),
+            textButton("Website", action: #selector(openMaintainerSite), tooltip: "https://dotoca.net/hideout"),
             textButton("Contact", action: #selector(openContact), tooltip: "adv@dotoca.net"),
             textButton("Upstream", action: #selector(openUpstream), tooltip: "https://github.com/dwarvesf/hidden")
         ])
@@ -502,22 +502,22 @@ final class TrayPanelViewController: NSViewController {
         links.spacing = 14
         links.translatesAutoresizingMaskIntoConstraints = false
 
-        let credit = HyperlinkTextField()
-        credit.href = "https://dotoca.net/"
-        credit.stringValue = "Maintained by Vitalii Tereshchuk (xVoLAnD)"
-        credit.isEditable = false
-        credit.isSelectable = false
-        credit.isBordered = false
-        credit.drawsBackground = false
-        credit.font = .systemFont(ofSize: 10)
-        credit.textColor = .secondaryLabelColor
-        credit.lineBreakMode = .byTruncatingTail
+        let maintainer = HyperlinkTextField()
+        maintainer.href = "https://dotoca.net/hideout"
+        maintainer.stringValue = "© 2026, Vitalii Tereshchuk / xVoLAnD (https://dotoca.net)"
+        maintainer.isEditable = false
+        maintainer.isSelectable = false
+        maintainer.isBordered = false
+        maintainer.drawsBackground = false
+        maintainer.font = .systemFont(ofSize: 10)
+        maintainer.textColor = .secondaryLabelColor
+        maintainer.lineBreakMode = .byTruncatingTail
 
-        let copyright = NSTextField(labelWithString: "© 2019 Dwarves Foundation · MIT license")
+        let copyright = NSTextField(labelWithString: "© 2019 Dwarves Foundation - MIT license")
         copyright.font = .systemFont(ofSize: 10)
         copyright.textColor = .tertiaryLabelColor
 
-        let stack = NSStackView(views: [versionLabel, links, credit, copyright])
+        let stack = NSStackView(views: [versionLabel, links, maintainer, copyright])
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 6
@@ -646,7 +646,7 @@ final class TrayPanelViewController: NSViewController {
     }
 
     private func textButton(_ title: String, action: Selector, tooltip: String? = nil) -> NSButton {
-        let button = NSButton(title: title, target: self, action: action)
+        let button = LinkButton(title: title, target: self, action: action)
         button.isBordered = false
         button.bezelStyle = .inline
         button.font = .systemFont(ofSize: 11)
@@ -662,7 +662,7 @@ final class TrayPanelViewController: NSViewController {
         button.isBordered = false
         button.bezelStyle = .inline
         button.imagePosition = .imageOnly
-        button.contentTintColor = .secondaryLabelColor
+        button.contentTintColor = .labelColor
         button.toolTip = "How the always hidden section works".localized
         button.setAccessibilityLabel("How the always hidden section works".localized)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -789,7 +789,7 @@ final class TrayPanelViewController: NSViewController {
     }
 
     @objc private func openMaintainerSite() {
-        open("https://dotoca.net/")
+        open("https://dotoca.net/hideout")
     }
 
     @objc private func openContact() {
