@@ -79,9 +79,13 @@ class StatusBarController: MenuBarItemProvider {
         }
     }
 
-    private var isPreferencesWindowVisible: Bool {
-        let wc = PreferencesWindowController.shared
-        return wc.isWindowLoaded && (wc.window?.isVisible ?? false)
+    private var isSettingsPanelVisible: Bool {
+        TrayPanelController.shared.isVisible
+    }
+
+    /// Read by the tray panel: whether the menu bar is currently collapsed.
+    var isMenuBarCollapsed: Bool {
+        isCollapsed
     }
 
     //MARK: - Methods
@@ -264,7 +268,14 @@ class StatusBarController: MenuBarItemProvider {
                     showContextMenu(from: sender)
                 }
             } else if event.type == NSEvent.EventType.rightMouseUp && !isOptionKeyPressed {
-                showContextMenu(from: sender)
+                // Right-click on the arrow opens the settings panel (the tray
+                // panel replaced the Preferences window); on a separator it
+                // keeps showing the context menu.
+                if isArrow {
+                    TrayPanelController.shared.toggle(relativeTo: sender)
+                } else {
+                    showContextMenu(from: sender)
+                }
             } else {
                 self.showHideSeparatorsAndAlwayHideArea()
             }
@@ -276,7 +287,7 @@ class StatusBarController: MenuBarItemProvider {
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.maxY + 5), in: button)
     }
 
-    // Modifier-free reveal path (Preferences button): expands if needed and
+    // Modifier-free reveal path (tray panel button): expands if needed and
     // shows separators, deterministically. Unlike Option-click it cannot fail
     // on modifier delivery.
     @objc private func revealForArranging() {
@@ -429,6 +440,7 @@ class StatusBarController: MenuBarItemProvider {
         }
         Preferences.lastCollapsedState = false
         menuBarEngine.expand()
+        NotificationCenter.default.post(name: .menuBarStateChanged, object: nil)
         if !isInitialRestore {
             autoCollapseIfNeeded()
         }
@@ -443,6 +455,7 @@ class StatusBarController: MenuBarItemProvider {
             NSApp.setActivationPolicy(.regular)
         }
         Preferences.lastCollapsedState = false
+        NotificationCenter.default.post(name: .menuBarStateChanged, object: nil)
     }
 
     private func didCollapseMenuBar() {
@@ -451,6 +464,10 @@ class StatusBarController: MenuBarItemProvider {
             button.image = Assets.expandImage
         }
         Preferences.lastCollapsedState = true
+        // The panel is anchored to an item the collapse just hid; keeping it
+        // on screen would leave it floating over a bar it no longer matches.
+        TrayPanelController.shared.close()
+        NotificationCenter.default.post(name: .menuBarStateChanged, object: nil)
     }
 
     private func autoCollapseIfNeeded() {
@@ -464,11 +481,11 @@ class StatusBarController: MenuBarItemProvider {
         timer?.invalidate()
         self.timer = Timer.scheduledTimer(withTimeInterval: Preferences.numberOfSecondForAutoHide, repeats: false) { [weak self] _ in
             guard let self = self, Preferences.isAutoHide else { return }
-            if self.isMouseInMenuBar || self.isPreferencesWindowVisible {
+            if self.isMouseInMenuBar || self.isSettingsPanelVisible {
                 // Silent by design until now: this re-arm loop is why auto-hide
                 // "stops working" whenever the pointer parks in the menu bar or
-                // Preferences stays open (e.g. while switching engines to test).
-                AppLog.info("StatusBar: auto-collapse deferred (pointerInBar=\(self.isMouseInMenuBar) prefsVisible=\(self.isPreferencesWindowVisible)) — re-arming")
+                // the settings panel stays open.
+                AppLog.info("StatusBar: auto-collapse deferred (pointerInBar=\(self.isMouseInMenuBar) panelVisible=\(self.isSettingsPanelVisible)) — re-arming")
                 self.startTimerToAutoHide()
             } else {
                 self.collapseMenuBar()
@@ -479,9 +496,9 @@ class StatusBarController: MenuBarItemProvider {
     private func getContextMenu() -> NSMenu {
         let menu = NSMenu()
 
-        let prefItem = NSMenuItem(title: "Preferences...".localized, action: #selector(openPreferenceViewControllerIfNeeded), keyEquivalent: "P")
-        prefItem.target = self
-        menu.addItem(prefItem)
+        let settingsItem = NSMenuItem(title: "Settings…".localized, action: #selector(openSettingsPanel), keyEquivalent: "P")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
 
         let toggleAutoHideItem = NSMenuItem(title: "Toggle Auto Collapse".localized, action: #selector(toggleAutoHide), keyEquivalent: "t")
         toggleAutoHideItem.target = self
@@ -509,8 +526,26 @@ class StatusBarController: MenuBarItemProvider {
         autoCollapseIfNeeded()
     }
 
-    @objc func openPreferenceViewControllerIfNeeded() {
-        Util.showPrefWindow()
+    @objc func openSettingsPanel() {
+        showSettingsPanel()
+    }
+
+    /// Opens the panel from the arrow, without toggling it closed first.
+    func showSettingsPanel() {
+        showSettingsPanel(attempt: 0)
+    }
+
+    private func showSettingsPanel(attempt: Int) {
+        guard let button = btnExpandCollapse.button, button.window != nil else {
+            // At launch the status item may not be in the menu bar yet; retry
+            // briefly instead of dropping the request.
+            guard attempt < 5 else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                self?.showSettingsPanel(attempt: attempt + 1)
+            }
+            return
+        }
+        TrayPanelController.shared.show(relativeTo: button)
     }
 
     @objc func toggleAutoHide() {

@@ -31,15 +31,23 @@ class AppDelegate: NSObject, NSApplicationDelegate{
         setupAutoStartApp()
         registerDefaultValues()
         setupHotKey()
-        openPreferencesIfNeeded()
+        openSettingsPanelIfNeeded()
         detectLTRLang()
         UpdateChecker.shared.checkIfDue()
     }
     
-    func openPreferencesIfNeeded() {
-        if Preferences.isShowPreference {
-            Util.showPrefWindow()
+    func openSettingsPanelIfNeeded() {
+        guard Preferences.isShowPreference else { return }
+        // Let the menu bar lay the status item out before anchoring to it.
+        DispatchQueue.main.async {
+            Util.showSettingsPanel()
         }
+    }
+
+    /// Main-menu "Settings…" (the app is an accessory, so this menu is only
+    /// reachable while the app is active, e.g. with the panel open).
+    @objc func openSettingsPanel(_ sender: Any?) {
+        Util.showSettingsPanel()
     }
     
     func setupAutoStartApp() {

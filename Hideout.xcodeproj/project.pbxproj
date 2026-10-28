@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA1000000000000000000012 /* TrayPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000011 /* TrayPanelController.swift */; };
+		AA1000000000000000000014 /* TrayPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000013 /* TrayPanelViewController.swift */; };
+		AA1000000000000000000016 /* TrayPanelPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000015 /* TrayPanelPreview.swift */; };
+		AA1000000000000000000018 /* TrayPanelGripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000017 /* TrayPanelGripView.swift */; };
 		00117C4426600671005E517C /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00117C4326600671005E517C /* Assets.swift */; };
 		00137CDF24A63DB1004AC855 /* Notification.Name+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00137CDE24A63DB1004AC855 /* Notification.Name+Extension.swift */; };
 		0842CDFB23A9FDD000D14BD4 /* GlobalKeybindingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0842CDFA23A9FDD000D14BD4 /* GlobalKeybindingPreferences.swift */; };
-		08A5F85A23AA007A00981CA5 /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A5F85923AA007A00981CA5 /* PreferencesViewController.swift */; };
 		08A5F85C23AA013100981CA5 /* SelectedSecond.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A5F85B23AA013100981CA5 /* SelectedSecond.swift */; };
 		08A5F85F23AA01EE00981CA5 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 08A5F85E23AA01EE00981CA5 /* HotKey */; };
 		08A5F86123AA085B00981CA5 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A5F86023AA085B00981CA5 /* Preferences.swift */; };
 		08A5F86423AA09F300981CA5 /* UserDefault+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A5F86323AA09F300981CA5 /* UserDefault+Extension.swift */; };
-		08B9F32C2411883300AA0551 /* NSWindow+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B9F32B2411883300AA0551 /* NSWindow+Extension.swift */; };
 		08C20FDE23AABDD10035D978 /* HyperlinkTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C20FDD23AABDD10035D978 /* HyperlinkTextField.swift */; };
 		08C20FE023AB44E60035D978 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C20FDF23AB44E60035D978 /* Bundle+Extension.swift */; };
-		08C20FE223AB452C0035D978 /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C20FE123AB452C0035D978 /* AboutViewController.swift */; };
-		3CF14C82221FA49D0083D42B /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF14C81221FA49D0083D42B /* PreferencesWindowController.swift */; };
 		55F3F1192608923B0054B881 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F3F1182608923B0054B881 /* Date+Extension.swift */; };
 		55F3F11D2608925A0054B881 /* StackView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F3F11C2608925A0054B881 /* StackView+Extension.swift */; };
 		929113F521F9D04100173149 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 929113F421F9D04100173149 /* AppDelegate.swift */; };
@@ -45,18 +45,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AA1000000000000000000011 /* TrayPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelController.swift; sourceTree = "<group>"; };
+		AA1000000000000000000013 /* TrayPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelViewController.swift; sourceTree = "<group>"; };
+		AA1000000000000000000015 /* TrayPanelPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelPreview.swift; sourceTree = "<group>"; };
+		AA1000000000000000000017 /* TrayPanelGripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrayPanelGripView.swift; sourceTree = "<group>"; };
 		00117C4326600671005E517C /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		00137CDE24A63DB1004AC855 /* Notification.Name+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification.Name+Extension.swift"; sourceTree = "<group>"; };
 		0842CDFA23A9FDD000D14BD4 /* GlobalKeybindingPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalKeybindingPreferences.swift; sourceTree = "<group>"; };
-		08A5F85923AA007A00981CA5 /* PreferencesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesViewController.swift; sourceTree = "<group>"; };
 		08A5F85B23AA013100981CA5 /* SelectedSecond.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedSecond.swift; sourceTree = "<group>"; };
 		08A5F86023AA085B00981CA5 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		08A5F86323AA09F300981CA5 /* UserDefault+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefault+Extension.swift"; sourceTree = "<group>"; };
-		08B9F32B2411883300AA0551 /* NSWindow+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSWindow+Extension.swift"; sourceTree = "<group>"; };
 		08C20FDD23AABDD10035D978 /* HyperlinkTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperlinkTextField.swift; sourceTree = "<group>"; };
 		08C20FDF23AB44E60035D978 /* Bundle+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extension.swift"; sourceTree = "<group>"; };
-		08C20FE123AB452C0035D978 /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
-		3CF14C81221FA49D0083D42B /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		55188DF7279A737800A92772 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Main.strings; sourceTree = "<group>"; };
 		55188DF9279A737900A92772 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		55D9B6B52660F153007AF073 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Main.strings; sourceTree = "<group>"; };
@@ -129,8 +129,7 @@
 		0842CDFC23A9FF6D00D14BD4 /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				08C20FDC23AABC440035D978 /* About */,
-				0842CDFE23A9FF7C00D14BD4 /* Preferences */,
+				0842CDFE23A9FF7C00D14BD4 /* TrayPanel */,
 				0842CDFD23A9FF7500D14BD4 /* StatusBar */,
 			);
 			path = Features;
@@ -177,13 +176,15 @@
 			path = Layout;
 			sourceTree = "<group>";
 		};
-		0842CDFE23A9FF7C00D14BD4 /* Preferences */ = {
+		0842CDFE23A9FF7C00D14BD4 /* TrayPanel */ = {
 			isa = PBXGroup;
 			children = (
-				08A5F85923AA007A00981CA5 /* PreferencesViewController.swift */,
-				3CF14C81221FA49D0083D42B /* PreferencesWindowController.swift */,
+				AA1000000000000000000011 /* TrayPanelController.swift */,
+				AA1000000000000000000013 /* TrayPanelViewController.swift */,
+				AA1000000000000000000015 /* TrayPanelPreview.swift */,
+				AA1000000000000000000017 /* TrayPanelGripView.swift */,
 			);
-			path = Preferences;
+			path = TrayPanel;
 			sourceTree = "<group>";
 		};
 		08A5F86223AA09D900981CA5 /* Extensions */ = {
@@ -191,21 +192,12 @@
 			children = (
 				08A5F86323AA09F300981CA5 /* UserDefault+Extension.swift */,
 				08C20FDF23AB44E60035D978 /* Bundle+Extension.swift */,
-				08B9F32B2411883300AA0551 /* NSWindow+Extension.swift */,
 				967F4B2424169BC800F18D3C /* String+Extension.swift */,
 				00137CDE24A63DB1004AC855 /* Notification.Name+Extension.swift */,
 				55F3F1182608923B0054B881 /* Date+Extension.swift */,
 				55F3F11C2608925A0054B881 /* StackView+Extension.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		08C20FDC23AABC440035D978 /* About */ = {
-			isa = PBXGroup;
-			children = (
-				08C20FE123AB452C0035D978 /* AboutViewController.swift */,
-			);
-			path = About;
 			sourceTree = "<group>";
 		};
 		9267D3212201A49200EFFCE2 /* Common */ = {
@@ -373,20 +365,20 @@
 				C70DC4EC26A1B3D4009E77F2 /* UpdateChecker.swift in Sources */,
 				92C97B9122018C1F0007559C /* StatusBarController.swift in Sources */,
 				55F3F1192608923B0054B881 /* Date+Extension.swift in Sources */,
-				08B9F32C2411883300AA0551 /* NSWindow+Extension.swift in Sources */,
 				929113F521F9D04100173149 /* AppDelegate.swift in Sources */,
 				08C20FDE23AABDD10035D978 /* HyperlinkTextField.swift in Sources */,
 				92C97B88220032ED0007559C /* Util.swift in Sources */,
 				967F4B2524169BC800F18D3C /* String+Extension.swift in Sources */,
 				00117C4426600671005E517C /* Assets.swift in Sources */,
-				08A5F85A23AA007A00981CA5 /* PreferencesViewController.swift in Sources */,
-				3CF14C82221FA49D0083D42B /* PreferencesWindowController.swift in Sources */,
 				92C97B8D220058740007559C /* NSView+Extension.swift in Sources */,
 				0842CDFB23A9FDD000D14BD4 /* GlobalKeybindingPreferences.swift in Sources */,
 				55F3F11D2608925A0054B881 /* StackView+Extension.swift in Sources */,
-				08C20FE223AB452C0035D978 /* AboutViewController.swift in Sources */,
 				00137CDF24A63DB1004AC855 /* Notification.Name+Extension.swift in Sources */,
 				08A5F86423AA09F300981CA5 /* UserDefault+Extension.swift in Sources */,
+				AA1000000000000000000012 /* TrayPanelController.swift in Sources */,
+				AA1000000000000000000014 /* TrayPanelViewController.swift in Sources */,
+				AA1000000000000000000016 /* TrayPanelPreview.swift in Sources */,
+				AA1000000000000000000018 /* TrayPanelGripView.swift in Sources */,
 				AA1E0007240F0A1100B0C3D7 /* MenuBarLayout.swift in Sources */,
 				AA1E0008240F0A1100B0C3D8 /* AccessibilityMenuBarInventory.swift in Sources */,
 				AA1E0001240F0A1100B0C3D1 /* MenuBarEngine.swift in Sources */,

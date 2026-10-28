@@ -3,7 +3,7 @@
 Hidden Bar is a single-process AppKit menubar utility (one dependency:
 [HotKey](https://github.com/soffes/HotKey)). There is no helper app, no
 daemon, no network. Everything happens inside three `NSStatusItem`s (arrow,
-separator, optional always-hidden marker) and one window.
+separator, optional always-hidden marker) and one transient tray panel.
 
 ## The core mechanism
 
@@ -50,8 +50,9 @@ flowchart TD
     PREFS[Preferences facade] -->|UserDefaults| UD[(UserDefaults)]
     PREFS -->|posts| NC{{NotificationCenter\n.prefsChanged / .alwayHideToggle}}
     NC --> SBC
-    PVC[PreferencesViewController] --> PREFS
-    SBC -->|context menu| PVC
+    TPC[TrayPanelController / NSPopover] --> PREFS
+    SBC -->|right-click arrow| TPC
+    SBC -->|context menu| TPC
 ```
 
 - **`AppDelegate`** (entry): registers default prefs, sets up the global hotkey,
@@ -60,10 +61,11 @@ flowchart TD
   collapse/expand, auto-hide timer, interaction-awareness, hover-to-expand,
   self-restore of dragged-off items.
 - **`Preferences`** (facade enum): typed accessors over `UserDefaults`; setters
-  post `NotificationCenter` notifications that the controller and prefs window
+  post `NotificationCenter` notifications that the controller and tray panel
   observe. There is no other state store.
-- **`PreferencesViewController` / `PreferencesWindowController`**: the only
-  window (storyboard-based), shown on demand from the context menu.
+- **`TrayPanelController` / `TrayPanelViewController`**: the only UI surface
+  (a transient `NSPopover` anchored to the arrow, built in code). It replaced
+  the storyboard Preferences window; its height is draggable and remembered.
 
 ## Behavior layers on the core trick
 

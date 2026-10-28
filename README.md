@@ -92,12 +92,12 @@ Native requires the **direct (non-sandboxed) build**, macOS 27+, and Accessibili
 ## 🕹 Usage
 
 * `⌘` + drag icons across the `|` separator: left of it hides on collapse.
-  A second, translucent `|` (enable *Always hidden section* in Preferences)
-  marks a zone that stays hidden even when expanded.
+  A second, translucent `|` (enable *Always hidden section* in the tray
+  panel — right-click the arrow) marks a zone that stays hidden even when expanded.
 * Click the Arrow icon to hide menu bar items.
 * **Option-click** the arrow or a separator to show/hide separators for
   arranging (reveals everything for `⌘`-dragging). If Option-click does
-  nothing on your setup, use Preferences → **Show All Icons for Arranging**.
+  nothing on your setup, use the tray panel → **Show All Icons**.
 * Missing an icon after quit/update? Check the system `«` overflow first —
   macOS parks displaced icons there and doesn't always re-seat them.
 

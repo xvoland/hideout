@@ -34,7 +34,7 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
 - **AXPress accessibility defect.** VoiceOver users cannot toggle the bar: the arrow's
   `AXPress` handler reads `NSApp.currentEvent`, which is nil under assistive synthesis.
 - **`hoverToExpand` Preferences checkbox.** Shipped as a Terminal-only `defaults write`;
-  add a proper checkbox in `PreferencesViewController`.
+  add a proper checkbox in the tray panel (`TrayPanelViewController`).
 - **Surface the `SMAppService` error contract in the prefs UI.** On `register()` failure
   (unsigned build, or user denies in System Settings), the checkbox stays on while the
   system says off; the error is swallowed into NSLog. Fix when the prefs UI is next touched.
@@ -95,7 +95,7 @@ math, collapse state machine) are HIGH RISK and require a mandatory review-team 
 ## Hideout fork — session state 2026-09-23 (develop @ 4a3569b)
 
 - **v1.20.0 re-released** (tag force-moved 92ea180 → 4a3569b, full release): update
-  checker (launch + weekly throttle, stable-only, manual button in Preferences General),
+  checker (launch + weekly throttle, stable-only, manual button in the tray panel),
   UI grammar fixes, visible-rebrand leftovers (About/Hide/Quit menu, login checkbox).
   Same version number → the in-app checker will NOT flag it to existing v1.20.0 installs.
 - **OPEN — version stamping.** Repo MARKETING_VERSION is a 1.18.5 fossil;

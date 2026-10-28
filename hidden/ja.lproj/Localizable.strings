@@ -20,3 +20,25 @@
 3. 最後は「＞」を右クリックすると，半透明「｜」より左にあるアイコンが常に非表示される．
 （もう一回「＞」を右クリックすると，常に非表示されたアイコンが表示される）
 ";
+
+/* Tray panel */
+"Settings" = "設置";
+"Start Hideout when I log in" = "ログイン時に Hideout を起動";
+"Open the panel on launch" = "起動時にパネルを開く";
+"Use the full MenuBar on expanding" = "アイコンを表示する時に Hidden のメニューバーも表示";
+"Enable always hidden section" = "「アイコンを常に非表示機能」を有効にする";
+"Automatically hide icon(s) after:" = "一定時間が経つと自動的にアイコンを非表示にする：";
+"Always keep system menu-bar items visible" = "システムのメニューバー項目を常に表示";
+"Global Shortcut" = "グローバルショートカット";
+"Hidden" = "非表示";
+"Shown" = "表示";
+"⭐️ Always Hidden" = "⭐️常に非表示";
+"Menu bar" = "メニューバー";
+"Menu bar hidden" = "メニューバーは非表示";
+"Menu bar visible" = "メニューバーは表示中";
+"About" = "情報";
+"This fork is fully open source" = "このフォークは完全なオープンソースです";
+"Contact the maintainer" = "メンテナーに連絡";
+"Know more about the fork" = "フォークについて詳しく";
+"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
+"Settings…" = "設定…";

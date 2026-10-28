@@ -5,28 +5,31 @@ Everything Hidden Bar can do, including the parts with no UI.
 ## Basics
 
 - **Left-click the arrow** (`<` / `>`): expand or collapse the hidden section.
-- **Right-click the arrow** or **left-click the separator** (`|`): context menu
-  (Preferences, Toggle Auto Collapse, Quit).
+- **Right-click the arrow**: the tray panel (all settings, About, Quit).
+  **Left-click the separator** (`|`): context menu (Settings, Toggle Auto
+  Collapse, Quit).
 - **⌘-drag** icons in the menu bar to move them across the separator: icons to
   the separator's left are hidden when collapsed.
 - **Option-click the arrow or a separator** (`|`): show/hide the separators
   and the always-hidden area without expanding. Showing them releases hiding
   so everything can be ⌘-dragged; hiding re-enforces it. If Option-click does
   nothing on your setup (the click event can arrive without the modifier),
-  use Preferences → **Show All Icons for Arranging** instead — same action,
+  use the tray panel → **Show All Icons** instead — same action,
   no modifier needed. Hold Option until after mouse release, otherwise even a
   correct press reads as a plain click.
 
-## Preferences window
+## Tray panel
 
 | Setting | What it does |
 |---|---|
-| Start Hidden Bar when I log in | Login item via System Settings (macOS 13+ `SMAppService`); revocable in System Settings > General > Login Items |
-| Show preferences on launch | Open this window at app start |
+| Start Hideout when I log in | Login item via System Settings (macOS 13+ `SMAppService`); revocable in System Settings > General > Login Items |
+| Open the panel on launch | Show the tray panel at app start |
 | Auto collapse | Re-hide automatically after the chosen delay |
 | Global shortcut | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18) |
 | Enable always hidden section | A second zone whose icons stay hidden even when expanded; revealed by option-clicking the arrow |
 | Use full menu bar on expanding | App becomes briefly "regular" while expanded (helps on tight menubars) |
+| Always keep system menu-bar items visible | System extras survive a collapse regardless of their section |
+| Menu bar height | Drag the grip at the panel's bottom edge; the height is remembered |
 
 
 > **Always-hidden section:** enabling it hides the separators once, so the zone

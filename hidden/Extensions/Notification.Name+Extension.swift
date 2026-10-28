@@ -14,4 +14,7 @@ extension Notification.Name {
     static let prefsChanged = Notification.Name("prefsChanged")
     static let alwayHideToggle = Notification.Name("alwayHideToggle")
     static let revealForArranging = Notification.Name("revealForArranging")
+    /// Posted after the menu bar actually collapses or expands, so the tray
+    /// panel can update its status line.
+    static let menuBarStateChanged = Notification.Name("menuBarStateChanged")
 }

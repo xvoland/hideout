@@ -28,3 +28,25 @@ Steps to enable:
 Steps to view always hidden icons:
 1. Right-click the “<” icon again to view them, and repeat the action to hide them. Enjoy 😉!
 ";
+
+/* Tray panel (English base) */
+"Settings" = "Settings";
+"Start Hideout when I log in" = "Start Hideout when I log in";
+"Open the panel on launch" = "Open the panel on launch";
+"Use the full MenuBar on expanding" = "Use the full MenuBar on expanding";
+"Enable always hidden section" = "Enable always hidden section";
+"Automatically hide icon(s) after:" = "Automatically hide icon(s) after:";
+"Always keep system menu-bar items visible" = "Always keep system menu-bar items visible";
+"Global Shortcut" = "Global Shortcut";
+"Hidden" = "Hidden";
+"Shown" = "Shown";
+"⭐️ Always Hidden" = "⭐️ Always Hidden";
+"Menu bar" = "Menu bar";
+"Menu bar hidden" = "Menu bar hidden";
+"Menu bar visible" = "Menu bar visible";
+"About" = "About";
+"This fork is fully open source" = "This fork is fully open source";
+"Contact the maintainer" = "Contact the maintainer";
+"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
+"Settings…" = "Settings…";
+"Hide the always hidden help" = "Hide the always hidden help";

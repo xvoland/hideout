@@ -21,5 +21,6 @@ extension UserDefaults {
         static let useFullStatusBarOnExpandEnabled = "useFullStatusBarOnExpandEnabled"
         static let hoverToExpand = "hoverToExpand"
         static let keepSystemItemsVisible = "keepSystemItemsVisible"
+        static let panelHeight = "panelHeight"
     }
 }

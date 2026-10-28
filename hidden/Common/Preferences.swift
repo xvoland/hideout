@@ -190,5 +190,16 @@ enum Preferences {
         }
     }
 
+    /// The tray panel's height, remembered after the user drags its grip.
+    /// Zero means "use the default height".
+    static var panelHeight: Double {
+        get {
+            UserDefaults.standard.double(forKey: UserDefaults.Key.panelHeight)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: UserDefaults.Key.panelHeight)
+        }
+    }
+
 
 }

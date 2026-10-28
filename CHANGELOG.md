@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+- The Preferences window is gone. **Right-click the arrow** to open a compact
+  tray panel (an `NSPopover` anchored to the status item) with every setting,
+  the menu-bar illustration, the global-shortcut recorder, update check,
+  arranging shortcut, and About/attribution.
+- The panel closes on Escape or a click outside, and its height can be dragged
+  from the grip at the bottom edge and is remembered across launches.
+- Left-clicking the arrow still collapses/expands as before; the separator's
+  context menu remains (its Settings item now opens the panel). The main menu
+  item is renamed to **Settings…**.
+- New settings labels are localized in all bundled languages where a
+  translation already existed; untranslated helper text falls back to English.
+
+
 ## v1.22.4 (2026-09-25)
 
 Requires macOS 13 Ventura or later. (Pre-Ventura users: stay on

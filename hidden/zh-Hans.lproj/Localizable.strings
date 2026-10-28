@@ -23,3 +23,25 @@
 （再次右键单击 “>” 按钮恢复显示 “持续隐藏区域” 中的图标。）
 祝您使用愉快 😉!
 ";
+
+/* Tray panel */
+"Settings" = "设置";
+"Start Hideout when I log in" = "登录时启动 Hideout";
+"Open the panel on launch" = "启动时打开面板";
+"Use the full MenuBar on expanding" = "展开隐藏区域时使用完整的菜单栏";
+"Enable always hidden section" = "启用持续隐藏区域";
+"Automatically hide icon(s) after:" = "自动隐藏图标于：";
+"Always keep system menu-bar items visible" = "始终显示系统菜单栏项目";
+"Global Shortcut" = "全局快捷键";
+"Hidden" = "隐藏";
+"Shown" = "显示";
+"⭐️ Always Hidden" = "⭐️持续隐藏";
+"Menu bar" = "菜单栏";
+"Menu bar hidden" = "菜单栏已隐藏";
+"Menu bar visible" = "菜单栏可见";
+"About" = "关于";
+"This fork is fully open source" = "此分支完全开源";
+"Contact the maintainer" = "联系维护者";
+"Know more about the fork" = "了解此分支";
+"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
+"Settings…" = "设置…";

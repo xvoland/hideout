@@ -21,3 +21,25 @@ Các bước thực hiện:
 Để hiện lại những icon luôn ẩn:
 1. Click phải vào nút “<” 😉!
 ";
+
+/* Tray panel */
+"Settings" = "Tuỳ chọn";
+"Start Hideout when I log in" = "Khởi động Hideout khi đăng nhập";
+"Open the panel on launch" = "Mở bảng điều khiển khi khởi động";
+"Use the full MenuBar on expanding" = "Sử dụng toàn thanh công cụ khi mở rộng";
+"Enable always hidden section" = "Bật tính năng luôn ẩn";
+"Automatically hide icon(s) after:" = "Tự động ẩn sau:";
+"Always keep system menu-bar items visible" = "Luôn hiển thị các mục hệ thống trên thanh menu";
+"Global Shortcut" = "Phím tắt";
+"Hidden" = "Ẩn";
+"Shown" = "Hiện";
+"⭐️ Always Hidden" = "⭐️Luôn ẩn";
+"Menu bar" = "Thanh menu";
+"Menu bar hidden" = "Thanh menu đã ẩn";
+"Menu bar visible" = "Thanh menu đang hiện";
+"About" = "Giới thiệu";
+"This fork is fully open source" = "Bản fork này hoàn toàn mã nguồn mở";
+"Contact the maintainer" = "Liên hệ người duy trì";
+"Know more about the fork" = "Tìm hiểu thêm về bản fork";
+"MIT © Dwarves Foundation" = "MIT © Dwarves Foundation";
+"Settings…" = "Tuỳ chọn…";

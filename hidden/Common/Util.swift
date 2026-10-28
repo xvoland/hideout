@@ -33,9 +33,9 @@ class Util {
         NSLog("AutoStart: SMAppService.mainApp.status = \(SMAppService.mainApp.status.rawValue)")
     }
     
-    static func showPrefWindow() {
-        let prefWindow = PreferencesWindowController.shared.window
-        prefWindow?.bringToFront()
+    static func showSettingsPanel() {
+        guard let delegate = NSApplication.shared.delegate as? AppDelegate else { return }
+        delegate.statusBarController.showSettingsPanel()
     }
    
 }

@@ -83,8 +83,8 @@
 /* Class = "NSSegmentedCell"; B2x-1Q-Aei.ibShadowedLabels[1] = "About"; ObjectID = "B2x-1Q-Aei"; */
 "B2x-1Q-Aei.ibShadowedLabels[1]" = "關於";
 
-/* Class = "NSMenuItem"; title = "Preferences…"; ObjectID = "BOF-NM-1cW"; */
-"BOF-NM-1cW.title" = "偏好設定⋯";
+/* Class = "NSMenuItem"; title = "Settings…"; ObjectID = "BOF-NM-1cW"; */
+"BOF-NM-1cW.title" = "設定…";
 
 /* Class = "NSMenuItem"; title = "    Left to Right"; ObjectID = "BgM-ve-c93"; */
 "BgM-ve-c93.title" = "    由左至右";
