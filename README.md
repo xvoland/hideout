@@ -35,15 +35,13 @@ It is designed for people who have too many background apps, system utilities, a
 
 Includes compatibility work for macOS 27 "Golden Gate" and **wide screens like QHD, UltraWide QHD, 4K UHD, Super UltraWide, 5K2K/WUQHD**, etc.
 
-
-
 <p align="center">
-	<img src="img/tutorial.gif">
+	<img src="img/screen01.png">
 </p>
 
 
 <p align="center">
-	<img src="img/screen01.png">
+	<img src="img/tutorial.gif">
 </p>
 
 
@@ -80,8 +78,9 @@ The first time you open Hideout, macOS may show a security warning. To open the 
 3. If macOS blocks it, **open System Settings → Privacy & Security**, find the message about Hideout, and **click Open Anyway**. You may need to try opening the app first.
 4. Confirm that you want to open it.
 
-We know this isn’t as convenient as installing a notarized app, and we’re sorry for the extra steps. If you find Hideout useful and would like to help us cover the cost of an Apple Developer membership, your support would mean a lot. ❤️ Thank you for supporting independent, open-source software!
+We know this isn’t as convenient as installing a notarized app, and we’re sorry for the extra steps. If you find Hideout useful and would like to help us cover the cost of an Apple Developer membership, your support would mean a lot. 
 
+❤️ Thank you for supporting independent, open-source software!
 
 The build is **unsigned**, so before the first launch run:
 
@@ -144,10 +143,13 @@ pre-Ventura builds). Later versions require macOS 13 because autostart moved to 
 - [Micro Sniff](https://github.com/dwarvesf/micro-sniff) - An ultra-light macOS utility that notify whenever your micro-device is being used
 - [VimMotion](https://github.com/dwarvesf/VimMotionPublic) Vim style shortcut for MacOS
 
-
 ## License
-(c) 2026, Vitalii Tereshchuk / xVoLAnD ([https://dotoca.net]https://dotoca.net)
+
+&copy; 2026, Vitalii Tereshchuk / xVoLAnD ([https://dotoca.net/hideout](https://dotoca.net/hideout)). All rights reserved.
+
 MIT &copy; [Dwarves Foundation](https://github.com/dwarvesf)
 
-Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation.
+Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden)
+
+**Tiny app. Tidy Mac.** ❤️
 
