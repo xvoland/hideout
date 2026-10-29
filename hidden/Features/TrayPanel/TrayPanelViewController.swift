@@ -325,7 +325,8 @@ final class TrayPanelViewController: NSViewController {
         let autoHide = settingRow(
             title: "Automatically hide icons".localized,
             subtitle: "Hide selected menu bar icons after a period of inactivity.".localized,
-            control: autoHideSwitch
+            control: autoHideSwitch,
+            emphasized: true
         )
 
         delayLabel = NSTextField(labelWithString: "Hide after".localized)
@@ -363,7 +364,8 @@ final class TrayPanelViewController: NSViewController {
             title: "Always-hidden section".localized,
             subtitle: "Keep selected icons hidden from the regular menu bar.".localized,
             control: alwaysHiddenSwitch,
-            accessory: helpButton()
+            accessory: helpButton(),
+            emphasized: true
         )
 
         helpRow = makeHelpRow()
@@ -379,7 +381,8 @@ final class TrayPanelViewController: NSViewController {
         let keepSystem = settingRow(
             title: "Keep system icons visible".localized,
             subtitle: "Prevent macOS system menu bar items from being hidden.".localized,
-            control: keepSystemSwitch
+            control: keepSystemSwitch,
+            emphasized: true
         )
 
         fullMenuBarSwitch = toggle(action: #selector(fullMenuBarChanged),
@@ -389,7 +392,8 @@ final class TrayPanelViewController: NSViewController {
         let fullMenuBar = settingRow(
             title: "Use the full menu bar when expanding".localized,
             subtitle: "Activate Hideout like a regular app while the menu bar is expanded.".localized,
-            control: fullMenuBarSwitch
+            control: fullMenuBarSwitch,
+            emphasized: true
         )
 
         return card([autoHide, delayRow, separator(), alwaysHidden, helpRow,
@@ -568,9 +572,10 @@ final class TrayPanelViewController: NSViewController {
     private func settingRow(title: String,
                             subtitle: String? = nil,
                             control: NSView? = nil,
-                            accessory: NSView? = nil) -> NSView {
+                            accessory: NSView? = nil,
+                            emphasized: Bool = false) -> NSView {
         let titleLabel = NSTextField(labelWithString: title)
-        titleLabel.font = .systemFont(ofSize: 13)
+        titleLabel.font = .systemFont(ofSize: 13, weight: emphasized ? .semibold : .regular)
         titleLabel.textColor = .labelColor
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.maximumNumberOfLines = 3

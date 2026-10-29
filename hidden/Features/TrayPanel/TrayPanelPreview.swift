@@ -53,23 +53,35 @@ final class TrayPanelPreview: PanelCardView {
     }
 
     /// Rebuilds the strip for the current always-hidden setting.
+    ///
+    /// The zones follow the menu bar itself: `[always hidden] | [hidden] | > [visible]`
+    /// for left-to-right languages, mirrored for right-to-left ones. The arrow
+    /// sits with the visible zone because that is the control the user clicks.
     func refresh(alwaysHidden: Bool) {
         bar.removeAllSubViews()
 
         let hidden = zone(icons: ["ico_1", "ico_2", "ico_3"], caption: "Hidden".localized)
         let visible = zone(icons: ["ico_collapse", "ico_7"], caption: "Visible".localized)
 
+        var zones = [hidden]
         if alwaysHidden {
-            let always = zone(icons: ["ico_4", "ico_5", "ico_6"], caption: "Always Hidden".localized)
-            bar.addArrangedSubview(hidden)
-            bar.addArrangedSubview(divider())
-            bar.addArrangedSubview(always)
-            bar.addArrangedSubview(divider())
-            bar.addArrangedSubview(visible)
-        } else {
-            bar.addArrangedSubview(hidden)
-            bar.addArrangedSubview(divider())
-            bar.addArrangedSubview(visible)
+            // Read left to right, the always-hidden section comes first; the
+            // captions used to sit above the wrong groups when it was on.
+            zones.insert(zone(icons: ["ico_4", "ico_5", "ico_6"],
+                              caption: "Always Hidden".localized),
+                         at: 0)
+        }
+        zones.append(visible)
+
+        if !Constant.isUsingLTRLanguage {
+            zones.reverse()
+        }
+
+        for (index, zone) in zones.enumerated() {
+            if index > 0 {
+                bar.addArrangedSubview(divider())
+            }
+            bar.addArrangedSubview(zone)
         }
     }
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- The menu-bar preview now orders its zones like the real bar: **Always
+  Hidden**, **Hidden**, **Visible** (mirrored for right-to-left languages).
+  With the always-hidden section on, the captions previously sat above the
+  wrong groups.
+- **Hiding Behavior** setting titles are semibold, so the switches are easier
+  to scan than their helper text.
+
 ## v1.24.0 (2026-10-28)
 
 ### Changed
