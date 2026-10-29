@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.24.1 (2026-10-29)
 
 ### Fixed
 - The menu-bar preview now orders its zones like the real bar: **Always
