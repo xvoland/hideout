@@ -119,6 +119,11 @@ Requirements: the **direct (non-sandboxed) build** on **macOS 27** (this GitHub/
 	<img src="img/tutorial.gif">
 </p>
 
+<p align="center">
+	<img width="350" src="img/screen02.jpg">
+</p>
+
+
 ## 📚 Documentation
 
 - [Manual](docs/MANUAL.md): every setting, the hidden Terminal-only options, and troubleshooting.
