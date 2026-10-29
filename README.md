@@ -92,7 +92,9 @@ xattr -dr com.apple.quarantine /Applications/Hideout.app
 	<img src="img/screen00.png">
 </p>
 
-
+<p align="center">
+	<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" style="height: 80px" alt="PayPal, Gumroad, QR-codes etc donations">
+</p>
 
 ## ⚙️ Hiding (macOS 27)
 
