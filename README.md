@@ -10,16 +10,28 @@
   </a>
 </p>
 
+## HIDEOUT — The World’s Smallest Menu Bar Hiding App
+
+Hideout is a lightweight macOS utility that lets you hide unwanted menu bar icons and keep your Mac interface clean and organized.
+
+It is designed for people who have too many background apps, system utilities, and status icons competing for space in the macOS menu bar.
+
 <p align="center">
 <a href="https://dotoca.net/hideout">
  		<img height="96" src="https://github.com/xvoland/hideout/blob/master/img/qr.png" style="height: 80px" alt="PayPal, Gumroad, QR-codes etc donations">
   </a>
 </p>
 
-## Hideout - A Cleaner Mac Menu Bar
-Hideout is a lightweight macOS utility that lets you hide unwanted menu bar icons and keep your Mac interface clean and organized.
 
-It is designed for people who have too many background apps, system utilities, and status icons competing for space in the macOS menu bar.
+## ✦ Small App. Big Cleanup.
+
+- Hide the clutter — Keep your menu bar clean and organized.
+- See what matters — Leave your essential icons visible.
+- Reveal when needed — Access hidden icons whenever you want.
+- Stay lightweight — A simple, unobtrusive macOS utility.
+- Feel at home — Built around familiar macOS interactions.
+
+
 
 Includes compatibility work for macOS 27 "Golden Gate" and **wide screens like QHD, UltraWide QHD, 4K UHD, Super UltraWide, 5K2K/WUQHD**, etc.
 
@@ -44,6 +56,8 @@ macOS ties the Accessibility permission to the code
 signature, so after **every update** re-grant it in System Settings when prompted
 (first collapse asks again); that is expected, not a bug.
 
+
+
 #### Using Homebrew
 
 This fork ships its own Homebrew cask so you install **this** build — not the
@@ -53,8 +67,23 @@ upstream one:
 brew install --cask https://raw.githubusercontent.com/xvoland/hideout/master/Casks/hideout.rb
 ```
 
-This pulls the latest macOS 27 "Golden Gate" build from the
-[xvoland/hidden Releases](https://github.com/xvoland/hideout/releases) page. The build is **unsigned**, so before the first launch run:
+
+
+### Security & Manual download
+
+Hideout is an independent, open-source project, and unfortunately, we don’t have the budget for an Apple Developer Program membership yet. This means the app isn’t signed and notarized by Apple.
+
+The first time you open Hideout, macOS may show a security warning. To open the app, you’ll need to follow these steps:
+
+1. Download Hideout from the [latest release](https://github.com/xvoland/hideout/releases)
+2. Move the app to your **Applications folder.**
+3. If macOS blocks it, **open System Settings → Privacy & Security**, find the message about Hideout, and **click Open Anyway**. You may need to try opening the app first.
+4. Confirm that you want to open it.
+
+We know this isn’t as convenient as installing a notarized app, and we’re sorry for the extra steps. If you find Hideout useful and would like to help us cover the cost of an Apple Developer membership, your support would mean a lot. ❤️ Thank you for supporting independent, open-source software!
+
+
+The build is **unsigned**, so before the first launch run:
 
 ```
 xattr -dr com.apple.quarantine /Applications/Hideout.app
@@ -65,11 +94,6 @@ xattr -dr com.apple.quarantine /Applications/Hideout.app
 </p>
 
 
-#### Manual download
-
-- [Download latest version](https://github.com/xvoland/hideout/releases/latest)
-- Open and drag the app to the Applications folder.
-- Launch Hideout and drag the icon in your menu bar (hold CMD) to the right so it is between some other icons.
 
 ## ⚙️ Hiding (macOS 27)
 
@@ -77,17 +101,7 @@ macOS 27 Golden Gate rebuilt the menu bar as a single window. Hiding is always n
 
 Requirements: the **direct (non-sandboxed) build** on **macOS 27** (this GitHub/ad-hoc release, compiled with `HIDDENBAR_NATIVE_VISIBILITY=1`), plus **Accessibility** permission (prompted on first collapse). Where unavailable (sandboxed builds, pre-27), collapsing reports unavailable and the arrow stays put.
 
-## 🤔 Why native hiding?
 
-macOS historically had **no public API** to hide other apps' menu-bar icons. Hideout used a geometry hack: inflate a separator `NSStatusItem` so icons to its left slide out of view.
-
-| macOS era | What changed | Consequence |
-|-----------|--------------|-------------|
-| **≤ 26 (Ventura/Sonoma/Sequoia)** | Each status item = its own window. Inflating the separator pushes icons off-screen. | Geometry hiding worked. |
-| **27 Golden Gate** | Menu bar became **one window** with a native overflow (`«`). Inflating past half the screen width **drops** the item instead of clamping, and length changes no longer displace neighbours. | Geometry hiding is dead on 27 — hiding must go through the system. |
-| **27 + private API** | macOS 27 introduced `MenuBarClientCore` (assessment mode) — a private framework that can restrict the menu bar to an allow-list. | **Native hiding** — asks macOS to hide everything except the allow-list. Width-independent, notch-aware. |
-
-Native requires the **direct (non-sandboxed) build**, macOS 27+, and Accessibility permission. It uses a private API Apple may change. For macOS ≤ 26, upstream `dwarvesf/hidden` remains the path.
 
 ## 🕹 Usage
 
@@ -126,23 +140,9 @@ pre-Ventura builds). Later versions require macOS 13 because autostart moved to 
 - [VimMotion](https://github.com/dwarvesf/VimMotionPublic) Vim style shortcut for MacOS
 
 
-## Maintainer (this fork)
-
-> ⚠️ **WARNING: UNOFFICIAL BUILD**
-> 
-> This is a community fork of [Hidden Bar](https://github.com/dwarvesf/hidden) maintained by **Vitalii Tereshchuk (xVoLAnD)** — https://dotoca.net/hideout, with added support for **macOS 27 Golden Gate**.
-> 
-> It is **NOT** the official Dwarves Foundation release.
-> Download the fork build from the [Releases](https://github.com/xvoland/hideout/releases) page.
-
-
-| Role | Name | Contact |
-| --- | --- | --- |
-| Fork maintainer, build & macOS 27 verification | Vitalii Tereshchuk (xVoLAnD) | https://dotoca.net/hideout |
-
-Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation. The macOS 27 Golden Gate hide-mechanism fix originates from upstream [PR #396](https://github.com/dwarvesf/hidden/pull/396) by Skyler (skuthus); this fork packages, builds, and verifies it for macOS 27.
-
-
 ## License
+(c) 2026, Vitalii Tereshchuk / xVoLAnD ([https://dotoca.net]https://dotoca.net)
 MIT &copy; [Dwarves Foundation](https://github.com/dwarvesf)
+
+Upstream project: [dwarvesf/hidden](https://github.com/dwarvesf/hidden) © Dwarves Foundation.
 
