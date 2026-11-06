@@ -17,8 +17,8 @@ import AppKit
 /// throttle and also confirms the "up to date" state.
 ///
 /// Stable-only is enforced by the endpoint choice: `/releases/latest`
-/// resolves to the newest non-prerelease, non-draft release, so
-/// `-goldengate-test` tags are never offered. All failures (offline,
+/// resolves to the newest non-prerelease, non-draft release, so prerelease
+/// tags are never offered. All failures (offline,
 /// rate-limited, sandboxed without network) are silent by design — the check
 /// must never nag.
 final class UpdateChecker: NSObject {

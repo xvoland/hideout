@@ -1,13 +1,13 @@
 #!/bin/bash
 # Extract version from git tag and update MARKETING_VERSION in project.pbxproj.
 # Usage: ./bump-version.sh <tag>
-# Example: ./bump-version.sh v1.11.5-goldengate-test → MARKETING_VERSION = 1.11.5
+# Example: ./bump-version.sh v1.11.5 → MARKETING_VERSION = 1.11.5
 
 set -euo pipefail
 
 TAG="${1:?Usage: $0 <tag>}"
 
-# Strip 'v' prefix and anything after '-' (e.g., v1.11.5-goldengate-test → 1.11.5)
+# Strip 'v' prefix (anything after '-' is ignored defensively) — v1.11.5 → 1.11.5
 VERSION=$(echo "$TAG" | sed 's/^v//;s/-.*//')
 
 if [[ -z "$VERSION" ]]; then

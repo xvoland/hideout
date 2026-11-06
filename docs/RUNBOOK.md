@@ -63,13 +63,12 @@ installed app, test the dev build, then re-import and relaunch.
 
 1. Verify the stack: every PR reviewed, builds green, behavioral checks above run.
 2. Tag and push; CI builds and publishes automatically:
-   - `git tag vX.Y.Z-goldengate-test && git push origin vX.Y.Z-goldengate-test`
-     publishes a prerelease;
-   - `git tag vX.Y.Z && git push origin vX.Y.Z` publishes a full release.
+   `git tag vX.Y.Z && git push origin vX.Y.Z`
 
    The version comes from the tag via `.github/scripts/bump-version.sh`; the
    workflow builds `Release-Direct`, packages `Hideout.app`, a DMG and a source
-   archive, and creates the GitHub release.
+   archive, and creates the GitHub release. Every tag is a full release —
+   never tag throwaway versions.
 3. Builds are **ad-hoc signed** (`codesign --force --deep --sign -` in CI).
    Homebrew installs need no signature check at all (Homebrew does not
    quarantine cask downloads), so only manual/browser downloads need the
@@ -80,7 +79,7 @@ installed app, test the dev build, then re-import and relaunch.
    (issues #281/#202); decide deliberately whether a release goes there too.
 5. Homebrew: upstream has the official cask (`brew install --cask hiddenbar`);
    this fork's macOS 27 build ships via its own cask in `Casks/hideout.rb`.
-   On every full `vX.Y.Z` tag CI re-pins the cask (version + zip sha256) and
+   On every `v*` tag CI re-pins the cask (version + zip sha256) and
    commits it to master (`update-cask.py`). Verify a cask change locally before
    pushing:
 

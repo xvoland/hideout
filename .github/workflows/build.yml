@@ -103,17 +103,15 @@ jobs:
             Hideout.app.zip
             Hideout.dmg
             Hideout-source.zip
-          # Test tags (vX.Y.Z-goldengate-test) publish as prereleases;
-          # clean vX.Y.Z tags publish as full releases.
-          prerelease: ${{ contains(github.ref, 'goldengate-test') }}
+          # A pushed v* tag publishes as a full release.
           generate_release_notes: true
 
-      # Full releases (clean vX.Y.Z, not -goldengate-test) get the cask pinned
-      # to the exact version + artifact sha256 and committed to master, so tap
-      # users can `brew update && brew upgrade hideout`. Tag builds start from
+      # Every v* tag gets the cask pinned to the exact version + artifact
+      # sha256 and committed to master, so tap users can
+      # `brew update && brew upgrade hideout`. Tag builds start from
       # the tag itself, not from master, hence the explicit HEAD:master push.
       - name: Pin cask version + sha256
-        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'goldengate-test')
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           TAG="${GITHUB_REF_NAME}"
           VERSION="${TAG#v}"
@@ -121,7 +119,7 @@ jobs:
           python3 .github/scripts/update-cask.py "${TAG}" "${VERSION}" "${SHA256}"
 
       - name: Commit updated cask
-        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'goldengate-test')
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
