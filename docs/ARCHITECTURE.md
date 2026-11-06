@@ -119,7 +119,7 @@ is distributed unsigned (`xattr -dr com.apple.quarantine` after install). The on
 dependency is HotKey (a small Carbon `RegisterEventHotKey` wrapper) locked by the
 committed `Package.resolved`. The opt-in hover monitor observes pointer position
 only and discards event payloads. About links are hardcoded (Website →
-<https://dotoca.net/hideout>, GitHub, maintainer email, upstream). A full-tree
+<https://dotoca.net/hideout>, GitHub, maintainer email). A full-tree
 audit (2026-06) scored 9/10 with hygiene-level findings only.
 
 ## Known architectural limits

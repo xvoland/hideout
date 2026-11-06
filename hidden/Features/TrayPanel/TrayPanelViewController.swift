@@ -486,8 +486,7 @@ final class TrayPanelViewController: NSViewController {
         let links = NSStackView(views: [
             textButton("GitHub", action: #selector(openGitHub), tooltip: "https://github.com/xvoland/hidden"),
             textButton("Website".localized, action: #selector(openMaintainerSite), tooltip: "https://dotoca.net/hideout"),
-            textButton("Contact".localized, action: #selector(openContact), tooltip: "adv@dotoca.net"),
-            textButton("Upstream".localized, action: #selector(openUpstream), tooltip: "https://github.com/dwarvesf/hidden")
+            textButton("Contact".localized, action: #selector(openContact), tooltip: "adv@dotoca.net")
         ])
         links.orientation = .horizontal
         links.alignment = .centerY
@@ -787,10 +786,6 @@ final class TrayPanelViewController: NSViewController {
 
     @objc private func openContact() {
         open("mailto:adv@dotoca.net")
-    }
-
-    @objc private func openUpstream() {
-        open("https://github.com/dwarvesf/hidden")
     }
 
     private func open(_ string: String) {

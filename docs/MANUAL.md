@@ -41,7 +41,7 @@ to change the height; it is remembered across launches.
 | **Menu Bar Preview** | |
 | Menu Bar Preview | Illustrative strip that labels the Hidden / Always Hidden / Visible zones — not a live mirror of the system bar |
 | **About** | |
-| GitHub / Website / Contact / Upstream | Links open the fork repository, <https://dotoca.net/hideout>, the maintainer email, and the original Dwarves Foundation project. The pointer becomes a hand over each link |
+| GitHub / Website / Contact | Links open the fork repository, <https://dotoca.net/hideout> and the maintainer email. The pointer becomes a hand over each link |
 | Credits | Two lines: the 2026 fork maintainer (Vitalii Tereshchuk / xVoLAnD) and the 2019 Dwarves Foundation MIT notice |
 
 

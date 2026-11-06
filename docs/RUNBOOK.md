@@ -51,7 +51,7 @@ Standard checks before any release:
 - localization tables stay parseable: `plutil -lint hidden/*.lproj/*.strings`;
 - right-clicking the arrow opens the tray panel: grouped cards render in light
   and dark appearance; About links open the fork repo,
-  <https://dotoca.net/hideout>, `mailto:adv@dotoca.net` and upstream; the
+  <https://dotoca.net/hideout> and `mailto:adv@dotoca.net`; the
   pointer becomes a hand over them; the inline always-hidden tutorial text is
   legible on the gray card; both credit lines show without truncation.
 
