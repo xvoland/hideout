@@ -70,14 +70,32 @@ installed app, test the dev build, then re-import and relaunch.
    The version comes from the tag via `.github/scripts/bump-version.sh`; the
    workflow builds `Release-Direct`, packages `Hideout.app`, a DMG and a source
    archive, and creates the GitHub release.
-3. Builds are **ad-hoc / unsigned**. Tell users to clear quarantine with
-   `xattr -dr com.apple.quarantine "Hideout.app"`. Notarization is not wired
-   up (it needs a Developer ID certificate and secrets).
+3. Builds are **ad-hoc signed** (`codesign --force --deep --sign -` in CI).
+   Homebrew installs need no signature check at all (Homebrew does not
+   quarantine cask downloads), so only manual/browser downloads need the
+   quarantine cleanup: `xattr -dr com.apple.quarantine "Hideout.app"`.
+   Notarization is not wired up (it needs a Developer ID certificate and
+   secrets).
 4. App Store (separate lane): the MAS listing has lagged GitHub since v1.8
    (issues #281/#202); decide deliberately whether a release goes there too.
 5. Homebrew: upstream has the official cask (`brew install --cask hiddenbar`);
-   this fork's macOS 27 build ships via its own cask — see the
-   [Casks](https://github.com/xvoland/hidden/blob/main/Casks) directory in this repo.
+   this fork's macOS 27 build ships via its own cask in `Casks/hideout.rb`.
+   On every full `vX.Y.Z` tag CI re-pins the cask (version + zip sha256) and
+   commits it to master (`update-cask.py`). Verify a cask change locally before
+   pushing:
+
+   ```sh
+   brew tap xvoland/hideout file://"$(pwd)"
+   brew trust xvoland/hideout
+   brew info --cask hideout     # must show the pinned version, no warnings
+   brew audit --cask hideout --online   # must exit 0
+   brew fetch --cask hideout    # verifies the pinned sha256
+   brew untap xvoland/hideout
+   ```
+
+   Note: installing casks from a raw URL (`brew install --cask https://…`) is
+   no longer supported by Homebrew; the tap + `brew trust` flow is the only
+   route.
 6. Before any public release after the SMAppService migration: one
    upgrade-path run from a launcher-era build (v1.9 or older) verifying System
    Settings shows no ghost LauncherApplication login item.

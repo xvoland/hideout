@@ -26,6 +26,17 @@ jobs:
           CODE_SIGNING_ALLOWED=NO
           -derivedDataPath build
 
+      # Ad-hoc signing ("-" identity, no Apple cert): keeps every Mach-O in the
+      # bundle valid for Homebrew installs (brew does not quarantine cask
+      # downloads, so Gatekeeper never runs — no Developer ID signature needed)
+      # and avoids "damaged app" on Apple Silicon.
+      - name: Ad-hoc sign app bundle
+        run: |
+          APP="build/Build/Products/Release-Direct/Hideout.app"
+          codesign --force --deep --timestamp=none --sign - "$APP"
+          codesign --verify --deep --strict "$APP"
+          codesign --display --verbose=1 "$APP" 2>&1 | head -5
+
       - name: Package app
         run: |
           ditto -c -k --sequesterRsrc --keepParent \
@@ -96,3 +107,28 @@ jobs:
           # clean vX.Y.Z tags publish as full releases.
           prerelease: ${{ contains(github.ref, 'goldengate-test') }}
           generate_release_notes: true
+
+      # Full releases (clean vX.Y.Z, not -goldengate-test) get the cask pinned
+      # to the exact version + artifact sha256 and committed to master, so tap
+      # users can `brew update && brew upgrade hideout`. Tag builds start from
+      # the tag itself, not from master, hence the explicit HEAD:master push.
+      - name: Pin cask version + sha256
+        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'goldengate-test')
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          SHA256=$(shasum -a 256 "Hideout.app.zip" | cut -d' ' -f1)
+          python3 .github/scripts/update-cask.py "${TAG}" "${VERSION}" "${SHA256}"
+
+      - name: Commit updated cask
+        if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'goldengate-test')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/hideout.rb
+          if git diff --cached --quiet; then
+            echo "Cask unchanged; nothing to commit."
+          else
+            git commit -m "ci: pin cask hideout to ${GITHUB_REF_NAME}"
+            git push origin HEAD:master
+          fi

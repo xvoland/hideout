@@ -47,29 +47,35 @@ Includes compatibility work for macOS 27 "Golden Gate" and **wide screens like Q
 
 ## 🚀 Install
 
-These builds are **ad-hoc / unsigned** (`CODE_SIGNING_ALLOWED=NO`) — no Developer ID
-signature, no notarization. (Support the project to purchase a signature from Apple.)
+The builds are **ad-hoc signed** (`codesign --sign -`, no Developer ID
+certificate, no notarization). macOS ties the Accessibility permission to the
+code signature, so after **every update** re-grant it in System Settings when
+prompted (first collapse asks again); that is expected, not a bug.
+Support the project to purchase a signed & notarized build from Apple.
 
-macOS ties the Accessibility permission to the code
-signature, so after **every update** re-grant it in System Settings when prompted
-(first collapse asks again); that is expected, not a bug.
+#### Using Homebrew (no signature, no `xattr` needed)
 
-
-
-#### Using Homebrew
-
-This fork ships its own Homebrew cask so you install **this** build — not the
-upstream one:
+Homebrew does not apply the `com.apple.quarantine` attribute to cask installs,
+so Gatekeeper never evaluates the app — an ad-hoc signed build just works:
 
 ```
-brew install --cask https://raw.githubusercontent.com/xvoland/hideout/master/Casks/hideout.rb
+brew tap xvoland/hideout https://github.com/xvoland/hideout
+brew trust xvoland/hideout
+brew install --cask hideout
 ```
+
+Updates: `brew update && brew upgrade hideout` (CI pins the cask to each
+release with a real checksum — no `:no_check`, no `:latest` placeholders).
+
+Note: one-line installs of casks from a raw URL (`brew install --cask
+https://...`) were removed by Homebrew; `brew trust` is Homebrew's untrusted-tap
+confirmation, required once.
 
 
 
 ### Security & Manual download
 
-Hideout is an independent, open-source project, and unfortunately, we don’t have the budget for an Apple Developer Program membership yet. This means the app isn’t signed and notarized by Apple.
+Hideout is an independent, open-source project, and unfortunately, we don’t have the budget for an Apple Developer Program membership yet. This means the app isn’t signed with a Developer ID and notarized by Apple (the build itself is ad-hoc signed).
 
 The first time you open Hideout, macOS may show a security warning. To open the app, you’ll need to follow these steps:
 
@@ -77,16 +83,17 @@ The first time you open Hideout, macOS may show a security warning. To open the 
 2. Move the app to your **Applications folder.**
 3. If macOS blocks it, **open System Settings → Privacy & Security**, find the message about Hideout, and **click Open Anyway**. You may need to try opening the app first.
 4. Confirm that you want to open it.
-
-We know this isn’t as convenient as installing a notarized app, and we’re sorry for the extra steps. If you find Hideout useful and would like to help us cover the cost of an Apple Developer membership, your support would mean a lot. 
-
-❤️ Thank you for supporting independent, open-source software!
-
-The build is **unsigned**, so before the first launch run:
+5. If it is still blocked (browsers add the quarantine attribute to downloads), remove it once:
 
 ```
 xattr -dr com.apple.quarantine /Applications/Hideout.app
 ```
+
+Homebrew installs skip all of this entirely — see the section above.
+
+We know this isn’t as convenient as installing a notarized app, and we’re sorry for the extra steps. If you find Hideout useful and would like to help us cover the cost of an Apple Developer membership, your support would mean a lot. 
+
+❤️ Thank you for supporting independent, open-source software!
 
 <p align="center">
 	<img src="img/screen00.png">
