@@ -6,7 +6,7 @@
 # ad-hoc-signed app runs with no Gatekeeper prompt and no `xattr` cleanup.
 cask "hideout" do
   version "1.25.0"
-  sha256 "aa99b9bd0602d069907b1622796f73cc9228c9022329f992f4bbdc92785d049c"
+  sha256 "49c7943424fd675f4d7bc17f8026dc1484982326abd0a0c5b2281086da7e9e0d"
 
   url "https://github.com/xvoland/hideout/releases/download/v#{version}/Hideout.app.zip"
   name "Hideout"
