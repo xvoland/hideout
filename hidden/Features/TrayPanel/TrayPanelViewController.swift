@@ -262,7 +262,7 @@ final class TrayPanelViewController: NSViewController {
                                          action: #selector(arrangePressed),
                                          tooltip: "Show All Icons for Arranging".localized),
                    views: [preview])
-        addSection("About".localized, views: [aboutCard()])
+        addSection("About".localized, views: [aboutCard(), supportNoteLabel()])
         finishContentLayout()
     }
 
@@ -424,6 +424,21 @@ final class TrayPanelViewController: NSViewController {
         engineNote.preferredMaxLayoutWidth = 320
 
         let row = NSStackView(views: [engineNote])
+        row.orientation = .horizontal
+        row.alignment = .top
+        row.edgeInsets = NSEdgeInsets(top: -2, left: 12, bottom: 0, right: 12)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        return row
+    }
+
+    private func supportNoteLabel() -> NSView {
+        let label = NSTextField(wrappingLabelWithString: "Enjoying Hideout? A small donation keeps the build possible.".localized)
+        label.font = .systemFont(ofSize: 10)
+        label.textColor = .tertiaryLabelColor
+        label.maximumNumberOfLines = 2
+        label.preferredMaxLayoutWidth = 320
+
+        let row = NSStackView(views: [label])
         row.orientation = .horizontal
         row.alignment = .top
         row.edgeInsets = NSEdgeInsets(top: -2, left: 12, bottom: 0, right: 12)
