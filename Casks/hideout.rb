@@ -5,8 +5,8 @@
 # Homebrew does not apply the quarantine attribute to cask installs, so this
 # ad-hoc-signed app runs with no Gatekeeper prompt and no `xattr` cleanup.
 cask "hideout" do
-  version "1.24.1"
-  sha256 "78451e131077e92389ccc06411daaa5c8c2c7441e5cb386e6ed7da7a22a55e27"
+  version "1.25.0"
+  sha256 "aa99b9bd0602d069907b1622796f73cc9228c9022329f992f4bbdc92785d049c"
 
   url "https://github.com/xvoland/hideout/releases/download/v#{version}/Hideout.app.zip"
   name "Hideout"
