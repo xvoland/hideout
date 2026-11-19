@@ -17,6 +17,15 @@ import ApplicationServices
 final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
     private static let messagingTimeout: Float = 0.1
 
+    // The census is requested from several places (collapse, expanded
+    // presentation, the newcomer poll, post-collapse diagnostics). One AX walk
+    // takes ~1s, so concurrent requests share the in-flight result instead of
+    // each paying for a full walk. Callers arriving during a walk join it;
+    // the next request after delivery starts a fresh one.
+    private let coordination = DispatchQueue(label: "hideout.ax.snapshot")
+    private var pending: [([MenuBarInventoryItem]) -> Void] = []
+    private var isWalking = false
+
     private var hasRequestedAuthorization = false
 
     var isAuthorized: Bool {
@@ -35,6 +44,16 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
     // Accessibility round-trips to every app take about a second in total, so the
     // walk runs off the main thread.
     func snapshot(completion: @escaping ([MenuBarInventoryItem]) -> Void) {
+        var startsWalk = false
+        coordination.sync {
+            pending.append(completion)
+            if !isWalking {
+                isWalking = true
+                startsWalk = true
+            }
+        }
+        guard startsWalk else { return }
+
         // Only app bundles own status items. Skipping the rest (dozens of WebKit
         // and XPC helpers, each of which would sit out the timeout) cuts the walk
         // from ~2.8s to ~1s.
@@ -42,9 +61,18 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
         let apps = NSWorkspace.shared.runningApplications
             .filter { $0.processIdentifier != ownPID && $0.bundleURL?.pathExtension == "app" }
             .map { (pid: $0.processIdentifier, bundleIdentifier: $0.bundleIdentifier) }
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let items = Self.statusItems(of: apps)
-            DispatchQueue.main.async { completion(items) }
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                var callbacks: [([MenuBarInventoryItem]) -> Void] = []
+                self.coordination.sync {
+                    callbacks = self.pending
+                    self.pending.removeAll()
+                    self.isWalking = false
+                }
+                for callback in callbacks { callback(items) }
+            }
         }
     }
 
@@ -59,6 +87,8 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
             guard AXUIElementCopyAttributeValue(element, "AXExtrasMenuBar" as CFString, &barValue) == .success,
                   let barValue = barValue,
                   CFGetTypeID(barValue) == AXUIElementGetTypeID() else { continue }
+            // CFGetTypeID above guarantees this cast; `as?` is rejected by the
+            // compiler because a downcast to a CoreFoundation type always succeeds.
             let bar = barValue as! AXUIElement
             var childrenValue: CFTypeRef?
             guard AXUIElementCopyAttributeValue(bar, kAXChildrenAttribute as CFString, &childrenValue) == .success,
@@ -84,6 +114,8 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
               CFGetTypeID(sizeValue) == AXValueGetTypeID() else { return nil }
         var position = CGPoint.zero
         var size = CGSize.zero
+        // CFGetTypeID checks above guarantee both casts; `as?` is rejected by
+        // the compiler because a downcast to a CoreFoundation type always succeeds.
         guard AXValueGetValue(positionValue as! AXValue, .cgPoint, &position),
               AXValueGetValue(sizeValue as! AXValue, .cgSize, &size) else { return nil }
         return CGRect(origin: position, size: size)

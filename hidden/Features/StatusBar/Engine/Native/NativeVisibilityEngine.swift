@@ -166,6 +166,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
         guard visibility.isAvailable else {
             logUnavailableOnce("the native menu-bar visibility API is not available in this build or on this macOS")
             state = .unavailable
+            restoreSeparatorsAfterFailedCollapse()
             return completion(.unavailable)
         }
         guard inventory.isAuthorized else {
@@ -174,6 +175,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             // the permission is granted.
             inventory.requestAuthorization()
             logUnavailableOnce("Accessibility permission is needed to read the menu-bar sections")
+            restoreSeparatorsAfterFailedCollapse()
             return completion(.unavailable)
         }
         state = .calibrating
@@ -186,6 +188,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             guard let layout = layout else {
                 self.logUnavailableOnce("the arrow's position cannot be read yet")
                 self.state = .expanded
+                self.restoreSeparatorsAfterFailedCollapse()
                 return completion(.unavailable)
             }
             // Never hide on a blind snapshot: an empty census (cold AX server,
@@ -195,6 +198,7 @@ final class NativeVisibilityEngine: MenuBarEngine {
             guard !inventory.isEmpty else {
                 self.logUnavailableOnce("the menu-bar census came back empty — refusing to hide blind")
                 self.state = .expanded
+                self.restoreSeparatorsAfterFailedCollapse()
                 return completion(.unavailable)
             }
             // Per-icon pre-collapse census: ordinal left-to-right, section
@@ -247,6 +251,16 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
         state = .expanded
         applyExpandedPresentation()
+    }
+
+    /// Reveal paths must be able to cancel an in-flight collapse: its
+    /// Accessibility read keeps `state == .calibrating`, so a plain `expand()`
+    /// guarded by `state == .collapsed` would be dropped. Bumping the generation
+    /// first makes the pending activation's late success invalidate itself
+    /// instead of adopting a restriction after the bar was revealed.
+    func forceExpand() {
+        generation += 1
+        expand()
     }
 
     func updateAlwaysHiddenSection(enabled: Bool, separatorHidden: Bool) {
@@ -644,6 +658,14 @@ final class NativeVisibilityEngine: MenuBarEngine {
         }
         items?.separatorItem.isVisible = visible
         items?.alwaysHiddenItem?.length = visible && alwaysHiddenEnabled ? expandedLength : 0
+    }
+
+    /// `collapse()` shows both separators up front so the census reads a
+    /// settled bar. When hiding then fails, put them back to the user's
+    /// preference instead of leaving them visible while "hide separators" is on.
+    private func restoreSeparatorsAfterFailedCollapse() {
+        guard alwaysHiddenSeparatorHidden else { return }
+        setSeparatorsVisible(false)
     }
 
     // Any arrangement works: whatever sits left of the separator is the hidden section.

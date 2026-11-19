@@ -11,9 +11,8 @@ import AppKit
 import HotKey
 import ServiceManagement
 
-@NSApplicationMain
-
-class AppDelegate: NSObject, NSApplicationDelegate{
+@main
+class AppDelegate: NSObject, NSApplicationDelegate {
     
     var statusBarController = StatusBarController()
     

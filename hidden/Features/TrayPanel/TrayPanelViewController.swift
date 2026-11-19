@@ -692,7 +692,7 @@ final class TrayPanelViewController: NSViewController {
         keepSystemSwitch.state = Preferences.keepSystemItemsVisible ? .on : .off
         fullMenuBarSwitch.state = Preferences.useFullStatusBarOnExpandEnabled ? .on : .off
 
-        delayPopup.selectItem(at: SelectedSecond.secondToPossition(seconds: Preferences.numberOfSecondForAutoHide))
+        delayPopup.selectItem(at: SelectedSecond.secondToPosition(seconds: Preferences.numberOfSecondForAutoHide))
         updateDelayAvailability()
 
         preview.refresh(alwaysHidden: Preferences.alwaysHiddenSectionEnabled)

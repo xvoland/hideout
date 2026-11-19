@@ -22,5 +22,9 @@ extension UserDefaults {
         static let hoverToExpand = "hoverToExpand"
         static let keepSystemItemsVisible = "keepSystemItemsVisible"
         static let panelHeight = "panelHeight"
+        // Kept here too so every persisted key has one declaration site.
+        static let lastCollapsedState = "lastCollapsedState"
+        static let lastUpdateCheck = "lastUpdateCheck"
+        static let lastLaunchTimestamp = "lastLaunchTimestamp"
     }
 }

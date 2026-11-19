@@ -120,6 +120,10 @@ final class TrayPanelController: NSObject, NSPopoverDelegate {
     func popoverDidClose(_ notification: Notification) {
         isVisible = false
         lastCloseDate = Date()
+        // A close during a grip drag skips gripChanged(commit:), which is the
+        // usual place that re-enables animation. Restore it here so the next
+        // open is not stuck with an animated popover.
+        setAnimates(true)
         panel.panelDidClose()
         AppLog.info("TrayPanel: closed")
     }
