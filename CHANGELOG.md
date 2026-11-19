@@ -21,9 +21,8 @@
   numbers sent on every activation are built once.
 - Every preference write no longer tears down and reinstalls the global
   mouse-moved monitor; that happens only when hover-to-expand actually changes.
-- Centralized the remaining raw UserDefaults keys, fixed naming typos, replaced
-  deprecated `@NSApplicationMain` with `@main`, and replaced force casts in the
-  AX inventory with guarded casts.
+- Centralized the remaining raw UserDefaults keys, fixed naming typos, and
+  replaced deprecated `@NSApplicationMain` with `@main`.
 
 ### Added
 - A `HideoutTests` unit-test target for pure logic (section classification,

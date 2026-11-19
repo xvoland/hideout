@@ -61,9 +61,9 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
         let apps = NSWorkspace.shared.runningApplications
             .filter { $0.processIdentifier != ownPID && $0.bundleURL?.pathExtension == "app" }
             .map { (pid: $0.processIdentifier, bundleIdentifier: $0.bundleIdentifier) }
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let items = Self.statusItems(of: apps)
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async {
                 guard let self = self else { return }
                 var callbacks: [([MenuBarInventoryItem]) -> Void] = []
                 self.coordination.sync {
@@ -86,8 +86,10 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
             var barValue: CFTypeRef?
             guard AXUIElementCopyAttributeValue(element, "AXExtrasMenuBar" as CFString, &barValue) == .success,
                   let barValue = barValue,
-                  CFGetTypeID(barValue) == AXUIElementGetTypeID(),
-                  let bar = barValue as? AXUIElement else { continue }
+                  CFGetTypeID(barValue) == AXUIElementGetTypeID() else { continue }
+            // CFGetTypeID above guarantees this cast; `as?` is rejected by the
+            // compiler because a downcast to a CoreFoundation type always succeeds.
+            let bar = barValue as! AXUIElement
             var childrenValue: CFTypeRef?
             guard AXUIElementCopyAttributeValue(bar, kAXChildrenAttribute as CFString, &childrenValue) == .success,
                   let children = childrenValue as? [AXUIElement] else { continue }
@@ -112,10 +114,10 @@ final class AccessibilityMenuBarInventory: MenuBarInventoryProviding {
               CFGetTypeID(sizeValue) == AXValueGetTypeID() else { return nil }
         var position = CGPoint.zero
         var size = CGSize.zero
-        guard let positionAX = positionValue as? AXValue,
-              let sizeAX = sizeValue as? AXValue,
-              AXValueGetValue(positionAX, .cgPoint, &position),
-              AXValueGetValue(sizeAX, .cgSize, &size) else { return nil }
+        // CFGetTypeID checks above guarantee both casts; `as?` is rejected by
+        // the compiler because a downcast to a CoreFoundation type always succeeds.
+        guard AXValueGetValue(positionValue as! AXValue, .cgPoint, &position),
+              AXValueGetValue(sizeValue as! AXValue, .cgSize, &size) else { return nil }
         return CGRect(origin: position, size: size)
     }
 }
