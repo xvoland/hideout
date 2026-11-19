@@ -38,14 +38,16 @@ enum Preferences {
         }
         
         set {
+            // Encoding an Optional nil produces the four bytes "null", not
+            // empty data, so it must be removed explicitly rather than stored.
+            guard let newValue = newValue else {
+                UserDefaults.standard.removeObject(forKey: UserDefaults.Key.globalKey)
+                NotificationCenter.default.post(Notification(name: .prefsChanged))
+                return
+            }
             if let data = try? JSONEncoder().encode(newValue) {
                 UserDefaults.standard.set(data, forKey: UserDefaults.Key.globalKey)
-            } else if newValue == nil {
-                // encode(nil) comes back empty; without this the key survives in
-                // defaults and the "cleared" shortcut is back after relaunch.
-                UserDefaults.standard.removeObject(forKey: UserDefaults.Key.globalKey)
             }
-            
             NotificationCenter.default.post(Notification(name: .prefsChanged))
         }
     }
@@ -66,7 +68,10 @@ enum Preferences {
     
     static var numberOfSecondForAutoHide: Double {
         get {
-            UserDefaults.standard.double(forKey: UserDefaults.Key.numberOfSecondForAutoHide)
+            let stored = UserDefaults.standard.double(forKey: UserDefaults.Key.numberOfSecondForAutoHide)
+            // A migrated or manually written 0/negative would make the
+            // auto-hide Timer fire in a tight loop; keep a one-second floor.
+            return max(1.0, stored)
         }
         
         set {
@@ -164,10 +169,10 @@ enum Preferences {
 
     static var lastCollapsedState: Bool {
         get {
-            return UserDefaults.standard.bool(forKey: "lastCollapsedState")
+            return UserDefaults.standard.bool(forKey: UserDefaults.Key.lastCollapsedState)
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: "lastCollapsedState")
+            UserDefaults.standard.set(newValue, forKey: UserDefaults.Key.lastCollapsedState)
         }
     }
 
@@ -183,10 +188,10 @@ enum Preferences {
 
     static var lastUpdateCheck: Date? {
         get {
-            UserDefaults.standard.object(forKey: "lastUpdateCheck") as? Date
+            UserDefaults.standard.object(forKey: UserDefaults.Key.lastUpdateCheck) as? Date
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: "lastUpdateCheck")
+            UserDefaults.standard.set(newValue, forKey: UserDefaults.Key.lastUpdateCheck)
         }
     }
 

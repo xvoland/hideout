@@ -62,7 +62,7 @@ final class UpdateChecker: NSObject {
                 return
             }
             Preferences.lastUpdateCheck = Date()
-            let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
+            let current = Bundle.main.releaseVersionNumber ?? "0"
             if Self.isNewer(tag: release.tagName, than: current) {
                 AppLog.info("UpdateCheck: \(release.tagName) newer than \(current) — prompting")
                 DispatchQueue.main.async {

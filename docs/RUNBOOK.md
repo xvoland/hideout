@@ -20,10 +20,23 @@ Both must exit 0 with **no** `MACOSX_DEPLOYMENT_TARGET` override; the floor is
 report hiding as unavailable. The single expected warning is the deliberately
 deprecated `SMLoginItemSetEnabled(false)` call that cleans up legacy installs.
 
-## Behavioral verification (no test target exists; this is the methodology)
+## Unit tests (pure logic only)
 
-The repo has no unit-test infrastructure; behavior is verified against the real
-menu bar. Two building blocks make that scriptable:
+The `HideoutTests` target covers the parts that do not need the real menu bar:
+section classification (LTR/RTL), layout resolution (most-visible-wins,
+own/system exclusions), version comparison, shortcut rendering, delay mapping,
+and the preference edge cases fixed in v1.26.0. Run it with the dedicated
+shared scheme (the `Hideout` scheme used by CI is left untouched):
+
+```sh
+xcodebuild test -project 'Hideout.xcodeproj' -scheme 'HideoutTests' \
+  -configuration Debug
+```
+
+## Behavioral verification (live menu bar; this is the methodology)
+
+Everything that touches the real menu bar is still verified against it. Two
+building blocks make that scriptable:
 
 1. **Truth signal**: the log. Collapse prints
    `NativeVisibility: arrow at x=…; visible […], hidden […], always hidden […]`

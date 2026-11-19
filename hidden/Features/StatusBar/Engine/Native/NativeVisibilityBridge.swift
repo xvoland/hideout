@@ -25,6 +25,11 @@ protocol NativeVisibilityProviding: AnyObject {
 }
 
 final class NativeVisibilityBridge: NativeVisibilityProviding {
+    // Sent on every activation (collapse, expanded presentation, launch,
+    // newcomer watch). Build the 4096 NSNumbers once instead of on each call.
+    private static let cachedSystemItems = NativeVisibilityEngine.systemItemsToKeep
+    private static let cachedSystemItemNumbers: [NSNumber] = cachedSystemItems.map { NSNumber(value: $0) }
+
     var isAvailable: Bool {
         return HBNativeVisibilityIsAvailable()
     }
@@ -32,7 +37,10 @@ final class NativeVisibilityBridge: NativeVisibilityProviding {
     func activate(allowedSystemItems: [Int],
                   allowedBundleIdentifiers: [String],
                   completion: @escaping (Result<NativeVisibilityAssertion, Error>) -> Void) {
-        HBNativeVisibilityActivate(allowedSystemItems.map { NSNumber(value: $0) },
+        let numbers = allowedSystemItems == Self.cachedSystemItems
+            ? Self.cachedSystemItemNumbers
+            : allowedSystemItems.map { NSNumber(value: $0) }
+        HBNativeVisibilityActivate(numbers,
                                    allowedBundleIdentifiers) { handle, error in
             if let handle = handle {
                 completion(.success(Handle(raw: handle)))

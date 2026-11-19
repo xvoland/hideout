@@ -19,6 +19,11 @@ protocol MenuBarEngine: AnyObject {
     func collapse(completion: @escaping (CollapseResult) -> Void)
     func expand()
 
+    /// Expands even while a collapse is still calibrating. Reveal paths
+    /// (Show All Icons, hover-to-expand) must win during that window, where
+    /// `state` is neither `.collapsed` nor `.expanded`.
+    func forceExpand()
+
     func updateAlwaysHiddenSection(enabled: Bool, separatorHidden: Bool)
 
     // Whether the user's ⌘-drag arrangement lets the engine hide anything: its

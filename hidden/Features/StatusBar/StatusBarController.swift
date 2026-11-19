@@ -50,7 +50,14 @@ class StatusBarController: MenuBarItemProvider {
         return menuBarEngine.state == .collapsed
     }
 
-    private var isBtnAlwaysHiddenValidPosition: Bool {
+    /// A collapse can spend ~1s in `.calibrating` reading Accessibility. It is
+    /// not collapsed yet, but reveal/hover paths must act on it rather than
+    /// being dropped by a `state == .collapsed` guard.
+    private var isCollapsedOrCalibrating: Bool {
+        menuBarEngine.state == .collapsed || menuBarEngine.state == .calibrating
+    }
+
+    private var isAlwaysHiddenSeparatorValidPosition: Bool {
         if !Preferences.alwaysHiddenSectionEnabled { return true }
         return menuBarEngine.isAlwaysHiddenSeparatorPlaced
     }
@@ -101,7 +108,7 @@ class StatusBarController: MenuBarItemProvider {
                                                keepSystemItemsVisible: { Preferences.keepSystemItemsVisible })
         AppLog.info("MenuBarEngine: native diagRev=\(BuildInfo.diagnosticsRevision) nativeAvailable=\(NativeVisibilityEngine.nativeVisibilityAvailable)")
         setupUI()
-        setupAlwayHideStatusBar()
+        setupAlwaysHiddenStatusBar()
         setupHoverToExpandIfEnabled()
         updateHoverMonitoring()
         installFlagsMonitor()
@@ -176,6 +183,10 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     @objc private func updateHoverMonitoring() {
+        // `.prefsChanged` is posted by nearly every preference write. Only
+        // reinstall the global mouseMoved monitor when this setting actually
+        // changed, otherwise hover events are dropped around every swap.
+        guard Preferences.hoverToExpand != (hoverMonitor != nil) else { return }
         removeHoverMonitor()
         installHoverMonitor()
     }
@@ -186,7 +197,7 @@ class StatusBarController: MenuBarItemProvider {
         AppLog.info("HoverToExpand: enabled, installing global mouse monitor")
         hoverMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
             guard let self = self else { return }
-            guard self.isCollapsed && self.isMouseInMenuBar else {
+            guard self.isCollapsedOrCalibrating && self.isMouseInMenuBar else {
                 self.hoverDwellTimer?.invalidate()
                 self.hoverDwellTimer = nil
                 return
@@ -195,8 +206,8 @@ class StatusBarController: MenuBarItemProvider {
             self.hoverDwellTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
                 guard let self = self else { return }
                 self.hoverDwellTimer = nil
-                if self.isCollapsed && self.isMouseInMenuBar {
-                    self.expandMenubar()
+                if self.isCollapsedOrCalibrating && self.isMouseInMenuBar {
+                    self.expandMenubar(force: true)
                 }
             }
         }
@@ -277,7 +288,7 @@ class StatusBarController: MenuBarItemProvider {
                     showContextMenu(from: sender)
                 }
             } else {
-                self.showHideSeparatorsAndAlwayHideArea()
+                self.showHideSeparatorsAndAlwaysHiddenArea()
             }
         }
     }
@@ -291,18 +302,21 @@ class StatusBarController: MenuBarItemProvider {
     // shows separators, deterministically. Unlike Option-click it cannot fail
     // on modifier delivery.
     @objc private func revealForArranging() {
-        AppLog.info("StatusBar: reveal requested — showing separators")
-        if self.isCollapsed { self.expandMenubar() }
+        AppLog.info("StatusBar: reveal requested (state=\(menuBarEngine.state)) — showing separators")
+        // Force expansion: during a calibrating collapse `isCollapsed` is false,
+        // so a guarded expand would be dropped and the in-flight collapse would
+        // then hide the bar the user asked to reveal.
+        self.expandMenubar(force: true)
         self.showSeparators()
         AppLog.info("StatusBar: separators hidden=\(Preferences.areSeparatorsHidden)")
     }
 
-    func showHideSeparatorsAndAlwayHideArea() {
+    func showHideSeparatorsAndAlwaysHiddenArea() {
         // Expand first: the hide guard below reads live separator geometry,
         // which is only trustworthy while expanded (collapsed items report
         // degenerate frames). Toggling first would silently no-op from a
         // collapsed bar whenever the always-hidden section is on.
-        if self.isCollapsed {self.expandMenubar()}
+        self.expandMenubar(force: true)
         Preferences.areSeparatorsHidden ? self.showSeparators() : self.hideSeparators()
         AppLog.info("StatusBar: separators hidden=\(Preferences.areSeparatorsHidden)")
     }
@@ -312,7 +326,7 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private func hideSeparators() {
-        guard self.isBtnAlwaysHiddenValidPosition else {
+        guard self.isAlwaysHiddenSeparatorValidPosition else {
             AppLog.info("StatusBar: hide separators blocked — always-hidden separator is not on the hidden side of the arrow; ⌘-drag it left of the arrow and retry")
             return
         }
@@ -387,13 +401,13 @@ class StatusBarController: MenuBarItemProvider {
     }
 
     private static func isLikelyLoginLaunch() -> Bool {
-        let lastLaunch = UserDefaults.standard.double(forKey: "lastLaunchTimestamp")
+        let lastLaunch = UserDefaults.standard.double(forKey: UserDefaults.Key.lastLaunchTimestamp)
         let now = Date().timeIntervalSince1970
         return now - lastLaunch < 60 && lastLaunch > 0
     }
 
     private static func saveLaunchTimestamp() {
-        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "lastLaunchTimestamp")
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: UserDefaults.Key.lastLaunchTimestamp)
     }
 
     private func collapseMenuBar() {
@@ -428,9 +442,16 @@ class StatusBarController: MenuBarItemProvider {
         }
     }
 
-    private func expandMenubar(isInitialRestore: Bool = false) {
-        AppLog.info("StatusBar: expand requested (isCollapsed=\(self.isCollapsed))")
-        guard self.isCollapsed else {return}
+    /// `force` is for reveal paths that must win while a collapse is still
+    /// calibrating: the engine state is then neither `.collapsed` nor
+    /// `.expanded`, so the normal `isCollapsed` guard would drop the request.
+    private func expandMenubar(isInitialRestore: Bool = false, force: Bool = false) {
+        AppLog.info("StatusBar: expand requested (state=\(menuBarEngine.state), force=\(force))")
+        if force {
+            guard menuBarEngine.state != .expanded else { return }
+        } else {
+            guard self.isCollapsed else { return }
+        }
         if let button = btnExpandCollapse.button {
             button.image = Assets.collapseImage
         }
@@ -439,7 +460,11 @@ class StatusBarController: MenuBarItemProvider {
             NSApp.activate(ignoringOtherApps: true)
         }
         Preferences.lastCollapsedState = false
-        menuBarEngine.expand()
+        if force {
+            menuBarEngine.forceExpand()
+        } else {
+            menuBarEngine.expand()
+        }
         NotificationCenter.default.post(name: .menuBarStateChanged, object: nil)
         if !isInitialRestore {
             autoCollapseIfNeeded()
@@ -556,7 +581,7 @@ class StatusBarController: MenuBarItemProvider {
 
 //MARK: - Alway hide feature
 extension StatusBarController {
-    private func setupAlwayHideStatusBar() {
+    private func setupAlwaysHiddenStatusBar() {
         NotificationCenter.default.addObserver(self, selector: #selector(toggleStatusBarIfNeeded), name: .alwayHideToggle, object: nil)
         toggleStatusBarIfNeeded()
     }

@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.26.0 (2026-11-19)
+
+### Fixed
+- Reveal paths (Show All Icons, hover-to-expand, Option-click on a separator)
+  now win while a collapse is still calibrating. Previously they were silently
+  dropped because the engine was neither collapsed nor expanded, and the pending
+  collapse then hid the bar the user had asked to reveal.
+- A failed collapse no longer leaves the separators visible while "hide
+  separators" is still enabled.
+- Clearing the global shortcut now removes its UserDefaults key instead of
+  storing the literal `null` left by encoding an optional nil.
+- The auto-hide delay has a one-second floor, so a migrated or manually written
+  `0` cannot turn the timer into a tight re-arm loop.
+- A popover closed during a grip drag re-enables its open/close animation again.
+
+### Changed
+- Accessibility snapshots are coalesced: concurrent census requests now share
+  one ~1s AX walk instead of each paying for a full one. The 4096 system-item
+  numbers sent on every activation are built once.
+- Every preference write no longer tears down and reinstalls the global
+  mouse-moved monitor; that happens only when hover-to-expand actually changes.
+- Centralized the remaining raw UserDefaults keys, fixed naming typos, replaced
+  deprecated `@NSApplicationMain` with `@main`, and replaced force casts in the
+  AX inventory with guarded casts.
+
+### Added
+- A `HideoutTests` unit-test target for pure logic (section classification,
+  layout resolution, version comparison, shortcut rendering, delay mapping and
+  the preference regressions above). Run with `-scheme HideoutTests`.
+
 ## v1.24.1 (2026-10-29)
 
 ### Fixed
