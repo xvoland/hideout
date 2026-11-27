@@ -12,6 +12,8 @@ ZIP="${2:?Usage: $0 <tag> <zip> <appcast>}"
 OUTPUT="${3:?Usage: $0 <tag> <zip> <appcast>}"
 
 : "${SPARKLE_PRIVATE_KEY:?SPARKLE_PRIVATE_KEY secret is required}"
+# Actions secrets may carry a trailing newline; Sparkle wants the bare key.
+KEY=$(printf '%s' "${SPARKLE_PRIVATE_KEY}" | tr -d '[:space:]')
 
 SPARKLE_VERSION="2.10.1"
 TMP=$(mktemp -d)
@@ -31,14 +33,14 @@ if [[ -f "${OUTPUT}" ]]; then
   cp "${OUTPUT}" "${UPDATES}/appcast.xml"
 fi
 
-printf '%s\n' "${SPARKLE_PRIVATE_KEY}" | \
+printf '%s\n' "${KEY}" | \
   "${BIN}/generate_appcast" \
     --ed-key-file - \
     --download-url-prefix "https://github.com/xvoland/hideout/releases/download/${TAG}/" \
     --link "https://github.com/xvoland/hideout" \
     "${UPDATES}"
 
-SIGNATURE=$(printf '%s' "${SPARKLE_PRIVATE_KEY}" | \
+SIGNATURE=$(printf '%s' "${KEY}" | \
   "${BIN}/sign_update" -p --ed-key-file - "${UPDATES}/Hideout.app.zip")
 LENGTH=$(stat -f%z "${UPDATES}/Hideout.app.zip")
 
