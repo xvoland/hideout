@@ -149,7 +149,6 @@ pre-Ventura builds). Later versions require macOS 13 because autostart moved to 
 
 ## You may also like
 - [Blurred](https://github.com/dwarvesf/Blurred) - A macOS utility that helps reduce distraction by dimming your inactive noise
-- [Micro Sniff](https://github.com/dwarvesf/micro-sniff) - An ultra-light macOS utility that notify whenever your micro-device is being used
 - [VimMotion](https://github.com/dwarvesf/VimMotionPublic) Vim style shortcut for MacOS
 
 ## License
