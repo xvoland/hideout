@@ -39,7 +39,7 @@ to change the height; it is remembered across launches.
 | **Keyboard Shortcut** | |
 | Toggle Hideout | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18); **Set Shortcut** records, the clear button removes it |
 | **Updates** | |
-| Check automatically / Install automatically | Daily background checks and background downloads; both can be turned off here |
+| Check automatically / Install automatically | Weekly background checks and background downloads; both can be turned off here |
 | Status / Install now | Shows the update state; **Install now** appears when an update is downloaded. Updates also install on quit |
 | **Menu Bar Preview** | |
 | Menu Bar Preview | Illustrative strip that labels the Hidden / Always Hidden / Visible zones — not a live mirror of the system bar |

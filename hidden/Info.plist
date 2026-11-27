@@ -44,6 +44,6 @@ macOS 27 Golden Gate support by Vitalii Tereshchuk (https://dotoca.net).</string
 	<key>SUAllowsAutomaticUpdates</key>
 	<true/>
 	<key>SUScheduledCheckInterval</key>
-	<integer>86400</integer>
+	<integer>604800</integer>
 </dict>
 </plist>

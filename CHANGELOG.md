@@ -1,9 +1,9 @@
 # Changelog
 
-## Unreleased
+## v1.26.1 (2026-11-27)
 
 ### Added
-- Sparkle 2 auto-updates: daily background checks, signed HTTPS downloads, a
+- Sparkle 2 auto-updates: weekly background checks, signed HTTPS downloads, a
   transparent Updates section in the tray panel, one-click install on ready,
   installation on quit, and a main-menu **Check for Updates…** item. Ed25519
   appcast signing works without Developer ID or notarization.

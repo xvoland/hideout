@@ -55,7 +55,7 @@ Support the project to purchase a signed & notarized build from Apple.
 
 #### Updates inside the app (Sparkle)
 
-Hideout checks for a new version once a day and downloads updates in the
+Hideout checks for a new version once a week and downloads updates in the
 background. The **Updates** section in the tray panel shows the current state
 and lets you turn automatic checks/installation off, check manually, or press
 **Install now** when an update is ready. Updates also install on quit. Archives
