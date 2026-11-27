@@ -53,6 +53,15 @@ code signature, so after **every update** re-grant it in System Settings when
 prompted (first collapse asks again); that is expected, not a bug.
 Support the project to purchase a signed & notarized build from Apple.
 
+#### Updates inside the app (Sparkle)
+
+Hideout checks for a new version once a day and downloads updates in the
+background. The **Updates** section in the tray panel shows the current state
+and lets you turn automatic checks/installation off, check manually, or press
+**Install now** when an update is ready. Updates also install on quit. Archives
+are signed with Sparkle's Ed25519 key and fetched over HTTPS, so no Developer ID
+or notarization is required. The main menu has **Check for Updates…** too.
+
 #### Using Homebrew (no signature, no `xattr` needed)
 
 Homebrew does not apply the `com.apple.quarantine` attribute to cask installs,
@@ -64,8 +73,9 @@ brew trust xvoland/hideout
 brew install --cask hideout
 ```
 
-Updates: `brew update && brew upgrade hideout` (CI pins the cask to each
-release with a real checksum — no `:no_check`, no `:latest` placeholders).
+Homebrew users can also run `brew update && brew upgrade hideout` (CI pins the
+cask to each release with a real checksum — no `:no_check`, no `:latest`
+placeholders). The in-app updater works regardless of how you installed it.
 
 Note: one-line installs of casks from a raw URL (`brew install --cask
 https://...`) were removed by Homebrew; `brew trust` is Homebrew's untrusted-tap

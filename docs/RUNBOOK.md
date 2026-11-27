@@ -78,19 +78,26 @@ installed app, test the dev build, then re-import and relaunch.
 2. Tag and push; CI builds and publishes automatically:
    `git tag vX.Y.Z && git push origin vX.Y.Z`
 
-   The version comes from the tag via `.github/scripts/bump-version.sh`; the
-   workflow builds `Release-Direct`, packages `Hideout.app`, a DMG and a source
-   archive, and creates the GitHub release. Every tag is a full release —
-   never tag throwaway versions.
+   The version comes from the tag via `.github/scripts/bump-version.sh` (which
+   also sets an increasing `CFBundleVersion` for Sparkle); the workflow builds
+   `Release-Direct` with `ENABLE_HARDENED_RUNTIME=NO`, packages `Hideout.app`, a
+   DMG and a source archive, and creates the GitHub release. Every tag is a
+   full release — never tag throwaway versions.
 3. Builds are **ad-hoc signed** (`codesign --force --deep --sign -` in CI).
    Homebrew installs need no signature check at all (Homebrew does not
    quarantine cask downloads), so only manual/browser downloads need the
    quarantine cleanup: `xattr -dr com.apple.quarantine "Hideout.app"`.
-   Notarization is not wired up (it needs a Developer ID certificate and
-   secrets).
-4. App Store (separate lane): the MAS listing has lagged GitHub since v1.8
+   Notarization is not wired up (it needs a Developer ID certificate).
+4. Sparkle feed: `.github/scripts/generate-appcast.sh` signs the new
+   `Hideout.app.zip` with the Ed25519 private key stored in the Actions secret
+   `SPARKLE_PRIVATE_KEY` and commits `appcast.xml` to master together with the
+   cask pin. The public key is in `hidden/Info.plist` (`SUPublicEDKey`) and the
+   feed URL is `SUFeedURL`. If the private key is ever lost, existing installs
+   cannot be updated (key rotation needs a Developer ID). Keep an offline copy
+   of the key exported with `generate_keys -x`.
+5. App Store (separate lane): the MAS listing has lagged GitHub since v1.8
    (issues #281/#202); decide deliberately whether a release goes there too.
-5. Homebrew: upstream has the official cask (`brew install --cask hiddenbar`);
+6. Homebrew: upstream has the official cask (`brew install --cask hiddenbar`);
    this fork's macOS 27 build ships via its own cask in `Casks/hideout.rb`.
    On every `v*` tag CI re-pins the cask (version + zip sha256) and
    commits it to master (`update-cask.py`). Verify a cask change locally before
@@ -108,7 +115,7 @@ installed app, test the dev build, then re-import and relaunch.
    Note: installing casks from a raw URL (`brew install --cask https://…`) is
    no longer supported by Homebrew; the tap + `brew trust` flow is the only
    route.
-6. Before any public release after the SMAppService migration: one
+7. Before any public release after the SMAppService migration: one
    upgrade-path run from a launcher-era build (v1.9 or older) verifying System
    Settings shows no ghost LauncherApplication login item.
 

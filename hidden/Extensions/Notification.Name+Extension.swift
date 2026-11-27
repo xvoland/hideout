@@ -17,4 +17,6 @@ extension Notification.Name {
     /// Posted after the menu bar actually collapses or expands, so the tray
     /// panel can update its status line.
     static let menuBarStateChanged = Notification.Name("menuBarStateChanged")
+    /// Posted when Sparkle's update state changes so the tray panel can show it.
+    static let updateStatusChanged = Notification.Name("updateStatusChanged")
 }

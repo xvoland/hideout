@@ -33,5 +33,17 @@ macOS 27 Golden Gate support by Vitalii Tereshchuk (https://dotoca.net).</string
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/xvoland/hideout/master/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>b59DVUeRGEX96M6Bk0RB/no0+6pk1F8hLj7eNZ86k2Q=</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUAutomaticallyUpdate</key>
+	<true/>
+	<key>SUAllowsAutomaticUpdates</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>

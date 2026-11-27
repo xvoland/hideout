@@ -6,6 +6,10 @@ Dwarves Foundation built the Hidden Bar app as an Open Source app. This app is p
 
 The app does NOT use any third party services that may collect information used to identify you.
 
+Automatic updates contact GitHub to fetch the signed update feed
+(`raw.githubusercontent.com`) and the release archive. These requests are used
+only to check for and download updates; the app does not send personal data.
+
 **Contact Us**
 
 If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at macos@d.foundation.

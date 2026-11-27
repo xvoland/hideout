@@ -28,8 +28,10 @@ fi
 # Update MARKETING_VERSION (may appear twice — Debug and Release configs)
 sed -i.bak "s/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = $VERSION;/g" "$PROJECT_FILE"
 
-# Reset CURRENT_PROJECT_VERSION to 1 for the new version
-sed -i.bak "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = 1;/g" "$PROJECT_FILE"
+# Sparkle compares CFBundleVersion, so it must increase with every release.
+# 1.26.0 -> 1260 (all released builds before Sparkle used 1).
+BUILD=$(echo "$VERSION" | tr -d '.')
+sed -i.bak "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD;/g" "$PROJECT_FILE"
 
 rm -f "${PROJECT_FILE}.bak"
 

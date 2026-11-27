@@ -22,8 +22,8 @@ Everything Hideout can do, including the parts with no UI.
 
 **Right-click the arrow** to open the panel; **Escape** or a click outside
 closes it. Settings are grouped into **General**, **Hiding Behavior**,
-**Keyboard Shortcut**, **Menu Bar Preview**, and **About**, with **Check for
-Updates…** and **Quit** pinned in the footer. Drag the grip under the footer
+**Keyboard Shortcut**, **Updates**, **Menu Bar Preview**, and **About**, with
+**Check for Updates…** and **Quit** pinned in the footer. Drag the grip under the footer
 to change the height; it is remembered across launches.
 
 | Setting | What it does |
@@ -38,6 +38,9 @@ to change the height; it is remembered across launches.
 | Use the full menu bar when expanding | Activate Hideout like a regular app while expanded (helps on tight menubars) |
 | **Keyboard Shortcut** | |
 | Toggle Hideout | System-wide expand/collapse hotkey (F-keys display as F18, not Fn18); **Set Shortcut** records, the clear button removes it |
+| **Updates** | |
+| Check automatically / Install automatically | Daily background checks and background downloads; both can be turned off here |
+| Status / Install now | Shows the update state; **Install now** appears when an update is downloaded. Updates also install on quit |
 | **Menu Bar Preview** | |
 | Menu Bar Preview | Illustrative strip that labels the Hidden / Always Hidden / Visible zones — not a live mirror of the system bar |
 | **About** | |

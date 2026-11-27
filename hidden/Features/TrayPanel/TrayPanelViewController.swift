@@ -47,6 +47,11 @@ final class TrayPanelViewController: NSViewController {
     private var keepSystemSwitch: NSSwitch!
     private var fullMenuBarSwitch: NSSwitch!
 
+    private var updateStatusLabel: NSTextField!
+    private var autoCheckSwitch: NSSwitch!
+    private var autoInstallSwitch: NSSwitch!
+    private var installButton: NSButton!
+
     private var delayLabel: NSTextField!
     private var delayPopup: NSPopUpButton!
     private var engineNote: NSTextField!
@@ -83,6 +88,7 @@ final class TrayPanelViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(refreshControls), name: .prefsChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshControls), name: .alwayHideToggle, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateStatus), name: .menuBarStateChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshUpdateUI), name: .updateStatusChanged, object: nil)
     }
 
     deinit {
@@ -257,6 +263,7 @@ final class TrayPanelViewController: NSViewController {
         addSection("Hiding Behavior".localized,
                    views: [hidingCard(), engineNoteLabel()])
         addSection("Keyboard Shortcut".localized, views: [shortcutCard()])
+        addSection("Updates".localized, views: [updateCard()])
         addSection("Menu Bar Preview".localized,
                    accessory: textButton("Show All Icons".localized,
                                          action: #selector(arrangePressed),
@@ -490,6 +497,44 @@ final class TrayPanelViewController: NSViewController {
         return card([row])
     }
 
+    private func updateCard() -> NSView {
+        autoCheckSwitch = toggle(action: #selector(autoCheckChanged),
+                                 label: "Check automatically".localized)
+        autoInstallSwitch = toggle(action: #selector(autoInstallChanged),
+                                   label: "Install automatically".localized)
+        installButton = textButton("Install now".localized,
+                                   action: #selector(installUpdatePressed))
+
+        return card([
+            updateStatusRow(),
+            separator(),
+            settingRow(title: "Check automatically".localized, control: autoCheckSwitch),
+            separator(),
+            settingRow(title: "Install automatically".localized, control: autoInstallSwitch)
+        ])
+    }
+
+    private func updateStatusRow() -> NSView {
+        updateStatusLabel = NSTextField(wrappingLabelWithString: UpdateManager.shared.status.message)
+        updateStatusLabel.font = .systemFont(ofSize: 11)
+        updateStatusLabel.textColor = .secondaryLabelColor
+        updateStatusLabel.maximumNumberOfLines = 2
+        updateStatusLabel.preferredMaxLayoutWidth = 190
+        updateStatusLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let spacer = NSView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        let row = NSStackView(views: [updateStatusLabel, spacer, installButton])
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 6
+        row.edgeInsets = NSEdgeInsets(top: 9, left: 0, bottom: 9, right: 0)
+        row.translatesAutoresizingMaskIntoConstraints = false
+        return row
+    }
+
     private func aboutCard() -> NSView {
         let version = Bundle.main.releaseVersionNumber ?? "—"
         let build = Bundle.main.buildVersionNumber ?? "—"
@@ -699,6 +744,7 @@ final class TrayPanelViewController: NSViewController {
         updateEngineNote()
         updateShortcut()
         updateStatus()
+        refreshUpdateUI()
     }
 
     private func updateDelayAvailability() {
@@ -721,6 +767,14 @@ final class TrayPanelViewController: NSViewController {
         statusLabel.stringValue = (controller?.isMenuBarCollapsed ?? false)
             ? "Menu bar hidden".localized
             : "Menu bar visible".localized
+    }
+
+    @objc private func refreshUpdateUI() {
+        guard isViewLoaded, updateStatusLabel != nil else { return }
+        updateStatusLabel.stringValue = UpdateManager.shared.status.message
+        autoCheckSwitch.state = UpdateManager.shared.automaticallyChecksForUpdates ? .on : .off
+        autoInstallSwitch.state = UpdateManager.shared.automaticallyInstallsUpdates ? .on : .off
+        installButton.isHidden = UpdateManager.shared.status != .ready
     }
 
     private func updateShortcut() {
@@ -782,7 +836,22 @@ final class TrayPanelViewController: NSViewController {
     @objc private func checkUpdatesPressed() {
         onRequestClose?()
         DispatchQueue.main.async {
-            UpdateChecker.shared.checkNow()
+            UpdateManager.shared.checkNow()
+        }
+    }
+
+    @objc private func autoCheckChanged() {
+        UpdateManager.shared.automaticallyChecksForUpdates = autoCheckSwitch.state == .on
+    }
+
+    @objc private func autoInstallChanged() {
+        UpdateManager.shared.automaticallyInstallsUpdates = autoInstallSwitch.state == .on
+    }
+
+    @objc private func installUpdatePressed() {
+        onRequestClose?()
+        DispatchQueue.main.async {
+            UpdateManager.shared.installNow()
         }
     }
 

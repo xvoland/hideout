@@ -31,7 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         registerDefaultValues()
         setupHotKey()
         openSettingsPanelIfNeeded()
-        UpdateChecker.shared.checkIfDue()
+        UpdateManager.shared.start()
     }
     
     func openSettingsPanelIfNeeded() {

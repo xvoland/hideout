@@ -43,3 +43,16 @@ Zum Anzeigen der permanent ausgeblendeten Symbole:
 "Use the full menu bar when expanding" = "Beim Erweitern die gesamte Menübreite benutzen";
 
 "Always Hidden" = "Permanent versteckt";
+
+// Sparkle auto-update UI
+"Check for Updates…" = "Check for Updates…";
+"Updates" = "Updates";
+"Check automatically" = "Check automatically";
+"Install automatically" = "Install automatically";
+"Install now" = "Install now";
+"Up to date" = "Up to date";
+"Checking for updates…" = "Checking for updates…";
+"Update available" = "Update available";
+"Downloading update…" = "Downloading update…";
+"Update ready to install" = "Update ready to install";
+"Update check failed" = "Update check failed";
